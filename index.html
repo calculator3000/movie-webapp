@@ -6,6 +6,7 @@
     <title>ScreenTrack: using the IMDB API to display data about movies</title>
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="config.js"></script> <!-- need this to be able to access the config file-->
 </head>
 
 <body>
@@ -38,9 +39,8 @@
 </main>
 </body>
 
-<script type=’text/javascript’ src=’config.js’></script>
-
 <script>
+    getAPIkey()
     getMoviesFromJsonFile();
 </script>
 
