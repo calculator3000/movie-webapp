@@ -1,0 +1,87 @@
+* {
+    box-sizing: border-box; /*include the padding and border in an element's total width and height */
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style for the header with navigation bar */
+header {
+    width: 100%;
+    background-color: black;
+    overflow: auto;
+}
+
+header h3 {
+    position: absolute;
+    color: white;
+    margin-left: 55px;
+    margin-right: 500px;
+
+}
+
+.logo img {
+    position: absolute;
+    margin-top: 12px;
+    margin-left: 10px;
+    height: 30px;
+    width: auto;
+}
+
+header ul {
+    padding: 0;
+    margin: 0 0 0 180px;
+    list-style: none;
+}
+
+header li {
+    float: left;
+}
+
+nav a {
+    width: 100px;
+    display: block;
+    padding: 20px 15px;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+
+nav a:hover {
+    background: grey;
+    transition: 0.5s;
+}
+
+
+
+
+/* Gallery */
+.gallery {
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 10px;
+    gap: 16px;
+
+}
+
+.gallery img {
+    width: 100%;
+    max-width: 350px;
+    height: 300px;
+    object-fit: cover;
+  }
+
+.gallery::after {
+    content: "";
+    width: 350px;
+}

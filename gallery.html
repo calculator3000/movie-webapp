@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>ScreenTrack: using the IMDB API to display data about movies</title>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo"><img src="images/camera.png"></div>
+        <h3>ScreenTrack</h3>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="./index.html">Home</a></li>
+                <li><a href="./gallery.html">Gallery</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="gallery">
+        <img scr="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/1.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/2.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/3.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/4.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/5.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/6.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/7.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/8.jpg">
+        <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/9.jpg">
+    </div>
+
+
+  <section>
+    <div>
+        <span id="movtitle"></span>
+        <span id="movrank"></span>
+
+    </div>
+
+  </section>
+
+</body>
+
+<script>
+    getMoviesFromJsonFile();
+</script>
+
+</html>
