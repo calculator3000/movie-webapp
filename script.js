@@ -12,25 +12,33 @@ const genreColors = {
     // Family
     // Fantasy
     // "Film Noir"
-    // History	
+    // History	// gold
     Horror: "#556B2F50", // dark olive green
     // Music
-    // Musical
+    // Musical // orange
     // Mystery
     Romance: "rgba(255, 0, 0, 0.2)", //semi-transparent red
-    // Sci-Fi	
+    // Sci-Fi	// silver
     // "Short Film"
     // Sport
     // Superhero
     // Thriller
-    // War
+    // War // grey
     // Western: "#DEB88750" // semi-transparent burly wood
 };
 
 // index.html, top250.json
 // later implement API calls, get the API keys from config file (not uploaded, configured in .gitignore)
-var mykey = config.MY_KEY;
-var url = "https://www.whatever.com/?query&sig=" + mykey;
+var myKey = " ";
+var url = "https://www.whatever.com/?query&sig=" + myKey;
+
+
+function getAPIkey() {
+    fetch('config.js').then(function (config) {
+        console.log('API key:', apikeys.MY_KEY);
+    });
+
+}
 
 async function getMoviesFromJsonFile() {
     // other way to write promise (needs async keyword). Gets the top250 movies from the json file and assigns the response data to movieData
@@ -77,6 +85,7 @@ async function getInTheatersFromJsonFile() {
     console.log("called Theater func");
     // call the function populateMovies 
     populateTheaterGallery(theaterData);
+    console.log(mykey)
 }
 
 function populateTheaterGallery(data) {
@@ -153,17 +162,3 @@ function populateTheaterGallery(data) {
 
     }
 }
-
-
-
-// Action (Blue)
-// Adventure (Green)
-// Comedy (Yellow)
-// Crime & Gangster (Purple)
-// Drama (Red)
-// Historical (Gold)
-// Horror (DarkGreen)
-// Musicals (Orange)
-// Sci-Fi (Silver)
-// War (Grey)
-// Western (Brown)
