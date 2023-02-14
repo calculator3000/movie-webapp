@@ -28,6 +28,10 @@ const genreColors = {
 };
 
 // index.html, top250.json
+// later implement API calls, get the API keys from config file (not uploaded, configured in .gitignore)
+var mykey = config.MY_KEY;
+var url = "https://www.whatever.com/?query&sig=" + mykey;
+
 async function getMoviesFromJsonFile() {
     // other way to write promise (needs async keyword). Gets the top250 movies from the json file and assigns the response data to movieData
     const response = await fetch("json_files/top250.json");
