@@ -1,4 +1,4 @@
-# movie-webapp: a group project for web and cloud computing class
+# movie-webapp
 
 Work in Progress
 
