@@ -59,9 +59,9 @@ nav a:hover {
     transition: 0.5s;
 }
 
-/* Style for the main with navigation bar */
+/* Style for the main */
 main {
-    margin-top: 70px;
+    margin-top: 70px; /* ensures main starts below navigation bar */
 }
 
 
