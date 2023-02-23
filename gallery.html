@@ -4,7 +4,10 @@
 <head>
     <meta charset="utf-8">
     <title>ScreenTrack: using the IMDB API to display data about movies</title>
+    <link rel="icon" type="image/x-icon" href="camera.png">
+    <script type="text/javascript" src="config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
     <script src="script.js"></script>
+    <script src="login.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -17,38 +20,25 @@
                 <li><a href="./index.html">Home</a></li>
                 <li><a href="./gallery.html">Gallery</a></li>
                 <li><a href="./in_theaters.html">In Theaters</a></li>
+                <li><a href="./watched.html">Watched</a></li>
             </ul>
         </nav>
+        <button onclick="login()">Login</button>
     </header>
-    <main>
-        <div class="gallery">
-            <img scr="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/1.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/2.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/3.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/4.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/5.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/6.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/7.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/8.jpg">
-            <img src="https://cdn.freecodecamp.org/curriculum/css-photo-gallery/9.jpg">
-        </div>
+    
+<main>
+    <button onclick="getWatched()">Get Watched Movies</button>
 
+<!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
+  <section id="watched">
 
-    <section>
-        <div>
-            <span id="movtitle"></span>
-            <span id="movrank"></span>
+  </section>
 
-        </div>
-
-    </section>
-    </main>
+</main>
 </body>
 
-<script type=’text/javascript’ src=’config.js’></script>
-
 <script>
-    // getMoviesFromJsonFile();
+
 </script>
 
 </html>
