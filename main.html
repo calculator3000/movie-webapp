@@ -8,7 +8,7 @@
     <script type="text/javascript" src="config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
     <script src="script.js"></script>
     <script src="login.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
 </head>
 
 <body>
@@ -26,16 +26,24 @@
         </nav>
         <button onclick="login()">Login</button>
     </header>
-    
-<main>
-    <button onclick="getWatched()">Get Watched Movies</button>
 
-<!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
-  <section id="watched">
+    <!-- will be filled with JSON-->
+    <main>
+        <div class="row">
+            <div class="column">
+              <h1>
+                Here you are right when you want to find out more about amazing movies. 
+                Feel free to browse our website and explore the Top 250 movies, 
+                the movies that are currently in the cinemas and your own watchlist.
+              </h1>
+            </div>
+            <div class="column_2">
+              <iframe width="80%" height="120%" src="https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1">
+            </iframe>
+            </div>
+          </div>
+    </main>
 
-  </section>
-
-</main>
 </body>
 
 <script>
