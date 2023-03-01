@@ -1,0 +1,105 @@
+* {
+    box-sizing: border-box; /*include the padding and border in an element's total width and height */
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style for the header with navigation bar */
+header {
+    width: 100%;
+    background-color: black;
+    overflow: auto;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+}
+
+.logo img {
+    position: absolute;
+    margin-top: 12px;
+    margin-left: 10px;
+    height: 30px;
+    width: auto;
+}
+
+header h3 {
+    position: absolute;
+    color: white;
+    margin-left: 55px;
+    margin-right: 500px;
+
+}
+
+header ul {
+    padding: 0;
+    margin: 0 0 0 180px;
+    list-style: none;
+}
+
+header li {
+    float: left;
+}
+
+nav a {
+    width: 120px;
+    display: block;
+    padding: 20px 15px;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+
+nav a:hover {
+    background: grey;
+    transition: 0.5s;
+}
+
+/* Style for the main */
+main {
+    margin-top: 70px; /* ensures main starts below navigation bar */
+}
+
+
+
+/* Style for the tp 250 movies */
+
+section {
+    padding: 10px;
+}
+.field {
+    margin: 10px;
+}
+.movie_card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+}
+.movie_card {
+    display: flex;
+}
+.big {
+    font-size: 300%;
+}
+.houritem, .hourheader {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    margin: 10px;
+}
+.houritem div, .hourheader div {
+    width: 80px;
+    margin: 5px;
+}

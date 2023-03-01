@@ -54,20 +54,22 @@ function populateMovies(data) {
 
     // loop through the elements of the movies array, get title and image from JSON to display on webapp
     for (const movie of movies) {
-        const movieCard = document.createElement('article');
+        const movie_card = document.createElement('article');
 
-        const movTitle = document.createElement('p'); // creates new element
-        movTitle.textContent = `${movie.rank}. ${movie.title}`; // fill the p element with the title
+        const movie_title = document.createElement('p'); // creates new element
+        movie_title.innerHTML = `${movie.rank}. ${movie.title}`; // fill the p element with the title
+        // let movie_title = document.getElementById("temperature");
+        // movie_title.textContent = `${movie.rank}. ${movie.title}`;
 
-        const movImg = document.createElement('img');
-        movImg.src = movie.image;
-        movImg.style.width = "100px";
-        movImg.style.height = "auto";
+        const movie_image = document.createElement('img');
+        movie_image.src = movie.image;
+        movie_image.style.width = "100px";
+        movie_image.style.height = "auto";
 
-        movieCard.appendChild(movTitle);
-        movieCard.appendChild(movImg);
+        movie_card.appendChild(movie_title);
+        movie_card.appendChild(movie_image);
         
-        section.appendChild(movieCard);
+        section.appendChild(movie_card);
 
         // append the element to the section
 
