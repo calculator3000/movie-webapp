@@ -71,35 +71,84 @@ main {
 section {
     padding: 10px;
 }
-.field {
-    margin: 10px;
-}
-.movie_card {
+.movieitem {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 20px;
     background-color: #ffffff;
-    padding: 10px;
-    border-radius: 10px;
+    border-radius: 20px;
+    margin: 10px;
+    width: 100%;
+    cursor:pointer;
 }
-.movie_card {
-    display: flex;
+.movieitem div{
+    width: 300px;
 }
-.big {
-    font-size: 300%;
+.movie_title {
+    font-weight: bold;
 }
-.houritem, .hourheader {
+.movie_image {
+    width: 100px;
+    height: "auto";
+}
+.header {
     display: flex;
     flex-direction: row;
-    justify-content: left;
+    justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    background-color: #ffffff;
-    border-radius: 10px;
+    padding: 20px;
+    background-color: #afe0f5;
+    border-radius: 20px;
     margin: 10px;
+    width: 100%;
+    font-weight: bold;
+    font-size: 110%;
 }
-.houritem div, .hourheader div {
-    width: 80px;
-    margin: 5px;
+.header div {
+    width: 300px;
+    
+}
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+  /* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 40px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    text-align: justify;
+}
+  /* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+#modal_title {
+    font-weight: bold;
+    font-size: 120%;
+    text-align: left;
+    text-decoration: overline;
+    line-height: 280%;
 }
