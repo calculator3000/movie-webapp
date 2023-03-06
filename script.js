@@ -42,6 +42,20 @@ async function getMoviesFromJsonFile() {
     populateMovies(movieData);
 }
 
+async function getWiki(id) {
+    let movie_id = id
+    let url = `https://imdb-api.com/en/API/Wikipedia/k_s6o9v1tp/${movie_id}`;
+    const response = await fetch(url);
+    var datawiki = await response.json();
+    console.log(datawiki);
+  
+    let modal_title = document.getElementById("modal_title");
+    modal_title.innerHTML = `${datawiki.fullTitle}`;
+  
+    let modal_content = document.getElementById("modal_content");
+    modal_content.innerHTML = datawiki.plotShort.plainText;
+}
+
 /**
  * populateMovies takes argument data.
  * it populates index.html top250 id with movie data
@@ -49,25 +63,59 @@ async function getMoviesFromJsonFile() {
  */
 function populateMovies(data) {
     console.log(data);
-    const section = document.querySelector('#top250'); // select the sections
-    const movies = data.items; 
+    const section = document.querySelector('#top250'); // select the sections 
+    const movies = data.items;
 
     // loop through the elements of the movies array, get title and image from JSON to display on webapp
     for (const movie of movies) {
-        const movieCard = document.createElement('article');
+        const movie_card = document.createElement('li');
+        movie_card.classList = "movieitem"
 
-        const movTitle = document.createElement('p'); // creates new element
-        movTitle.textContent = `${movie.rank}. ${movie.title}`; // fill the p element with the title
+        // Get the modal
+        let modal = document.getElementById("myModal");
+        // Get the <span> element that closes the modal
+        let span = document.getElementsByClassName("close")[0];
+        // When the user clicks on the button, open the modal
+        movie_card.onclick = function() {
+            modal.style.display = "block";
+        }
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+            modal.style.display = "none";
+            }
+        }
+        // get Wikipedia info from API and fill the modal
+        movie_card.addEventListener("click", function() {
+            getWiki(movie.id)
+        })
 
-        const movImg = document.createElement('img');
-        movImg.src = movie.image;
-        movImg.style.width = "100px";
-        movImg.style.height = "auto";
-
-        movieCard.appendChild(movTitle);
-        movieCard.appendChild(movImg);
+        const movie_image = document.createElement('img');
+        movie_image.src = movie.image;
+        movie_image.setAttribute("class", "movie_image")
         
-        section.appendChild(movieCard);
+        const movie_title = document.createElement('div'); // creates new element
+        movie_title.innerHTML = `${movie.rank}. ${movie.title}`; // fill the p element with the title
+        movie_title.setAttribute("class", "movie_title")
+        //let movie_title = document.getElementById("temperature");
+        //movie_title.textContent = `${movie.rank}. ${movie.title}`;
+
+        const movie_year = document.createElement('div');
+        movie_year.innerHTML = `${movie.year}`;
+
+        const movie_rating = document.createElement('div');
+        movie_rating.innerHTML = `${movie.imDbRating}`;
+
+        movie_card.appendChild(movie_image);
+        movie_card.appendChild(movie_title);
+        movie_card.appendChild(movie_year);
+        movie_card.appendChild(movie_rating);
+
+        section.appendChild(movie_card);
 
         // append the element to the section
 
