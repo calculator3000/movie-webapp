@@ -13,21 +13,21 @@ const genreColors = {
     Documentary: "#1E90FF30", // dodger blue
     Drama: "#DC143C30", // crimson
     // Family
-    // Fantasy
+    Fantasy: "#F5F5DC",
     // "Film Noir"
     // History	// gold
     Horror: "#556B2F50", // dark olive green
-    // Music
+    Music: "#B0E0E6", //powder blue
     // Musical // orange
-    // Mystery
+    Mystery: "#D3D3D3",
     Romance: "rgba(255, 0, 0, 0.2)", //semi-transparent red
-    // Sci-Fi	// silver
-    // "Short Film"
-    // Sport
-    // Superhero
-    // Thriller
-    // War // grey
-    // Western: "#DEB88750" // semi-transparent burly wood
+    "Sci-Fi": "lightcyan", // light cyan
+    // `Short Film`: "#f5fffa" // mintcream
+    Sport: "#FDF5E6", //OldLace
+    Superhero: "#F0FFF0", //HoneyDew
+    Thriller: "#FFB6C1",
+    War: "#90ee90", // light green
+    Western: "#DEB88750" // semi-transparent burly wood
 };
 
 
@@ -84,7 +84,8 @@ async function getInTheatersFromJsonFile() {
     const theaterData = await response.json();
 
     // call the function populateMovies 
-    populateTheaterGallery(theaterData);
+    // populateTheaterGallery(theaterData);
+    displayRandomElements(theaterData);
 }
 
 /**
@@ -259,3 +260,91 @@ function populateWatchedGallery() {
         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
     }
 }
+
+/** program to get a random item from an array */
+
+/**
+ * populateTheaterGallery takes argument data.
+ * it populates in_theaters.html gallery class with data about movies currently in theaters
+ * @param {json} data - JSON file
+ */
+
+function displayRandomElements(data) {
+    // Define a list of elements
+    // Extract the IDs from the JSON and store them in an array
+    console.log(data);
+    const elements = data.items.map(user => user.id);
+
+    
+    const randomElements = [];
+    while (randomElements.length < 4) {
+      const randomIndex = Math.floor(Math.random() * elements.length);
+      const randomElement = elements[randomIndex];
+      if (!randomElements.includes(randomElement)) {
+        randomElements.push(randomElement);
+      }
+    }
+    /*
+    // Display the four random elements
+    const output1 = document.getElementById('output1');
+    output1.textContent = randomElements[0];
+    
+    const output2 = document.getElementById('output2');
+    output2.textContent = randomElements[1];
+    
+    const output3 = document.getElementById('output3');
+    output3.textContent = randomElements[2];
+    
+    const output4 = document.getElementById('output4');
+    output4.textContent = randomElements[3];
+    */
+    const arr_title = [];
+    const arr_ranking = [];
+    const arr_plot = [];
+
+    for (var i = 0; i < randomElements.length; i++) {
+        console.log(randomElements[i]);
+        var id = randomElements[i];
+        title = data.items.find(x => x.id === randomElements[i]).title;
+        arr_title.push(title)
+        ranking = data.items.find(y => y.id === randomElements[i]).imDbRating;
+        arr_ranking.push(ranking);
+        plot = data.items.find(z => z.id === randomElements[i]).plot;
+        arr_plot.push(plot);
+
+      }
+    console.log(arr_title);
+    console.log(arr_ranking);
+    console.log(arr_plot);
+
+    
+    var first_title = document.getElementById("first_title");
+    first_title.textContent = arr_title[0];
+    const second_title = document.getElementById("second_title");
+    second_title.textContent = arr_title[1];
+    const third_title = document.getElementById("third_title");
+    third_title.textContent = arr_title[2];
+    const fourth_title = document.getElementById("fourth_title");
+    fourth_title.textContent = arr_title[3];
+
+    /*
+    const first_ranking = document.getElementById("first_ranking");
+    first_ranking.textContent = arr_ranking[0];
+    const second_ranking = document.getElementById("second_ranking");
+    second_ranking.textContent = arr_ranking[1];
+    const third_ranking = document.getElementById("third_ranking");
+    third_ranking.textContent = arr_ranking[2];
+    const fourth_ranking = document.getElementById("fourth_ranking");
+    fourth_ranking.textContent = arr_ranking[3];
+    */
+
+    const first_plot = document.getElementById("first_plot");
+    first_plot.textContent = arr_plot[0];
+    const second_plot = document.getElementById("second_plot");
+    second_plot.textContent = arr_plot[1];
+    const third_plot = document.getElementById("third_plot");
+    third_plot.textContent = arr_plot[2];
+    const fourth_plot = document.getElementById("fourth_plot");
+    fourth_plot.textContent = arr_plot[3];
+     
+  }
