@@ -13,8 +13,9 @@
 
 <body>
     <header>
-        <div class="logo"><a href="./main.html"><img src="images/camera.png"></a></div>
-        <h3>ScreenTrack</h3>
+
+        <a href="./main.html"><div class="logo"><img src="images/camera.png"></div></a>
+        <a href="./main.html"><h3>ScreenTrack</h3></a>
         <nav class="main-nav">
             <ul>
                 <li><a href="./index.html">Top 250</a></li>
@@ -28,25 +29,23 @@
     
 <main>
 <!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
-  <section id="top250">
+<section id="top250">
     <p>This is supposed to show information about movies from IMDb. <a href="https://www.imdb.com/chart/top/?ref_=nv_td_mv250">IMDB250</a></a></p>
-    <div class="movie_card">
-    <div id="movie_image"></div>
-    <div class="movie_info big">
-        <span id="movie_title"></span>C
+    <li class="header">
+        <div class="movie_image"></div>
+        <div class="movie_title">Title</div>
+        <div>Year</div>
+        <div>Rating</div>
+    </li>
+    <div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <span id="modal_title"></span>
+        <br />
+        <span id="modal_content"></span>
     </div>
-    <div class="movie_info">
-    <div class="field">
-        Feels like <span id="movie_title"></span>ºC
-    </div>
-    <div class="field">
-        Wind speed  <span id="wind_speed"></span> km/h <span id="wind_direction"></span>
-    </div>
-    <div class="field">
-        movie_image  <span id="movie_image"></span>%
-    </div>
-    </div>
-    </div>
+
+</div>
 </section>
 
 </main>
