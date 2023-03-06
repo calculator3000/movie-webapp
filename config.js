@@ -9,6 +9,6 @@ var traktapi = {
 
 var imdbapi = {
     key1: "k_6wmi1gqg", // Hannah
-    key2: "", // Julia
+    key2: "k_pius00o6", // Julia
     key3: "k_s6o9v1tp" // Celina
 }
