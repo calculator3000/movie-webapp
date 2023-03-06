@@ -1,0 +1,211 @@
+* {
+    box-sizing: border-box; /*include the padding and border in an element's total width and height */
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}
+
+h2 { 
+    display: block;
+    margin-left: 30px;
+    margin-top: 30px;
+    font-size: 32px;
+    text-align: center;
+    font-weight: bold;
+    padding-top: 40px;
+  }
+
+/* Style for the header with navigation bar */
+header {
+    width: 100%;
+    background-color: black;
+    overflow: auto;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+}
+
+.logo img {
+    position: absolute;
+    margin-top: 12px;
+    margin-left: 10px;
+    height: 30px;
+    width: auto;
+}
+
+header h3 {
+    position: absolute;
+    color: white;
+    margin-left: 55px;
+    margin-right: 500px;
+
+}
+
+header ul {
+    padding: 0;
+    margin: 0 0 0 180px;
+    list-style: none;
+}
+
+header li {
+    float: left;
+}
+
+nav a {
+    width: 120px;
+    display: block;
+    padding: 20px 15px;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+
+nav a:hover {
+    background: grey;
+    transition: 0.5s;
+}
+
+/* Style for the main */
+main {
+    margin-top: 58px; /* ensures main starts below navigation bar */
+}
+
+
+
+/* Gallery */
+.gallery {
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 10px;
+    gap: 16px;
+
+}
+
+.gallery img {
+    width: 100%;
+    max-width: 350px;
+    height: 300px;
+    object-fit: cover;
+  }
+
+.gallery::after {
+    content: "";
+    width: 350px;
+}
+
+.row {
+    display: flex;
+  }
+
+/* Homepage */
+
+.hero_image {
+    position: relative;
+    text-align: center;
+}
+
+.background {
+    float: left;
+    background-color: transparent;
+    text-align: center;
+    padding: 70px 0;
+    width: 100%;
+    height: 500px;
+    background-color: beige;
+
+}
+
+.column {
+    left: 5%;
+    position: absolute;
+    float: left;
+    background-color: transparent;
+    text-align: center;
+    padding: 70px 0;
+    width: 40%;
+}
+
+.column_2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    float: right;
+    background-color: transparent;
+    text-align: center;
+    width: 50%;
+    padding: 70px 0;
+    height: 400px; /* Should be removed. Only for demonstration */
+}
+
+
+/* Discover Movie Section
+--------------------------------*/
+
+
+.section-bg {
+    background: #ecf5ff;
+  }
+  
+  #services {
+    padding: 2.5rem 0;
+    box-shadow: inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1);
+  }
+#services .box {
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: 0 10px 45px 10px;
+  background: #fff;
+  box-shadow: 0 10px 29px 0 rgba(68, 88, 144, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+#services .box:hover {
+  -webkit-transform: translateY(-5px);
+  transform: translateY(-5px);
+}
+
+#services .icon {
+  position: absolute;
+  left: -10px;
+  top: calc(50% - 32px);
+}
+
+#services .icon i {
+  font-size: 64px;
+}
+
+#services .title {
+  margin-left: 40px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+#services .title {
+  color: #111;
+}
+
+#services .box:hover .title {
+  color: #007bff;
+}
+
+#services .description {
+  font-size: 14px;
+  margin-left: 40px;
+  line-height: 24px;
+  margin-bottom: 0;
+  font-family: "Open Sans", sans-serif;
+}
+  
+ 

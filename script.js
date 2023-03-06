@@ -13,21 +13,21 @@ const genreColors = {
     Documentary: "#1E90FF30", // dodger blue
     Drama: "#DC143C30", // crimson
     // Family
-    // Fantasy
+    Fantasy: "#F5F5DC",
     // "Film Noir"
     // History	// gold
     Horror: "#556B2F50", // dark olive green
-    // Music
+    Music: "#B0E0E6", //powder blue
     // Musical // orange
-    // Mystery
+    Mystery: "#D3D3D3",
     Romance: "rgba(255, 0, 0, 0.2)", //semi-transparent red
-    // Sci-Fi	// silver
-    // "Short Film"
-    // Sport
-    // Superhero
-    // Thriller
-    // War // grey
-    // Western: "#DEB88750" // semi-transparent burly wood
+    "Sci-Fi": "lightcyan", // light cyan
+    // `Short Film`: "#f5fffa" // mintcream
+    Sport: "#FDF5E6", //OldLace
+    Superhero: "#F0FFF0", //HoneyDew
+    Thriller: "#FFB6C1",
+    War: "#90ee90", // light green
+    Western: "#DEB88750" // semi-transparent burly wood
 };
 
 
@@ -42,6 +42,20 @@ async function getMoviesFromJsonFile() {
     populateMovies(movieData);
 }
 
+async function getWiki(id) {
+    let movie_id = id
+    let url = `https://imdb-api.com/en/API/Wikipedia/k_s6o9v1tp/${movie_id}`;
+    const response = await fetch(url);
+    var datawiki = await response.json();
+    console.log(datawiki);
+  
+    let modal_title = document.getElementById("modal_title");
+    modal_title.innerHTML = `${datawiki.fullTitle}`;
+  
+    let modal_content = document.getElementById("modal_content");
+    modal_content.innerHTML = datawiki.plotShort.plainText;
+}
+
 /**
  * populateMovies takes argument data.
  * it populates index.html top250 id with movie data
@@ -49,25 +63,59 @@ async function getMoviesFromJsonFile() {
  */
 function populateMovies(data) {
     console.log(data);
-    const section = document.querySelector('#top250'); // select the sections
-    const movies = data.items; 
+    const section = document.querySelector('#top250'); // select the sections 
+    const movies = data.items;
 
     // loop through the elements of the movies array, get title and image from JSON to display on webapp
     for (const movie of movies) {
-        const movieCard = document.createElement('article');
+        const movie_card = document.createElement('li');
+        movie_card.classList = "movieitem"
 
-        const movTitle = document.createElement('p'); // creates new element
-        movTitle.textContent = `${movie.rank}. ${movie.title}`; // fill the p element with the title
+        // Get the modal
+        let modal = document.getElementById("myModal");
+        // Get the <span> element that closes the modal
+        let span = document.getElementsByClassName("close")[0];
+        // When the user clicks on the button, open the modal
+        movie_card.onclick = function() {
+            modal.style.display = "block";
+        }
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+            modal.style.display = "none";
+            }
+        }
+        // get Wikipedia info from API and fill the modal
+        movie_card.addEventListener("click", function() {
+            getWiki(movie.id)
+        })
 
-        const movImg = document.createElement('img');
-        movImg.src = movie.image;
-        movImg.style.width = "100px";
-        movImg.style.height = "auto";
-
-        movieCard.appendChild(movTitle);
-        movieCard.appendChild(movImg);
+        const movie_image = document.createElement('img');
+        movie_image.src = movie.image;
+        movie_image.setAttribute("class", "movie_image")
         
-        section.appendChild(movieCard);
+        const movie_title = document.createElement('div'); // creates new element
+        movie_title.innerHTML = `${movie.rank}. ${movie.title}`; // fill the p element with the title
+        movie_title.setAttribute("class", "movie_title")
+        //let movie_title = document.getElementById("temperature");
+        //movie_title.textContent = `${movie.rank}. ${movie.title}`;
+
+        const movie_year = document.createElement('div');
+        movie_year.innerHTML = `${movie.year}`;
+
+        const movie_rating = document.createElement('div');
+        movie_rating.innerHTML = `${movie.imDbRating}`;
+
+        movie_card.appendChild(movie_image);
+        movie_card.appendChild(movie_title);
+        movie_card.appendChild(movie_year);
+        movie_card.appendChild(movie_rating);
+
+        section.appendChild(movie_card);
 
         // append the element to the section
 
@@ -82,7 +130,8 @@ async function getInTheatersFromJsonFile() {
     const theaterData = await response.json();
 
     // call the function populateMovies 
-    populateTheaterGallery(theaterData);
+    // populateTheaterGallery(theaterData);
+    displayRandomElements(theaterData);
 }
 
 /**
@@ -256,4 +305,109 @@ function populateWatchedGallery() {
         movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
     }
+}
+
+/** program to get a random item from an array */
+
+/**
+ * populateTheaterGallery takes argument data.
+ * it populates in_theaters.html gallery class with data about movies currently in theaters
+ * @param {json} data - JSON file
+ */
+
+function displayRandomElements(data) {
+    // Define a list of elements
+    // Extract the IDs from the JSON and store them in an array
+    console.log(data);
+    const elements = data.items.map(user => user.id);
+
+    
+    const randomElements = [];
+    while (randomElements.length < 4) {
+      const randomIndex = Math.floor(Math.random() * elements.length);
+      const randomElement = elements[randomIndex];
+      if (!randomElements.includes(randomElement)) {
+        randomElements.push(randomElement);
+      }
+    }
+
+    const arr_title = [];
+    const arr_ranking = [];
+    const arr_plot = [];
+
+    for (var i = 0; i < randomElements.length; i++) {
+        console.log(randomElements[i]);
+        var id = randomElements[i];
+        title = data.items.find(x => x.id === randomElements[i]).title;
+        arr_title.push(title)
+        ranking = data.items.find(y => y.id === randomElements[i]).imDbRating;
+        arr_ranking.push(ranking);
+        plot = data.items.find(z => z.id === randomElements[i]).plot;
+        arr_plot.push(plot);
+
+      }
+
+    
+    // create html element for each title, rank and plot for the four random movies
+    const first_title = document.getElementById("first_title");
+    first_title.textContent = arr_title[0];
+    const second_title = document.getElementById("second_title");
+    second_title.textContent = arr_title[1];
+    const third_title = document.getElementById("third_title");
+    third_title.textContent = arr_title[2];
+    const fourth_title = document.getElementById("fourth_title");
+    fourth_title.textContent = arr_title[3];
+
+    /*
+    const first_ranking = document.getElementById("first_ranking");
+    first_ranking.textContent = arr_ranking[0];
+    const second_ranking = document.getElementById("second_ranking");
+    second_ranking.textContent = arr_ranking[1];
+    const third_ranking = document.getElementById("third_ranking");
+    third_ranking.textContent = arr_ranking[2];
+    const fourth_ranking = document.getElementById("fourth_ranking");
+    fourth_ranking.textContent = arr_ranking[3];
+    */
+
+    const first_plot = document.getElementById("first_plot");
+    first_plot.textContent = arr_plot[0];
+    const second_plot = document.getElementById("second_plot");
+    second_plot.textContent = arr_plot[1];
+    const third_plot = document.getElementById("third_plot");
+    third_plot.textContent = arr_plot[2];
+    const fourth_plot = document.getElementById("fourth_plot");
+    fourth_plot.textContent = arr_plot[3];
+
+
+    // Generate a random index within the range of the array's length
+    const randomIndex = Math.floor(Math.random() * elements.length);
+
+    // Access the element at the random index
+    const randomElement = elements[randomIndex];
+    console.log(randomElement)
+
+    // call function getyoutube
+    getyoutube(randomElement)
+     
+  }
+
+  // gets the youtube trailer information for the random chosen movie
+  async function getyoutube(id) {
+    let movie_id = id
+    let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_pius00o6/${movie_id}`;
+    const response = await fetch(url);
+    var trailer = await response.json();
+    console.log(trailer);
+  
+
+    let trailer_link = document.getElementById("trailer_url");
+    console.log(trailer_link);
+    let videoUrl = trailer.videoUrl;
+    trailer_link.setAttribute("src", videoUrl);
+  
+    let trailer_title = document.getElementById("trailer_title");
+    trailer_title.innerHTML = trailer.title;
+
+    let trailer_year = document.getElementById("trailer_year");
+    trailer_year.innerHTML = trailer.year;
 }

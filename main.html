@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>ScreenTrack: using the IMDB API to display data about movies</title>
+    <link rel="icon" type="image/x-icon" href="camera.png">
+    <script type="text/javascript" src="config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
+    <script src="script.js">getInTheatersFromJsonFile</script>
+    <script src="login.js"></script>
+    <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo"><a href="./main.html"><img src="images/camera.png"></a></div>
+        <h3>ScreenTrack</h3>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="./index.html">Top 250</a></li>
+                <li><a href="./gallery.html">Gallery</a></li>
+                <li><a href="./in_theaters.html">In Theaters</a></li>
+                <li><a href="./watched.html">Watched</a></li>
+            </ul>
+        </nav>
+        <button onclick="login()">Login</button>
+    </header>
+
+    <!-- will be filled with JSON-->
+    <main>
+      <section class="hero_image">
+          <div class="background">
+          </div>
+          <div class="column">
+            <h1>
+              Here you are right when you want to find out more about amazing movies. 
+              Feel free to browse our website and explore the Top 250 movies, 
+              the movies that are currently in the cinemas and your own watchlist.
+            </h1>
+          </div>
+          <div class="column_2">
+            <video id="trailer_url" controls>
+              <source src="" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+      </section>
+
+      <!--==========================
+      Services Section
+    ============================-->
+    <section id="services" class="section-bg"> 
+      <div class="container">
+          <div class="section-header">
+            <h2>
+              Discover movies that are currently in cinemas
+            </h2>
+          </div>
+
+
+        <div class="row">
+
+          <div class="col-md-6 col-lg-5 offset-lg-1 ">
+            <div class="box">
+              <div class="icon"><i class="fab fa-angellist" style="color: #ff689b;"></i></div>
+              <h4 class="title", id="first_title"></h4>
+              <p class="description", id="first_plot"></p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-5 " >
+            <div class="box">
+              <div class="icon"><i class="fas fa-calculator" style="color: #e9bf06;"></i></div>
+              <h4 class="title", id="second_title"></h4>
+              <p class="description" id="second_plot"></p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-5 offset-lg-1 " >
+            <div class="box">
+              <div class="icon"><i class="far fa-calendar-alt" style="color: #3fcdc7;"></i></div>
+              <h4 class="title", id="third_title"></h4>
+              <p class="description", id="third_plot"></p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-5 " >
+            <div class="box">
+              <div class="icon"><i class="far fa-clock" style="color:#41cf2e;"></i></div>
+              <h4 class="title", id="fourth_title"></h4>
+              <p class="description", id="fourth_plot"></p>
+            </div>
+          </div>
+
+
+
+        </div>
+
+    </main>
+
+</body>
+
+<script>
+    getInTheatersFromJsonFile();
+</script>
+
+</html>
