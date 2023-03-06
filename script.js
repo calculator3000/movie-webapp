@@ -340,20 +340,28 @@ function displayRandomElements(data) {
     const randomElement = elements[randomIndex];
     console.log(randomElement)
 
+    // call function getyoutube
     getyoutube(randomElement)
      
   }
 
+  // gets the youtube trailer information for the random chosen movie
   async function getyoutube(id) {
     let movie_id = id
-    let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_s6o9v1tp/${movie_id}`;
+    let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_pius00o6/${movie_id}`;
     const response = await fetch(url);
     var trailer = await response.json();
     console.log(trailer);
   
-    let modal_title = document.getElementById("modal_title");
-    modal_title.innerHTML = `${datawiki.fullTitle}`;
+
+    let trailer_link = document.getElementById("trailer_url");
+    console.log(trailer_link);
+    let videoUrl = trailer.videoUrl;
+    trailer_link.setAttribute("src", videoUrl);
   
-    let modal_content = document.getElementById("modal_content");
-    modal_content.innerHTML = datawiki.plotShort.plainText;
+    let trailer_title = document.getElementById("trailer_title");
+    trailer_title.innerHTML = trailer.title;
+
+    let trailer_year = document.getElementById("trailer_year");
+    trailer_year.innerHTML = trailer.year;
 }
