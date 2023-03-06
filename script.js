@@ -284,20 +284,7 @@ function displayRandomElements(data) {
         randomElements.push(randomElement);
       }
     }
-    /*
-    // Display the four random elements
-    const output1 = document.getElementById('output1');
-    output1.textContent = randomElements[0];
-    
-    const output2 = document.getElementById('output2');
-    output2.textContent = randomElements[1];
-    
-    const output3 = document.getElementById('output3');
-    output3.textContent = randomElements[2];
-    
-    const output4 = document.getElementById('output4');
-    output4.textContent = randomElements[3];
-    */
+
     const arr_title = [];
     const arr_ranking = [];
     const arr_plot = [];
@@ -313,12 +300,10 @@ function displayRandomElements(data) {
         arr_plot.push(plot);
 
       }
-    console.log(arr_title);
-    console.log(arr_ranking);
-    console.log(arr_plot);
 
     
-    var first_title = document.getElementById("first_title");
+    // create html element for each title, rank and plot for the four random movies
+    const first_title = document.getElementById("first_title");
     first_title.textContent = arr_title[0];
     const second_title = document.getElementById("second_title");
     second_title.textContent = arr_title[1];
@@ -346,5 +331,29 @@ function displayRandomElements(data) {
     third_plot.textContent = arr_plot[2];
     const fourth_plot = document.getElementById("fourth_plot");
     fourth_plot.textContent = arr_plot[3];
+
+
+    // Generate a random index within the range of the array's length
+    const randomIndex = Math.floor(Math.random() * elements.length);
+
+    // Access the element at the random index
+    const randomElement = elements[randomIndex];
+    console.log(randomElement)
+
+    getyoutube(randomElement)
      
   }
+
+  async function getyoutube(id) {
+    let movie_id = id
+    let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_s6o9v1tp/${movie_id}`;
+    const response = await fetch(url);
+    var trailer = await response.json();
+    console.log(trailer);
+  
+    let modal_title = document.getElementById("modal_title");
+    modal_title.innerHTML = `${datawiki.fullTitle}`;
+  
+    let modal_content = document.getElementById("modal_content");
+    modal_content.innerHTML = datawiki.plotShort.plainText;
+}
