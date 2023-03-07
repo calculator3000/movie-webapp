@@ -4,22 +4,23 @@
 <head>
     <meta charset="utf-8">
     <title>ScreenTrack: using the IMDB API to display data about movies</title>
-    <link rel="icon" type="image/x-icon" href="images/camera.png">
-    <script type="text/javascript" src="scripts/config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
-    <script src="scripts/script.js"></script>
-    <script src="scripts/login.js"></script>
-    <link rel="stylesheet" href="styles/style_top250.css">
+    <link rel="icon" type="image/x-icon" href="camera.png">
+    <script type="text/javascript" src="config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
+    <script src="script.js"></script>
+    <script src="login.js"></script>
+    <link rel="stylesheet" href="style_top250.css">
 </head>
 
 <body>
     <header>
-        <div class="logo"><a href="./index.html"><img src="images/camera.png"></a></div>
-        <h3>ScreenTrack</h3>
+
+        <a href="./main.html"><div class="logo"><img src="images/camera.png"></div></a>
+        <a href="./main.html"><h3>ScreenTrack</h3></a>
         <nav class="main-nav">
             <ul>
-                <li><a href="./top250.html">Top 250</a></li>
+                <li><a href="./index.html">Top 250</a></li>
+                <li><a href="./gallery.html">Gallery</a></li>
                 <li><a href="./in_theaters.html">In Theaters</a></li>
-                <li><a href="./stats.html">Stats</a></li>
                 <li><a href="./watched.html">Watched</a></li>
             </ul>
         </nav>
@@ -28,20 +29,30 @@
     
 <main>
 <!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
-<section id="top250">
-    <p>This is supposed to show information about movies from IMDb. <a href="https://www.imdb.com/chart/top/?ref_=nv_td_mv250">IMDB250</a></a></p>
+<section id="top250">   
+    <div class="slidecontainer">
+        <p>Filter for range of years:</p>
+        <input type="range" min="1921" max="2022" value="50" class="slider" id="myRange" onclick= "filterYears()">
+        <p>Year: <span id="years"></span></p>
+        <p>Total movies: <span id="total_year"></span></p>
+      </div>
     <li class="header">
         <div class="movie_image"></div>
-        <div class="movie_title">Title</div>
-        <div>Year</div>
-        <div>Rating</div>
+        <div class="title" onclick= "sortTable(0)">Ranking &uarr;&darr;</div>
+        <div onclick= "sortTable(1)">Year &uarr;&darr;</div>
+        <div onclick="sortTable(2)">Rating &uarr;&darr;</div>
     </li>
     <div id="myModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
+        <img id="modal_img" class="movie_image"></img>
         <span id="modal_title"></span>
         <br />
-        <span id="modal_content"></span>
+        <span id="modal_text"></span>
+        <div class="modal-crew">
+            <p class = title>Crew:</p>
+            <span id="modal_actors"></span>
+        </div>
     </div>
 
 </div>
