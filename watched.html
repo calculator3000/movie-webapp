@@ -4,22 +4,22 @@
 <head>
     <meta charset="utf-8">
     <title>ScreenTrack: using the IMDB API to display data about movies</title>
-    <link rel="icon" type="image/x-icon" href="camera.png">
-    <script type="text/javascript" src="config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
-    <script src="script.js"></script>
-    <script src="login.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="images/camera.png">
+    <script type="text/javascript" src="scripts/config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
+    <script src="scripts/script.js"></script>
+    <script src="scripts/login.js"></script>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 
 <body>
     <header>
-        <div class="logo"><a href="./main.html"><img src="images/camera.png"></a></div>
+        <div class="logo"><a href="./index.html"><img src="images/camera.png"></a></div>
         <h3>ScreenTrack</h3>
         <nav class="main-nav">
             <ul>
-                <li><a href="./index.html">Top 250</a></li>
-                <li><a href="./gallery.html">Gallery</a></li>
+                <li><a href="./top250.html">Top 250</a></li>
                 <li><a href="./in_theaters.html">In Theaters</a></li>
+                <li><a href="./stats.html">Stats</a></li>
                 <li><a href="./watched.html">Watched</a></li>
             </ul>
         </nav>
@@ -30,7 +30,7 @@
     <main>
         <button onclick="getWatched()">Get Watched Movies</button>
 
-        <div class="watched-gallery">
+        <div class="gallery">
     
         </div>
 
@@ -39,7 +39,7 @@
 </body>
 
 <script>
-
+    // getWatched()
 </script>
 
 </html>

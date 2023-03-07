@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <title>ScreenTrack: using the IMDB API to display data about movies</title>
     <link rel="icon" type="image/x-icon" href="images/camera.png">
+    <script src="./node_modules/chart.js/dist/chart.umd.js"></script>
+
     <script type="text/javascript" src="scripts/config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
     <script src="scripts/script.js"></script>
     <script src="scripts/login.js"></script>
@@ -25,21 +27,24 @@
         </nav>
         <button onclick="login()">Login</button>
     </header>
+    
+    <main>
+    <!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
+        <section id="stats">
+            <button id="clickMe" onclick="getUserStats()">HELLO</button>
+        </section>
 
-<main>
-    <div class="gallery">
+        <canvas id="genres" width="250" heigth="200"> 
 
-    </div>
+        </canvas>
 
-
-<!-- will be filled with JSON-->
-
-</main>
+    </main>
 </body>
 
 <script>
-    getInTheatersFromJsonFile();
-    // getMoviesFromJsonFile();
+    // test()
+    getUserStats();
+    getWatchedFromJsonFile();
 </script>
 
 </html>
