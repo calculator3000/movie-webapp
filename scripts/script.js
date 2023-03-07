@@ -279,7 +279,7 @@ function getWatched() {
             getMovData(imdbId, function() { 
                 numRequestsCompleted++;
                 // populate gallery once all API calls are complete
-                if(numRequestsCompleted === watched.length) {
+                if((numRequestsCompleted === watched.length) && (window.location.pathname == "/movie-webapp/watched.html")) {
                     populateWatchedGallery();
                 }
             });
@@ -291,17 +291,17 @@ function getWatched() {
 /** get movie or series data from imdb api*/
 function getMovData(imdbId, callback) {
     console.log("2. in GetMovData")
-    // url = `https://imdb-api.com/en/API/Title/${imdbApiKey}/${imdbId}/FullActor,FullCast,Posters,Images,Ratings,`
-    
-    // fetch(url)
-    // .then(response => response.json())
-    // .then(data => {watchedArr.push(data)}); // save the response in watchedArr
 
-    var url = `https://www.omdbapi.com/?apikey=${omdbApiKey}&i=${imdbId}`
-    fetch(url)
-    .then(response => response.json())
-    .then(data => {watchedArr.push(data); callback()}); //, populateWatchedGallery(data)})
-    //.then(data => {watchedArr.push(data), populateWatchedGallery(data)});
+    // check if the function has already been called before
+    if (watchedArr.length > 0) {
+        callback();
+        console.log("was already filled")
+    } else {
+        var url = `https://www.omdbapi.com/?apikey=${omdbApiKey}&i=${imdbId}`
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {watchedArr.push(data); callback()});
+    }
 }
 
 
@@ -531,3 +531,32 @@ function convertMinutes(min) {
 }
 
 // window.addEventListener('load', getUserStats)
+
+
+async function getWatchedFromJsonFile() {
+    // other way to write promise (needs async keyword). 
+    const response = await fetch("./json_files/watched.json");
+    const movieData = await response.json();
+
+    // call the function populateMovies 
+    console.log(movieData.items);
+    for (const movie of movieData.items) {
+        var genres = movie.Genre
+        const genreArr = genres.split(", ");
+
+        for (let genre of genreArr) {
+            // console.log(genre)
+        }
+    }
+    createGenreStats();
+}
+
+function createGenreStats() {
+
+    var canvasElement = document.getElementById("genres");
+    var config = {}
+
+    var genreChart = new Chart()
+    
+
+}
