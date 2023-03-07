@@ -532,7 +532,7 @@ function convertMinutes(min) {
 
 // window.addEventListener('load', getUserStats)
 
-
+let genres = []
 async function getWatchedFromJsonFile() {
     // other way to write promise (needs async keyword). 
     const response = await fetch("./json_files/watched.json");
@@ -548,15 +548,43 @@ async function getWatchedFromJsonFile() {
             // console.log(genre)
         }
     }
-    createGenreStats();
+
+    for (const movie of movieData.items) {
+        let year = movie.Year
+        if(year in yearCount) {
+            yearCount[year] += 1;
+        } else {
+            yearCount[year] = 1;
+        }
+       
+    }
+    console.log(yearCount)
+
+    createYearStats();
+    //createGenreStats();
 }
 
 function createGenreStats() {
 
     var canvasElement = document.getElementById("genres");
-    var config = {}
+    var config = {
+        type: "bar",
+        data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
+    }
 
-    var genreChart = new Chart()
-    
+    var genreChart = new Chart(canvasElement, config)
+
+}
+
+let yearCount = {}
+
+function createYearStats() {
+    var canvasElement = document.getElementById("genres");
+    var config = {
+        type: "bar",
+        data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
+    }
+
+    var genreChart = new Chart(canvasElement, config)
 
 }
