@@ -39,9 +39,9 @@
             </h1>
           </div>
           <div class="column_2">
-            <video id="trailer_url" controls>
-              <source src="" type="video/mp4">
-              Your browser does not support the video tag.
+            <h1><p id="trailer_title"></p><p id="trailer_year"></p></h1>
+            <video controls>
+              <source src="" type="video/mp4" id="trailer_url">
             </video>
           </div>
       </section>
@@ -63,30 +63,35 @@
           <div class="col-md-6 col-lg-5 offset-lg-1 ">
             <div class="box">
               <div class="icon"><i class="fab fa-angellist" style="color: #ff689b;"></i></div>
-              <h4 class="title", id="first_title"></h4>
-              <p class="description", id="first_plot"></p>
+              <h4 class="title", id="element_1_title"></h4>
+              <h5 class="ranking", id="element_1_ranking"></h5>
+              <p class="description", id="element_1_plot"></p>
+              
             </div>
           </div>
           <div class="col-md-6 col-lg-5 " >
             <div class="box">
               <div class="icon"><i class="fas fa-calculator" style="color: #e9bf06;"></i></div>
-              <h4 class="title", id="second_title"></h4>
-              <p class="description" id="second_plot"></p>
+              <h4 class="title", id="element_2_title"></h4>
+              <h5 class="ranking", id="element_2_ranking"></h5>
+              <p class="description" id="element_2_plot"></p>
             </div>
           </div>
 
           <div class="col-md-6 col-lg-5 offset-lg-1 " >
             <div class="box">
               <div class="icon"><i class="far fa-calendar-alt" style="color: #3fcdc7;"></i></div>
-              <h4 class="title", id="third_title"></h4>
-              <p class="description", id="third_plot"></p>
+              <h4 class="title", id="element_3_title"></h4>
+              <h5 class="ranking", id="element_3_ranking"></h5>
+              <p class="description", id="element_3_plot"></p>
             </div>
           </div>
           <div class="col-md-6 col-lg-5 " >
             <div class="box">
               <div class="icon"><i class="far fa-clock" style="color:#41cf2e;"></i></div>
-              <h4 class="title", id="fourth_title"></h4>
-              <p class="description", id="fourth_plot"></p>
+              <h4 class="title", id="element_4_title"></h4>
+              <h5 class="ranking", id="element_4_ranking"></h5>
+              <p class="description", id="element_4_plot"></p>
             </div>
           </div>
 
@@ -97,6 +102,7 @@
     </main>
 
 </body>
+
 
 <script>
     getInTheatersFromJsonFile();
