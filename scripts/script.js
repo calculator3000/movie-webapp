@@ -585,57 +585,234 @@ function convertMinutes(min) {
 
 // window.addEventListener('load', getUserStats)
 
-let genres = []
+
 async function getWatchedFromJsonFile() {
-    // other way to write promise (needs async keyword). 
     const response = await fetch("./json_files/watched.json");
-    const movieData = await response.json();
+    const watchedData = await response.json();
 
-    // call the function populateMovies 
-    console.log(movieData.items);
-    for (const movie of movieData.items) {
-        var genres = movie.Genre
-        const genreArr = genres.split(", ");
+    generateWatchedStats(watchedData)
 
-        for (let genre of genreArr) {
-            // console.log(genre)
-        }
-    }
+    // getWatchedGenres(watchedData);
+    // getWatchedYears(watchedData);
+    // getWatchedActors(watchedData);
+    // getLowHighRatedMovie(watchedData)
+}
 
-    for (const movie of movieData.items) {
+function generateWatchedStats(watchedData) {
+    // set variables for objects containing data to be used in creation of the charts
+    let genreCountObject = {}; // format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
+    let yearCount = {}; // format: {1989: 1, 1990: 1}
+    let minRating = {}; // format: {Title: "JurassicPark", Rating: 6.1, Poster: "http://..."}
+    let maxRating = {}; // format: {Title: "Lord of the Rings", Rating: 9.3, Poster: "http://..."}
+    let langCount = {}; // format: {English: 30, Mandarin: 1}
+    let actorCount = {};
+    let countryCount = {}; 
+    // set variables to be used in creation of genre chart
+    let genreLabels = [];
+    let genreData = [];
+    let genreBckgColors= [];
+    // set initial values for lowest and highest rated films
+    let lowestRating = 10.0;
+    let highestRating = 0.0;
+    console.log(watchedData.items)
+
+    for (const movie of watchedData.items) {
+        let genres = movie.Genre // format: Genre: "Action, Adventure, Fantasy"
+        let genresSplit = genres.split(", ");
         let year = movie.Year
-        if(year in yearCount) {
-            yearCount[year] += 1;
-        } else {
-            yearCount[year] = 1;
+        let rating = movie.imdbRating
+        let language = movie.Language // format: "English, Mandarin"
+        let langSplit = language.split(", ")[0]; // only use the first language mentioned
+        let actorSplit = movie.Actors.split(", ")
+        let countrySplit = movie.Country.split(", ");
+
+        // GENRES: count how many times each genre appears in movies watched & populate genreObject with data
+        // if movie has multiple genres, all genres will be counted
+        for (const genre of genresSplit) {
+            genreCountObject = createCounterObject(genre, genreCountObject)
         }
+
+        // YEARS: count how many times each release year appears in movies watched & populate yearCount with data
+        yearCount = createCounterObject(year, yearCount)
+
+        // RATINGS: check what was the lowest and the highest rated movies watched (according to imdb rating)
+        // check if the current movie has a lower rating than the current lowest rating
+        if (rating < lowestRating) {
+            lowestRating = rating;
+            minRating["Title"] = movie.Title;
+            minRating["Rating"] = rating;
+            minRating["Poster"] = movie.Poster;
+        }
+        // check if the current movie has a higher rating than the current highest rating
+        if (rating > highestRating) {
+            highestRating = rating;
+            maxRating["Title"] = movie.Title;
+            maxRating["Rating"] = rating;
+            maxRating["Poster"] = movie.Poster;
+        }
+
+        // COUNTRIES: 
+        // countryCount = createCounterObject(countrySplit, countryCount)
+        for (const country of countrySplit) {
+            countryCount = createCounterObject(country, countryCount)
+        }
+
+        // ACTORS
+        for (const actor of actorSplit) {
+            actorCount = createCounterObject(actor, actorCount)
+        }
+
+        // LANGUAGES: note only first language
+        langCount = createCounterObject(langSplit, langCount)
+    }
+
+    console.log(actorCount)
+ 
+    // GENRES
+    // create a list of objects containing three properties: genre, count, color
+        // genre: the genre, 
+        // count: how many times this genre appears in the movies watched, 
+        // color: the color for the genre (from genreColors), to be used in the chart
+    // expected output: [{genre: 'adventure', count: 2, color: "#6B8E2330"}, ...]
+    const genreCountArr = Object.entries(genreCountObject).map(([genre, count]) => (
+        { genre, count, color: genreColors[genre]
+        }));
+
+    // sort the genreList from highest to lowest value
+    const genreCountSort = genreCountArr.sort(function (b,a) { return a.count - b.count });
+
+    // create new arrays containing the genre, count, and color respectively
+    // to be used in creation of the chart
+    for (var i=0; i < genreCountSort.length; i++) {
+        genreLabels.push(genreCountSort[i].genre)
+        genreData.push(genreCountSort[i].count)
+        genreBckgColors.push(genreCountSort[i].color)
+    }
+    console.log(countryCount)
        
-    }
-    console.log(yearCount)
-
-    createYearStats();
-    //createGenreStats();
+    // call functions responsiple for UI
+    displayGenreStats(genreLabels, genreData, genreBckgColors);
+    displayYearStats(yearCount);
+    displayLowHighRatedMovie(minRating, maxRating);
+    displayLanguageStats(langCount)
 }
 
-function createGenreStats() {
-
-    var canvasElement = document.getElementById("genres");
-    var config = {
-        type: "bar",
-        data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
+function createCounterObject(variable, object) {
+    if(variable in object) {
+        object[variable] += 1;
+    } else {
+        object[variable] = 1;
     }
-
-    var genreChart = new Chart(canvasElement, config)
-
+    return object;
 }
 
-let yearCount = {}
 
-function createYearStats() {
-    var canvasElement = document.getElementById("genres");
+function displayLowHighRatedMovie(lowestRating, highestRating) {
+    document.getElementById("lowScore").innerHTML = `${lowestRating.Rating}`;
+    document.getElementById('lowPoster').src = lowestRating.Poster;
+    document.getElementById('lowTitle').innerHTML = `${lowestRating.Title}`;
+    document.getElementById("highScore").innerHTML = `${highestRating.Rating}`;
+    document.getElementById('highPoster').src = highestRating.Poster;
+    document.getElementById('highTitle').innerHTML = `${highestRating.Title}`;
+}
+
+function displayLanguageStats(data) {
+    let canvasElement = document.getElementById("lang");
+    let config = {
+    type: "pie",
+        data: {
+            // labels: Object.keys(genreCountSort),
+            // labels: labels,
+            datasets: [
+                {
+                    label: 'Number of Movies Containing this Genre',
+                    // data: Object.values(genreCountSort),
+                    data: data
+                },
+            ],
+        }
+    }
+    // let config = {
+    //     type: "bar",
+    //     data: {
+    //         // labels: Object.keys(genreCountSort),
+    //         // labels: labels,
+    //         datasets: [
+    //             {
+    //                 label: 'Number of Movies Containing this Genre',
+    //                 // data: Object.values(genreCountSort),
+    //                 data: data
+    //             },
+    //         ],
+    //     },
+    //     options: {
+    //         indexAxis: 'y',
+    //         layout: {
+    //             padding: 50
+    //         }
+    //     },
+    //     scales: {
+    //         x: {
+    //           stacked: true,
+    //           display: false
+    //         },
+    //         y: {
+    //           stacked: true,
+    //           beginAtZero: true,
+    //         }
+    //       },
+    // }
+    console.log(config.data.datasets.data)
+
+    let languageChart = new Chart(canvasElement, config)    
+}
+
+function displayGenreStats(labels, data, color) {
+    let canvasElement = document.getElementById("genres");
+    let config = {
+        type: "bar",
+        data: {
+            // labels: Object.keys(genreCountSort),
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Number of Movies Containing this Genre',
+                    // data: Object.values(genreCountSort),
+                    data: data,
+                    backgroundColor: color
+                },
+            ],
+        },
+        options: {
+            indexAxis: 'y',
+            layout: {
+                padding: 50
+            }
+        },
+        scales: {
+            x: {
+              stacked: true,
+              display: false
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+            }
+          },
+    }
+    console.log(config.data.datasets.data)
+
+    let genreChart = new Chart(canvasElement, config)
+}
+
+
+function displayYearStats(data) {
+    var canvasElement = document.getElementById("years");
     var config = {
         type: "bar",
-        data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
+        // data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
+        data: { datasets: [{ data: data }] },
+        options: { indexAxis: "x"}
     }
 
     var genreChart = new Chart(canvasElement, config)

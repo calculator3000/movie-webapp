@@ -34,10 +34,30 @@
             <button id="clickMe" onclick="getUserStats()">HELLO</button>
         </section>
 
-        <canvas id="genres" width="250" heigth="200"> 
+        <canvas id="genres" width="50" heigth="50"></canvas>
+        <canvas id="years" width="50" heigth="50" padding="50"></canvas>
+        <canvas id="lang" width="50" heigth="50" padding="50"></canvas>        
+        
+        <section id="rating">
+            <div class="row">
+                <div class="column">
+                    <p>Lowest IMDB Score</p>
+                    <p id="lowScore"></p>
+                    <img id="lowPoster" src="">
+                    <p id="lowTitle"></p>
+                </div>
+                <div class="column">
+                    <p>Highest IMDB Score</p>
+                    <p id="highScore"></p>
+                    <img id="highPoster" src="">
+                    <p id="highTitle"></p>
 
-        </canvas>
+                </div>
+              </div>
 
+
+
+        </section>
     </main>
 </body>
 
