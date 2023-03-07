@@ -8,7 +8,7 @@
     <script type="text/javascript" src="scripts/config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
     <script src="scripts/script.js"></script>
     <script src="scripts/login.js"></script>
-    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/style_top250.css">
 </head>
 
 <body>
@@ -25,21 +25,36 @@
         </nav>
         <button onclick="login()">Login</button>
     </header>
-
+    
 <main>
-    <div class="gallery">
-
+<!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
+<section id="top250">
+    <p>This is supposed to show information about movies from IMDb. <a href="https://www.imdb.com/chart/top/?ref_=nv_td_mv250">IMDB250</a></a></p>
+    <li class="header">
+        <div class="movie_image"></div>
+        <div class="movie_title">Title</div>
+        <div>Year</div>
+        <div>Rating</div>
+    </li>
+    <div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <span id="modal_title"></span>
+        <br />
+        <span id="modal_content"></span>
     </div>
 
-
-<!-- will be filled with JSON-->
+</div>
+</section>
 
 </main>
+
 </body>
 
 <script>
-    getInTheatersFromJsonFile();
-    // getMoviesFromJsonFile();
+    // getAPIkey()
+    getMoviesFromJsonFile();
+    // login();
 </script>
 
 </html>

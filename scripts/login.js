@@ -1,17 +1,16 @@
 // variables to store the api-keys received trakt.tv, stored in config.js
-var clientId = "";
+// var clientId = "";
 var clientSecret = "";
 var token = "";
 var username = traktapi.username;
 var token2 = traktapi.token2
 var redirectUri = "http://127.0.0.1:5500/movie-webapp/";
-// var code = "16b467e1d2594add5aa309f72e88a47a031675b340e2f677c3d14352be6b070e";
 
 /** access apikeys stored in config2.js and assign to variables */
-function getCredentials() {
-  clientId = traktapi.clientId
-  clientSecret = traktapi.clientSecret
-}
+// function getCredentials() {
+//   clientId = traktapi.clientId
+//   clientSecret = traktapi.clientSecret
+// }
 
 /** force login */
 function login() {
@@ -34,8 +33,8 @@ function getCode() {
   }
 }
 
-window.addEventListener('load', getCredentials)
-window.addEventListener('load', getCode)
+// window.addEventListener('load', getCredentials)
+// window.addEventListener('load', getCode)
 
 /** replace code with token */
 function getToken(code) {

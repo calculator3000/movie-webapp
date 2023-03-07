@@ -1,4 +1,9 @@
-var imdbApiKey = imdbapi.key3
+const imdbApiKey = imdbapi.key3;
+const omdbApiKey = omdbapi.key1;
+// const username = traktapi.username;
+let numRequestsCompleted = 0;
+let clientId = traktapi.clientId
+
 var watchedArr = []
 
 // colors with transparency 30-50
@@ -35,7 +40,7 @@ const genreColors = {
 // Gets the top250 movies from the json file and assigns the response data to movieData
 async function getMoviesFromJsonFile() {
     // other way to write promise (needs async keyword). 
-    const response = await fetch("json_files/top250.json");
+    const response = await fetch("./json_files/top250.json");
     const movieData = await response.json();
     
     // call the function populateMovies 
@@ -45,6 +50,17 @@ async function getMoviesFromJsonFile() {
 async function getWiki(id) {
     let movie_id = id
     let url = `https://imdb-api.com/en/API/Wikipedia/k_s6o9v1tp/${movie_id}`;
+
+    // fetch(url)
+    // .then(response => {
+    //     if(response.errorMessage == "Invalid API Key") {
+    //             console.log("not successful")
+    //         } else {
+    //             console.log("succesful")
+    //         }
+    // }
+    // .then())
+
     const response = await fetch(url);
     var datawiki = await response.json();
     console.log(datawiki);
@@ -126,12 +142,13 @@ function populateMovies(data) {
 // Gets the movies in theaters from the json file and assigns the response data to movieData
 async function getInTheatersFromJsonFile() {
     // other way to write promise (needs async keyword). 
-    const response = await fetch("json_files/in_theaters.json");
+    const response = await fetch("./json_files/in_theaters.json");
     const theaterData = await response.json();
 
     // call the function populateMovies 
-    // populateTheaterGallery(theaterData);
-    displayRandomElements(theaterData);
+    populateTheaterGallery(theaterData);
+
+    // displayRandomElements(theaterData);
 }
 
 /**
@@ -203,107 +220,154 @@ function populateTheaterGallery(data) {
 }
 
 
+// /** testing getWatched function of trakt api */
+// function getWatched() {
+//     var request = new XMLHttpRequest();
+//     request.open('GET', `https://api.trakt.tv/users/${username}/watched/movies`);
+
+//     request.setRequestHeader('Content-Type', 'application/json');
+//     request.setRequestHeader('trakt-api-version', '2');
+//     request.setRequestHeader('Authorization', `Bearer ${token2}`);
+//     request.setRequestHeader('trakt-api-version', '2');
+//     request.setRequestHeader('trakt-api-key', clientId);
+
+//     request.onreadystatechange = function () {
+//         if (this.readyState === 4) {
+//             console.log('Status:', this.status);
+//             console.log('Headers:', this.getAllResponseHeaders());
+//             console.log('Body:', this.responseText);
+//             var watched = JSON.parse(this.responseText)
+
+//         // for every movie in watched list, get more data from IMDB
+//         for (const movie of watched) {
+//             imdbId = movie.movie.ids.imdb
+//             getMovData(imdbId)
+//         }
+//     }
+//   };
+//   populateWatchedGallery();
+
+//   request.send();
+// }
+
 /** testing getWatched function of trakt api */
+
+
 function getWatched() {
-    var request = new XMLHttpRequest();
-    request.open('GET', `https://api.trakt.tv/users/${username}/watched/movies`);
-
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.setRequestHeader('trakt-api-version', '2');
-    request.setRequestHeader('Authorization', `Bearer ${token2}`);
-    request.setRequestHeader('trakt-api-version', '2');
-    request.setRequestHeader('trakt-api-key', clientId);
-
+    console.log("1. In GetWatched")
+    const url = `https://api.trakt.tv/users/${username}/watched/movies`;
   
-    request.onreadystatechange = function () {
-        if (this.readyState === 4) {
-            console.log('Status:', this.status);
-            console.log('Headers:', this.getAllResponseHeaders());
-            console.log('Body:', this.responseText);
-            var watched = JSON.parse(this.responseText)
-
-        // for every movie in watched list, get more data from IMDB
-        for (const movie of watched) {
-            imdbId = movie.movie.ids.imdb
-            getMovData(imdbId)
+    fetch(url, {
+        headers: {
+            'Content-Type': 'application/json',
+            'trakt-api-version': '2',
+            'Authorization': `Bearer ${token2}`,
+            'trakt-api-key': clientId
         }
-    }
-  };
-  request.send();
-        
-  populateWatchedGallery();
+    })
+    .then(response => {
+        console.log('Status:', response.status);
+        console.log('Headers:', response.headers);
+        return response.json();
+    })
+    .then(watched => {
+        // for every movie in watched list, get more data from OMDB
+        // once completed, call populateWatchedGallery()
+        for (const movie of watched) {
+        imdbId = movie.movie.ids.imdb;
+            // only call the callback function once all requests have been completed and the data is stored in watchedArr
+            getMovData(imdbId, function() { 
+                numRequestsCompleted++;
+                // populate gallery once all API calls are complete
+                if(numRequestsCompleted === watched.length) {
+                    populateWatchedGallery();
+                }
+            });
+        } 
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 /** get movie or series data from imdb api*/
-function getMovData(imdbId) {
-    url = `https://imdb-api.com/en/API/Title/${imdbApiKey}/${imdbId}/FullActor,FullCast,Posters,Images,Ratings,`
+function getMovData(imdbId, callback) {
+    console.log("2. in GetMovData")
+    // url = `https://imdb-api.com/en/API/Title/${imdbApiKey}/${imdbId}/FullActor,FullCast,Posters,Images,Ratings,`
     
+    // fetch(url)
+    // .then(response => response.json())
+    // .then(data => {watchedArr.push(data)}); // save the response in watchedArr
+
+    var url = `https://www.omdbapi.com/?apikey=${omdbApiKey}&i=${imdbId}`
     fetch(url)
     .then(response => response.json())
-    .then(data => {watchedArr.push(data)}); // save the response in watchedArr
+    .then(data => {watchedArr.push(data); callback()}); //, populateWatchedGallery(data)})
+    //.then(data => {watchedArr.push(data), populateWatchedGallery(data)});
 }
 
+
 function populateWatchedGallery() {
-    console.log("in this function finally")
+    console.log("3. in populateWatchedGallery")
     console.log(watchedArr)
-    const section = document.querySelector('.watched-gallery'); // select the sections
-    const movies = watchedArr; 
-    
-    for (const movie of movies) {
+
+    for (const watchedMov of watchedArr) { 
+
+        const section = document.querySelector('.gallery'); // select the sections
         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
-        // later move to CSS
-        genreList.style.padding = "0px";
-        genreList.style.width = "130px";
-        genreList.style.margin = "0px";
+            // later move to CSS
+            genreList.style.padding = "0px";
+            genreList.style.width = "130px";
+            genreList.style.margin = "0px";
 
         // cover poster of the movie
         const movImg = document.createElement('img');
-        movImg.src = movie.image;
-        // later move to CSS
-        movImg.style.width = "130px";
-        movImg.style.height = "auto";
-        movImg.style["margin-top"] = "0px";
-        movieCard.appendChild(movImg);
+        movImg.src = watchedMov.Poster;
+            // later move to CSS
+            movImg.style.width = "130px";
+            movImg.style.height = "auto";
+            movImg.style["margin-top"] = "0px";
+            movieCard.appendChild(movImg);
 
         // movie title
-        const movTitle = document.createElement('p'); // creates new element
-        movTitle.textContent = `${movie.title}`; // fill the p element with the title
-        // later move to CSS
-        movTitle.style.width = "130px";
-        movTitle.style.height = "50px";
-        movTitle.style["text-align"] = "center";
-        movTitle.style["font-size"] = "12px";
-        movTitle.style["margin-top"] = "2px";
-        movTitle.style["margin-bottom"] = "0px";
-        movieCard.appendChild(movTitle);
-
-        // movie genre in little tags that change color according to genre
-        for (const genre of movie.genreList) {
-            const movGenre = document.createElement('li'); // creates new element
-            genreName = genre.key;
-            movGenre.textContent = genreName;
-
-            // get color mapping from genreColors class
-            const genreColor = genreColors[genreName];
+            const movTitle = document.createElement('p'); // creates new element
+            movTitle.textContent = `${watchedMov.Title}`; // fill the p element with the title
             // later move to CSS
-            movGenre.style["background-color"] = genreColor;
-            movGenre.style["border-radius"] = "10px";
-            movGenre.style["font-size"] = "8px";
-            // movGenre.style.width = "60px";
-            movGenre.style["text-align"] = "center";
-            movGenre.style.padding = "2px 5px";
-            movGenre.style["list-style"] = "none";
-            movGenre.style.display = "inline-block";
-            movGenre.style.margin = "2px";
-            
-            // append the genre li elements to the genreList ul element
-            genreList.appendChild(movGenre);            
-        }
+            movTitle.style.width = "130px";
+            movTitle.style.height = "50px";
+            movTitle.style["text-align"] = "center";
+            movTitle.style["font-size"] = "12px";
+            movTitle.style["margin-top"] = "2px";
+            movTitle.style["margin-bottom"] = "0px";
+            movieCard.appendChild(movTitle);
 
-        // append the element to the section
-        movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
-        section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
+        // genres
+            var genres = watchedMov.Genre
+            const genreArr = genres.split(", ");
+
+            for (const genre of genreArr) {
+                const movGenre = document.createElement('li'); // creates new element
+                movGenre.textContent = genre;
+
+                // get color mapping from genreColors class
+                const genreColor = genreColors[genre];
+                // later move to CSS
+                movGenre.style["background-color"] = genreColor;
+                movGenre.style["border-radius"] = "10px";
+                movGenre.style["font-size"] = "8px";
+                // movGenre.style.width = "60px";
+                movGenre.style["text-align"] = "center";
+                movGenre.style.padding = "2px 5px";
+                movGenre.style["list-style"] = "none";
+                movGenre.style.display = "inline-block";
+                movGenre.style.margin = "2px";
+                
+                // append the genre li elements to the genreList ul element
+                genreList.appendChild(movGenre);   
+            }
+            // append the element to the section
+            movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
+            section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
+
     }
 }
 
@@ -411,3 +475,59 @@ function displayRandomElements(data) {
     let trailer_year = document.getElementById("trailer_year");
     trailer_year.innerHTML = trailer.year;
 }
+
+
+function getUserStats() {
+    // let clientId = traktapi.clientId
+
+    let url = `https://api.trakt.tv/users/${username}/stats`;
+    
+    fetch(url, {
+        method: 'GET',
+        // mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            'trakt-api-version': '2',
+            'trakt-api-key': clientId //,
+            // 'authorization': `Bearer ${token2}`
+//            'access-control-allow-origin': '*'
+        }
+    })
+    .then(response => {
+        console.log('Status:', response.status);
+        console.log('Headers:', response.headers);
+        return response.json(); // response.text()
+    })
+    .then(body => {
+        console.log('Body:', body);
+        displayUserStats(body);
+    })
+    // .catch(error => {
+    //     console.error('Error:', error);
+    // });
+
+}
+
+function displayUserStats(stats) {
+    let minMovies = convertMinutes(stats.movies.minutes);
+    let minShows = convertMinutes(stats.episodes.minutes);
+    
+    const section = document.querySelector('#stats')
+    const pMinMovies = document.createElement('p'); // creates new element
+    const pMinShows = document.createElement('p'); // creates new element
+    pMinMovies.textContent = `Movies: ${minMovies}`; // fill the p element with the title
+    pMinShows.textContent = `TV Shows: ${minShows}`; // fill the p element with the title
+
+    section.appendChild(pMinMovies);
+    section.appendChild(pMinShows);
+
+}
+
+function convertMinutes(min) {
+    var days = Math.floor(min / 1440);
+    var hours = Math.floor((min % 1440) / 60);
+    var minutes = min % 60;
+    return days + " days, " + hours + " hours, " + minutes + " minutes"
+}
+
+// window.addEventListener('load', getUserStats)
