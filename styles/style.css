@@ -17,6 +17,7 @@ header {
     overflow: auto;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
+    z-index: 1;
 }
 
 .logo img {
@@ -65,7 +66,6 @@ main {
 }
 
 
-
 /* Gallery */
 .gallery {
     display: flex; 
@@ -85,9 +85,15 @@ main {
     max-width: 350px;
     height: 300px;
     object-fit: cover;
+
+    
   }
 
 .gallery::after {
     content: "";
     width: 350px;
 }
+
+.row {
+    display: flex;
+  }

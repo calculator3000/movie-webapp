@@ -17,6 +17,7 @@ header {
     overflow: auto;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
+    z-index: 1;
 }
 
 .logo img {
