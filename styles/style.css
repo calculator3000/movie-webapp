@@ -189,3 +189,10 @@ main {
 .row {
     display: flex;
   }
+
+
+  #filter_idea {
+    padding: 15px;
+    font-size: 24px;
+    margin-left: 20px;
+  }

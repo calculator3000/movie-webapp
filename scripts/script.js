@@ -1,4 +1,4 @@
-const imdbApiKey = imdbapi.key3;
+const imdbApiKey = imdbapi.key1;
 const omdbApiKey = omdbapi.key1;
 //const moviedbApiKey = moviedb.key1;
 // const username = traktapi.username;
@@ -378,7 +378,7 @@ function populateTheaterGallery(data) {
       genreFilter.style.borderRadius = "10px";
       genreFilter.style.fontSize = "15px";
       genreFilter.style.padding = "5px";
-      genreFilter.style.marginTop = "50px";
+      genreFilter.style.marginTop = "10px";
       genreFilter.style.marginRight = "10px";
       genreFilter.style.marginBottom = "20px";
       genreFilter.style.cursor = "pointer";
@@ -627,7 +627,7 @@ function displayRandomElements(data) {
 
 async function getyoutube(id) {
     let movie_id = id
-    let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_pius00o6/${movie_id}`;
+    let url = `https://imdb-api.com/en/API/YouTubeTrailer/${imdbApiKey}/${movie_id}`;
     try {
         const response = await fetch(url);
         const trailer = await response.json();

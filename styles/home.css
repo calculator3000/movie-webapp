@@ -294,7 +294,7 @@ color: #fba92c;
 #feedback .btn{
 	width: 100%;
 	padding: 0.5rem 1rem;
-	background-color: #2ecc71;
+	background-color: #fba92c;
 	color: #fff;
 	font-size: 1.1rem;
 	border: none;
@@ -304,7 +304,7 @@ color: #fba92c;
 }
 
 #feedback .btn:hover{
-    background-color: #27ae60;
+    background-color: #fba92c;
 }
 
 #feedback .field:focus{
