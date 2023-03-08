@@ -1,6 +1,6 @@
 const imdbApiKey = imdbapi.key1;
 const omdbApiKey = omdbapi.key1;
-//const moviedbApiKey = moviedb.key1;
+const moviedbApiKey = moviedb.key1;
 // const username = traktapi.username;
 let numRequestsCompleted = 0;
 let clientId = traktapi.clientId
@@ -274,11 +274,11 @@ async function getInTheatersFromJsonFile() {
     const theaterData = await response.json();
 
     // call the function populateMovies 
-    if (window.location.pathname === '/index.html') {
+    if (window.location.pathname === '/movie-webapp/index.html') {
         currentTab = 'index';
         displayRandomElements(theaterData);
         
-      } else if (window.location.pathname === '/in_theaters.html') {
+      } else if (window.location.pathname === '/movie-webapp/in_theaters.html') {
         currentTab = 'in_theaters';
         populateTheaterGallery(theaterData);
     }
@@ -585,9 +585,7 @@ function displayRandomElements(data) {
     
       
 
-    }
-
-    
+    }    
 }
 
 
@@ -955,32 +953,31 @@ function displayYearStats(data) {
     }
     var yearChart = new Chart(canvasElement, config)
 }
-}
 
-// Initialize EmailJS with your user ID
-emailjs.init('TtgLX2SAhGi_jaItB');
+// // Initialize EmailJS with your user ID
+// emailjs.init('TtgLX2SAhGi_jaItB');
 
-// Handle form submission
-document.getElementById('contact-form').addEventListener('submit', function(event) {
-  event.preventDefault(); // prevent default form behavior
+// // Handle form submission
+// document.getElementById('contact-form').addEventListener('submit', function(event) {
+//   event.preventDefault(); // prevent default form behavior
   
-  // Get form data
-  const formData = {
-    name: this.elements.name.value,
-    email: this.elements.email.value,
-    phone: this.elements.phone.value,
-    message: this.elements.message.value
-  };
+//   // Get form data
+//   const formData = {
+//     name: this.elements.name.value,
+//     email: this.elements.email.value,
+//     phone: this.elements.phone.value,
+//     message: this.elements.message.value
+//   };
   
-  // Send email using EmailJS
-  emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
-    .then(function(response) {
-      console.log('SUCCESS!', response.status, response.text);
-      // Clear form inputs
-      document.getElementById('contact-form').reset();
-      alert('Your message has been sent!');
-    }, function(error) {
-      console.log('FAILED...', error);
-      alert('Oops! Something went wrong. Please try again later.');
-    });
-});
+//   // Send email using EmailJS
+//   emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
+//     .then(function(response) {
+//       console.log('SUCCESS!', response.status, response.text);
+//       // Clear form inputs
+//       document.getElementById('contact-form').reset();
+//       alert('Your message has been sent!');
+//     }, function(error) {
+//       console.log('FAILED...', error);
+//       alert('Oops! Something went wrong. Please try again later.');
+//     });
+// });
