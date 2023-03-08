@@ -8,6 +8,7 @@ body {
     background-color: #f0f0f0;
     margin: 0;
     padding: 0;
+    margin-bottom: 30px;
 }
 
 /* Style for the header with navigation bar */
@@ -280,6 +281,9 @@ main {
   height: 350px;
 }
 
+#stats {
+  margin-bottom: 50px;
+}
 
 
 
