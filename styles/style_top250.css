@@ -179,7 +179,12 @@ section {
     width: 20%; /* Width of the outside container */
     float: right;
 }
-    
+#myInput {
+    width: 30%; /* Full-width */
+    font-size: 16px; /* Increase font-size */
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin: 20px;    
 .slider {
     -webkit-appearance: none;
     width: 60%;

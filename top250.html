@@ -13,7 +13,6 @@
 
 <body>
     <header>
-
         <a href="./index.html"><div class="logo"><img src="images/camera.png"></div></a>
         <a href="./index.html"><h3>ScreenTrack</h3></a>
         <nav class="main-nav">
@@ -29,7 +28,8 @@
     
 <main>
 <!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
-<section id="top250">   
+<section id="top250">
+    <input type="text" id="myInput" onkeyup="searchMovieActor()" placeholder="Search for movie..">   
     <div class="slidecontainer">
         <p>Filter for range of years:</p>
         <input type="range" min="1921" max="2022" value="50" class="slider" id="myRange" onclick= "filterYears()">
