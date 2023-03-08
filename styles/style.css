@@ -17,6 +17,7 @@ header {
     overflow: auto;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
+    z-index: 1;
 }
 
 .logo img {
@@ -58,6 +59,11 @@ nav a:hover {
     background: grey;
     transition: 0.5s;
 }
+
+nav a.current {
+  color: #fba92c;
+}
+
 
 /* Style for the main */
 main {
@@ -276,6 +282,7 @@ main {
 
 
 
+
 /* Gallery */
 .gallery {
     display: flex; 
@@ -295,9 +302,22 @@ main {
     max-width: 350px;
     height: 300px;
     object-fit: cover;
+
+    
   }
 
 .gallery::after {
     content: "";
     width: 350px;
 }
+
+.row {
+    display: flex;
+  }
+
+
+  #filter_idea {
+    padding: 15px;
+    font-size: 24px;
+    margin-left: 20px;
+  }
