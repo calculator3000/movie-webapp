@@ -72,7 +72,7 @@ main {
 section {
     padding: 10px;
 }
-.movieitem {
+#movieitem {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -84,10 +84,10 @@ section {
     width: 100%;
     cursor:pointer;
 }
-.movieitem div{
+#movieitem div{
     width: 300px;
 }
-.movie_title {
+.title {
     font-weight: bold;
 }
 .movie_image {
@@ -109,7 +109,7 @@ section {
 }
 .header div {
     width: 300px;
-    
+    cursor:pointer;
 }
 /* The Modal (background) */
 .modal {
@@ -133,6 +133,17 @@ section {
     width: 80%; /* Could be more or less, depending on screen size */
     text-align: justify;
 }
+.modal-crew {
+    display: inline-block;
+    width: 13%;
+    padding: 20px;
+    margin-top: -35px;
+}
+#modal_text {
+    display: inline-block;
+    width: 85%;
+    vertical-align:top;
+}
   /* The Close Button */
 .close {
     color: #aaa;
@@ -152,4 +163,14 @@ section {
     text-align: left;
     text-decoration: overline;
     line-height: 280%;
+    padding: 20px;
 }
+/*Slider*/
+.slidecontainer {
+    width: 20%; /* Width of the outside container */
+    float: right;
+}
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+} 
