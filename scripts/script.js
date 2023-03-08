@@ -310,40 +310,6 @@ function populateTheaterGallery(data) {
     }
 }
 
-
-// /** testing getWatched function of trakt api */
-// function getWatched() {
-//     var request = new XMLHttpRequest();
-//     request.open('GET', `https://api.trakt.tv/users/${username}/watched/movies`);
-
-//     request.setRequestHeader('Content-Type', 'application/json');
-//     request.setRequestHeader('trakt-api-version', '2');
-//     request.setRequestHeader('Authorization', `Bearer ${token2}`);
-//     request.setRequestHeader('trakt-api-version', '2');
-//     request.setRequestHeader('trakt-api-key', clientId);
-
-//     request.onreadystatechange = function () {
-//         if (this.readyState === 4) {
-//             console.log('Status:', this.status);
-//             console.log('Headers:', this.getAllResponseHeaders());
-//             console.log('Body:', this.responseText);
-//             var watched = JSON.parse(this.responseText)
-
-//         // for every movie in watched list, get more data from IMDB
-//         for (const movie of watched) {
-//             imdbId = movie.movie.ids.imdb
-//             getMovData(imdbId)
-//         }
-//     }
-//   };
-//   populateWatchedGallery();
-
-//   request.send();
-// }
-
-/** testing getWatched function of trakt api */
-
-
 function getWatched() {
     console.log("1. In GetWatched")
     const url = `https://api.trakt.tv/users/${username}/watched/movies`;
@@ -532,34 +498,25 @@ async function getyoutube(id) {
 
 
 function getUserStats() {
-    // let clientId = traktapi.clientId
-
     let url = `https://api.trakt.tv/users/${username}/stats`;
     
     fetch(url, {
         method: 'GET',
-        // mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
             'trakt-api-version': '2',
             'trakt-api-key': clientId //,
-            // 'authorization': `Bearer ${token2}`
-//            'access-control-allow-origin': '*'
         }
     })
     .then(response => {
         console.log('Status:', response.status);
         console.log('Headers:', response.headers);
-        return response.json(); // response.text()
+        return response.json(); 
     })
     .then(body => {
         console.log('Body:', body);
         displayUserStats(body);
     })
-    // .catch(error => {
-    //     console.error('Error:', error);
-    // });
-
 }
 
 function displayUserStats(stats) {
@@ -578,9 +535,6 @@ function convertMinutes(min) {
     var minutes = min % 60;
     return [days, hours, minutes]
 }
-
-// window.addEventListener('load', getUserStats)
-
 
 async function getWatchedFromJsonFile() {
     const response = await fetch("./json_files/watched.json");
