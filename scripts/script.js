@@ -345,11 +345,19 @@ function populateTheaterGallery(data) {
             const movGenre = document.createElement('li'); // creates new element
             genreName = genre.key;
             movGenre.textContent = genreName;
-            movGenre.setAttribute("class", "genre")
 
             // get color mapping from genreColors class
             const genreColor = genreColors[genreName];
+            // later move to CSS
             movGenre.style["background-color"] = genreColor;
+            movGenre.style["border-radius"] = "10px";
+            movGenre.style["font-size"] = "8px";
+            // movGenre.style.width = "60px";
+            movGenre.style["text-align"] = "center";
+            movGenre.style.padding = "2px 5px";
+            movGenre.style["list-style"] = "none";
+            movGenre.style.display = "inline-block";
+            movGenre.style.margin = "0px";
             
             // append the genre li elements to the genreList ul element
             genreList.appendChild(movGenre);            

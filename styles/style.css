@@ -204,16 +204,6 @@ main {
   margin-top: 5px;
   margin-bottom: 0px;
 }
-.genre {
-  border-radius: 10px;
-  font-size: 8px;
-  width: 60px;
-  text-align: center;
-  padding: 2px 5px;
-  list-style-type: none;
-  display: inline-block;
-  padding-left: 0px;
-}
 .genrefilters {
   display: flex;
   flex-wrap: wrap;
