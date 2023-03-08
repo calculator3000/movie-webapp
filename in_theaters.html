@@ -9,6 +9,7 @@
     <script src="scripts/script.js"></script>
     <script src="scripts/login.js"></script>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/style_top250.css">
 </head>
 
 <body>
@@ -27,9 +28,22 @@
     </header>
 
 <main>
-    <div class="gallery">
+    <div class="gallery"></div>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <img id="modal_img" class="movie_image"></img>
+                <span id="modal_title"></span>
+                <br />
+                <span id="modal_text"></span>
+                <div class="modal-crew">
+                    <p class = title>Runtime:</p>
+                    <div><span id="modal_runtime"></span> minutes</div>
+                    <p class = title>IMDb-Rating:</p>
+                    <span id="modal_rating"></span>
+                </div>
+            </div>
 
-    </div>
 
 
 <!-- will be filled with JSON-->
