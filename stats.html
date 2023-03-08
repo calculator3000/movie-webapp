@@ -31,71 +31,129 @@
     <main>
     <!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
         <section id="stats">
-            <button id="clickMe" onclick="getUserStats()">HELLO</button>
-        </section>
+            <!--button id="clickMe" onclick="getUserStats()">HELLO</button-->
+        <!--/section-->
+            <section class="row">
+                <div class="column">
+                    <p id="textStats">
+                        <span id="days"></span> days
+                        <span id="hours"></span> hours
+                        <span id="minutes"></span> minutes
+                    </p>
+                </div>
+                <div class="column">
+                    <p id="textStats">
+                        <span id="watched"></span> movies watched
+                    </p>
+                </div>
 
-        <section id="row1">
-            <section id="test">
-                <canvas id="years"></canvas>  <!--width="50" heigth="50" padding="50"-->
             </section>
-            <section id="topActors">
-                <section id="top0" class="actor-container">
-                    <img class="actorImg">
-                    <h3 class="actorName"></h3>
-                    <p class="actorCount"></p>
+
+            <section class="row">
+                <div class="column">
+                    <h3 class="statTitle">Movies Watched Per Release Year</h3>
+                    <section class="stats-container years-container">
+                        <canvas id="years"></canvas>  <!--width="50" heigth="50" padding="50"-->
+                    </section>
+                </div> 
+                <div class="column column-thirds">
+                    <h3 class="statTitle">Stars Appearing in Movies Watched</h3>
+                    <section id="topActors">
+                        <section id="top0" class="actor-container">
+                            <img class="actorImg">
+                            <div class="actorNameDiv">
+                                <h3 class="actorName"></h3>
+                            </div>
+                            <p class="actorCount"></p>
+                        </section>
+                        <section id="top1" class="actor-container">
+                            <img class="actorImg">
+                            <div class="actorNameDiv">
+                                <h3 class="actorName"></h3>
+                            </div>
+                            <p class="actorCount"></p>
+                        </section>
+                        <section id="top2" class="actor-container">
+                            <img class="actorImg">
+                            <div class="actorNameDiv">
+                                <h3 class="actorName"></h3>
+                            </div>
+                            <p class="actorCount"></p>
+                        </section>
+                        <section id="top3" class="actor-container">
+                            <img class="actorImg">
+                            <div class="actorNameDiv">
+                                <h3 class="actorName"></h3>
+                            </div>
+                            <p class="actorCount"></p>
+                        </section>
+                        <section id="top4" class="actor-container">
+                            <img class="actorImg">
+                            <div class="actorNameDiv">
+                                <h3 class="actorName"></h3>
+                            </div>
+                            <p class="actorCount"></p>
+                        </section>
+                        <section id="top5" class="actor-container">
+                            <img class="actorImg">
+                            <div class="actorNameDiv">
+                                <h3 class="actorName"></h3>
+                            </div>
+                            <p class="actorCount"></p>
+                        </section>
+                    </section>
+                </div>
+            </section>
+            <section class="row">
+                <div class="column">
+                    <h3 class="statTitle">IMDB Ratings of Movies Watched</h3>
+                    <section id="ratingRow">
+                        <div class="rating-container">
+                            <div class="imdbRating">
+                                <p class="largText">Lowest IMDB Score</p>
+                                <img src="./images/star.png" height="12px">
+                                <p id="lowScore" class="smallText"></p>
+                            </div>
+                            <img id="lowPoster" class="ratingPoster" src="">
+                            <p id="lowTitle" class="largText"></p>
+                        </div>
+                        <div class="rating-container">
+                            <div class="imdbRating">
+                                <p class="largText">Highest IMDB Score</p>
+                                <img src="./images/star.png" height="12px">
+                                <p id="highScore" class="smallText"></p>
+                            </div>
+                            <img id="highPoster" class="ratingPoster" src="">
+                            <p id="highTitle" class="largText"></p>
+                        </div>
                 </section>
-                <section id="top1" class="actor-container">
-                    <img class="actorImg">
-                    <h3 class="actorName"></h3>
-                    <p class="actorCount"></p>
-                </section>
-                <section id="top2" class="actor-container">
-                    <img class="actorImg">
-                    <h3 class="actorName"></h3>
-                    <p class="actorCount"></p>
-                </section>
-                <section id="top3" class="actor-container">
-                    <img class="actorImg">
-                    <h3 class="actorName"></h3>
-                    <p class="actorCount"></p>
-                </section>
-                <section id="top4" class="actor-container">
-                    <img class="actorImg">
-                    <h3 class="actorName"></h3>
-                    <p class="actorCount"></p>
-                </section>
-                <section id="top5" class="actor-container">
-                    <img class="actorImg">
-                    <h3 class="actorName"></h3>
-                    <p class="actorCount"></p>
-                </section>
+                </div>
+                <div class="column">
+                    <h3 class="statTitle">Genres contained in Movies Watched</h3>
+                    <section class="stats-container genres-container">
+                        <canvas id="genresChart" width="1380" height="800"></canvas>
+                    </section>
+                </div>
+            </section>
+
+            <section class="row">
+                <div class="column">
+                    <h3 class="statTitle">Movies From These Countries</h3>
+                    <section class="stats-container">
+                        <canvas id="country" width="50" heigth="50"></canvas>        
+                    </section>
+                </div> 
+                <div class="column">
+                    <h3 class="statTitle">Movies From These Languages</h3>
+                    <section class="stats-container lang-container">
+                        <canvas id="lang" width="50" heigth="50"></canvas>       
+                    </section>
+                </div> 
             </section>
         </section>
-
-        <canvas id="genres" width="50" heigth="50"></canvas>
-        <canvas id="country" width="50" heigth="50" padding="50"></canvas>        
-        <canvas id="lang" width="50" heigth="50" padding="50"></canvas>        
+ 
         
-        <section id="rating">
-            <div class="row">
-                <div class="column">
-                    <p>Lowest IMDB Score</p>
-                    <p id="lowScore"></p>
-                    <img id="lowPoster" src="">
-                    <p id="lowTitle"></p>
-                </div>
-                <div class="column">
-                    <p>Highest IMDB Score</p>
-                    <p id="highScore"></p>
-                    <img id="highPoster" src="">
-                    <p id="highTitle"></p>
 
-                </div>
-              </div>
-
-
-
-        </section>
     </main>
 </body>
 

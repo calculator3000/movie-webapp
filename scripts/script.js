@@ -564,24 +564,19 @@ function getUserStats() {
 
 function displayUserStats(stats) {
     let minMovies = convertMinutes(stats.movies.minutes);
-    let minShows = convertMinutes(stats.episodes.minutes);
-    
-    const section = document.querySelector('#stats')
-    const pMinMovies = document.createElement('p'); // creates new element
-    const pMinShows = document.createElement('p'); // creates new element
-    pMinMovies.textContent = `Movies: ${minMovies}`; // fill the p element with the title
-    pMinShows.textContent = `TV Shows: ${minShows}`; // fill the p element with the title
+    let numMovies = stats.movies.watched
 
-    section.appendChild(pMinMovies);
-    section.appendChild(pMinShows);
-
+    document.getElementById("days").innerText = minMovies[0];
+    document.getElementById("hours").innerText = minMovies[1];
+    document.getElementById("minutes").innerText = minMovies[2];
+    document.getElementById("watched").innerText = numMovies
 }
 
 function convertMinutes(min) {
     var days = Math.floor(min / 1440);
     var hours = Math.floor((min % 1440) / 60);
     var minutes = min % 60;
-    return days + " days, " + hours + " hours, " + minutes + " minutes"
+    return [days, hours, minutes]
 }
 
 // window.addEventListener('load', getUserStats)
@@ -592,11 +587,6 @@ async function getWatchedFromJsonFile() {
     const watchedData = await response.json();
 
     generateWatchedStats(watchedData)
-
-    // getWatchedGenres(watchedData);
-    // getWatchedYears(watchedData);
-    // getWatchedActors(watchedData);
-    // getLowHighRatedMovie(watchedData)
 }
 
 function generateWatchedStats(watchedData) {
@@ -714,7 +704,6 @@ function createCounterObject(variable, object) {
 
 function getActorPoster(actor, actorCount, functionCounter) {
     let imagePath = ""
-    // let actor = "Emma Watson" // Emma%20Watson
     let url = `https://api.themoviedb.org/3/search/person?api_key=${moviedbApiKey}&language=en-US&query=${actor}&page=1&include_adult=false`
     
     fetch(url)
@@ -725,7 +714,6 @@ function getActorPoster(actor, actorCount, functionCounter) {
     });
 }
 
-// var actors = []
 function displayTopActors(imgPath, actor, actorCount, functionCounter) {
     let baseurl = "https://image.tmdb.org/t/p/w154/"
     let imgUrl = baseurl + imgPath
@@ -735,15 +723,8 @@ function displayTopActors(imgPath, actor, actorCount, functionCounter) {
     actorSection.getElementsByClassName("actorImg")[0].src = imgUrl
     actorSection.getElementsByClassName("actorName")[0].innerHTML = actor
     actorSection.getElementsByClassName("actorCount")[0].innerHTML = actorCount + " movies"
-
-
-    // let actorObj = {}
-    // actorObj["actor"] = actor
-    // actorObj["count"] = count
-    // actorObj["image"] = imgUrl
-    // actors.push(actorObj)
-    // console.log(actors)
 }
+
 /**
  * creates a list of objects containing two to three properties
  * @param {object} object - the object to sort, format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
@@ -756,6 +737,7 @@ function createSortedCounter(object, hasColor = false) {
     let data = [];
     let bckgColors = []
 
+    console.log(window.location.pathname)
     // example format of result : [{label: 'adventure', count: 2, color: "#6B8E2330"}, ...]
         // label: e.g., genre
         // count: e.g., counting how many times genre appears in the movies watched
@@ -796,38 +778,27 @@ function displayLowHighRatedMovie(lowestRating, highestRating) {
 function displayLanguageStats(labels, data) {
     let canvasElement = document.getElementById("lang");
     let config = {
-        type: "pie",
+        type: "doughnut",
         data: {
-            // labels: Object.keys(genreCountSort),
             labels: labels,
             datasets: [
                 {
-                    label: 'Number of Movies Containing this Genre',
-                    // data: Object.values(genreCountSort),
+                    label: '# of movies containing this language (as first language)',
                     data: data,
-                    // backgroundColor: color
                 },
             ],
         },
         options: {
-            indexAxis: 'y',
-            layout: {
-                padding: 50
-            }
-        },
-        scales: {
-            x: {
-              stacked: true,
-              display: false
+            plugins: {
+                legend: {
+                    display: true
+                }
             },
-            y: {
-              stacked: true,
-              beginAtZero: true,
-            }
-          },
+            responsive: true,
+            maintainAspectRatio: false
+        }
     }
-
-    let genreChart = new Chart(canvasElement, config)
+    let langChart = new Chart(canvasElement, config)
 }
 
 function displayCountryStats(labels, data) {
@@ -835,92 +806,71 @@ function displayCountryStats(labels, data) {
     let config = {
         type: "bar",
         data: {
-            // labels: Object.keys(genreCountSort),
             labels: labels,
             datasets: [
                 {
-                    label: 'Number of Movies Containing this Genre',
-                    // data: Object.values(genreCountSort),
+                    label: 'number of movies from this country',
                     data: data,
-                    // backgroundColor: color
                 },
             ],
         },
         options: {
-            indexAxis: 'y',
-            layout: {
-                padding: 50
-            }
-        },
-        scales: {
-            x: {
-              stacked: true,
-              display: false
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            y: {
-              stacked: true,
-              beginAtZero: true,
-            }
-          },
+            indexAxis: 'y',
+        }
     }
-    let genreChart = new Chart(canvasElement, config)
+    let countryChart = new Chart(canvasElement, config)
 }
 
 function displayGenreStats(labels, data, color) {
-    let canvasElement = document.getElementById("genres");
+    let canvasElement = document.getElementById("genresChart");
     let config = {
         type: "bar",
         data: {
-            // labels: Object.keys(genreCountSort),
             labels: labels,
             datasets: [
                 {
-                    label: 'Number of Movies Containing this Genre',
-                    // data: Object.values(genreCountSort),
+                    label: 'number of movies containing this genre',
                     data: data,
                     backgroundColor: color
                 },
             ],
         },
         options: {
-            indexAxis: 'y',
-            layout: {
-                padding: 50
-            }
-        },
-        scales: {
-            x: {
-              stacked: true,
-              display: false
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            y: {
-              stacked: true,
-              beginAtZero: true,
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
             }
-          },
-    }
-
+        }
     let genreChart = new Chart(canvasElement, config)
 }
-
 
 function displayYearStats(data) {
     var canvasElement = document.getElementById("years");
     var config = {
         type: "bar",
-        // data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
-        data: { datasets: [{ data: data }] },
+        data: { datasets: [ { 
+                        data: data 
+                    }] },
         options: { 
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
             responsive: true,
+            maintainAspectRatio: false,
             indexAxis: "x",
-            layout: {
-                // padding: 50,
-                // width: 200,
-                // height: 300
-            }
         }
     }
-
-    var genreChart = new Chart(canvasElement, config)
-
+    var yearChart = new Chart(canvasElement, config)
 }
