@@ -241,6 +241,7 @@ async function getInTheatersFromJsonFile() {
         populateTheaterGallery(theaterData);
     }
 }
+}
 
 /**
  * populateTheaterGallery takes argument data.
@@ -257,7 +258,7 @@ function populateTheaterGallery(data) {
         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
         // later move to CSS
         genreList.style.padding = "0px";
-        genreList.style.width = "130px";
+        genreList.style.width = "190px";
         genreList.style.margin = "0px";
 
         // cover poster of the movie
@@ -265,7 +266,7 @@ function populateTheaterGallery(data) {
         movImg.src = movie.image;
         // later move to CSS
         movImg.style.width = "130px";
-        movImg.style.height = "auto";
+        movImg.style.height = "180px";
         movImg.style["margin-top"] = "0px";
         movieCard.appendChild(movImg);
 
@@ -276,8 +277,9 @@ function populateTheaterGallery(data) {
         movTitle.style.width = "130px";
         movTitle.style.height = "50px";
         movTitle.style["text-align"] = "center";
+        movTitle.style["verticalAlign"] = "middle";
         movTitle.style["font-size"] = "12px";
-        movTitle.style["margin-top"] = "2px";
+        movTitle.style["margin-top"] = "5px";
         movTitle.style["margin-bottom"] = "0px";
         movieCard.appendChild(movTitle);
 
@@ -298,7 +300,7 @@ function populateTheaterGallery(data) {
             movGenre.style.padding = "2px 5px";
             movGenre.style["list-style"] = "none";
             movGenre.style.display = "inline-block";
-            movGenre.style.margin = "2px";
+            movGenre.style.margin = "0px";
             
             // append the genre li elements to the genreList ul element
             genreList.appendChild(movGenre);            
@@ -308,6 +310,69 @@ function populateTheaterGallery(data) {
         movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
     }
+    const genreFilters = document.createElement('div'); // create a container for the genre filters
+    genreFilters.style.display = "flex";
+    genreFilters.style.flexWrap = "wrap";
+    genreFilters.style.marginBottom = "20px";
+    section.insertBefore(genreFilters, section.firstChild); // insert the container before the first child of the section element
+
+    const genreTypes = []; // create an array to store the genre types
+    for (const movie of movies) {
+    for (const genre of movie.genreList) {
+        const genreName = genre.key;
+        if (!genreTypes.includes(genreName)) {
+        genreTypes.push(genreName); // add the genre type to the array if it's not already there
+        }
+    }
+    }
+
+    genreTypes.sort();
+    const genreFiltersState = {}; // create an object to store the filter state for each genre
+
+    for (const genre of genreTypes) {
+      const genreFilter = document.createElement('div'); // create a filter element for each genre
+      genreFilter.textContent = genre;
+      genreFilter.style.backgroundColor = genreColors[genre];
+      genreFilter.style.borderRadius = "10px";
+      genreFilter.style.fontSize = "15px";
+      genreFilter.style.padding = "5px";
+      genreFilter.style.marginTop = "50px";
+      genreFilter.style.marginRight = "10px";
+      genreFilter.style.marginBottom = "20px";
+      genreFilter.style.cursor = "pointer";
+      genreFilters.appendChild(genreFilter);
+    
+      genreFiltersState[genre] = true; // initialize filter state for this genre to true
+    
+      genreFilter.addEventListener('click', () => {
+        const currentFilterState = genreFiltersState[genre];
+    
+        if (currentFilterState) {
+          // if filter is currently active, deactivate it
+          genreFiltersState[genre] = false;
+          genreFilter.style.backgroundColor = "white";
+          for (const movieCard of section.querySelectorAll('article')) {
+            const genreList = movieCard.querySelector('ul');
+            if (genreList.textContent.includes(genre)) {
+              movieCard.style.display = "none";
+            }
+          }
+        } else {
+          // if filter is currently inactive, activate it
+          genreFiltersState[genre] = true;
+          genreFilter.style.backgroundColor = genreColors[genre];
+          for (const movieCard of section.querySelectorAll('article')) {
+            const genreList = movieCard.querySelector('ul');
+            if (genreList.textContent.includes(genre)) {
+              movieCard.style.display = "";
+            }
+          }
+        }
+      });
+    }
+    
+    
+
 }
 
 
@@ -904,6 +969,9 @@ function displayGenreStats(labels, data, color) {
 }
 
 
+let yearCount = {};
+
+
 function displayYearStats(data) {
     var canvasElement = document.getElementById("years");
     var config = {
@@ -924,3 +992,5 @@ function displayYearStats(data) {
     var genreChart = new Chart(canvasElement, config)
 
 }
+
+
