@@ -138,14 +138,19 @@ main {
 
 .column_2 {
   position: absolute;
-  top: 50%;
+  top: 30%;
   left: 50%;
   float: right;
   background-color: transparent;
   text-align: center;
   width: 50%;
-  padding: 70px 0;
+  padding: 30px 0;
   height: 400px; /* Should be removed. Only for demonstration */
+}
+
+#trailer_url {
+  width: 500px;
+  height: 300px;
 }
 
 
@@ -180,11 +185,6 @@ max-width: 340px;
 #services .box:hover {
 -webkit-transform: translateY(-5px);
 transform: translateY(-5px);
-}
-
-
-#services .icon i {
-font-size: 64px;
 }
 
 #services .title {

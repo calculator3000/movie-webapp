@@ -41,9 +41,7 @@
           </div>
           <div class="column_2">
             <h1><p id="trailer_title"></p><p id="trailer_year"></p></h1>
-            <video controls>
-              <source src="" type="video/mp4" id="trailer_url">
-            </video>
+            <iframe src="" id="trailer_url" frameborder="0" allow="autoplay"allow="autoplay"></iframe>
           </div>
       </section>
 
@@ -115,29 +113,30 @@
       <!--==========================
       Feedback Section
     ============================-->
-      <section id="feedback" class="section-bg"> 
-        <div class="container">
-          <div class="section-header">
-            <h2>
-              Discover movies that are currently in cinemas
-            </h2>
-            <div class="container">
-              <div class="contact-box">
-                <div class="right">
-                  <h4>If you wish to see information about other movies on the website, please fill out the form.</h4>
-                  <input type="text" class="field" placeholder="Your Name">
-                  <input type="text" class="field" placeholder="Your Email">
-                  <input type="text" class="field" placeholder="Phone">
-                  <textarea placeholder="Message" class="field"></textarea>
-                  <button class="btn">Send</button>
-                </div>
+    <section id="feedback" class="section-bg"> 
+      <div class="container">
+        <div class="section-header">
+          <h2>
+            Discover movies that are currently in cinemas
+          </h2>
+          <div class="container">
+            <div class="contact-box">
+              <div class="right">
+                <h4>If you wish to see information about other movies on the website, please fill out the form.</h4>
+                <form id="contact-form">
+                  <input type="text" class="field" placeholder="Your Name" name="name">
+                  <input type="email" class="field" placeholder="Your Email" name="email">
+                  <input type="text" class="field" placeholder="Phone" name="phone">
+                  <textarea placeholder="Message" class="field" name="message"></textarea>
+                  <button type="submit" class="btn">Send</button>
+                </form>
               </div>
             </div>
-          </div> 
-        
-          
-      </section>
-
+          </div>
+        </div>
+      </div>
+    </section>
+    
     </main>
 
 </body>

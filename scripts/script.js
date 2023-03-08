@@ -561,7 +561,6 @@ function displayRandomElements(data) {
       const ranking = data.items.find(x => x.id === id).imDbRating;
       const plot = data.items.find(x => x.id === id).plot;
       const img = data.items.find(x => x.id === id).image;
-      console.log(img)
 
       const elementTitle = document.getElementById(`element_${i + 1}_title`);
       elementTitle.textContent = title;
@@ -575,7 +574,6 @@ function displayRandomElements(data) {
       
       const elementImage = document.getElementById(`element_${i + 1}_image`);
       elementImage.setAttribute('src', img);
-      console.log(img)
     
       
 
@@ -588,18 +586,33 @@ function displayRandomElements(data) {
 async function getyoutube(id) {
     let movie_id = id
     let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_pius00o6/${movie_id}`;
-    const response = await fetch(url);
-    var trailer = await response.json();
-    console.log(trailer);
+    try {
+        const response = await fetch(url);
+        const trailer = await response.json();
+        console.log(trailer);
+    
+        if (trailer.videoUrl) {
+          const trailer_link = document.getElementById("trailer_url");
+          const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
+          trailer_link.setAttribute('src', embeddedUrl);
 
-    let trailer_link = document.getElementById("trailer_url");
-    trailer_link.setAttribute('src', trailer.videoUrl);
-    console.log(trailer)
-    let trailer_title = document.getElementById("trailer_title");
-    trailer_title.innerHTML = `${trailer.title}`;
-
-    let trailer_year = document.getElementById("trailer_year");
-    trailer_year.innerHTML = trailer.year;
+          console.log(trailer)
+    
+          const trailer_title = document.getElementById("trailer_title");
+          trailer_title.innerHTML = `${trailer.title}`;
+    
+          const trailer_year = document.getElementById("trailer_year");
+          trailer_year.innerHTML = trailer.year;
+        } else {
+          console.error('No video URL found in response:', trailer);
+        }
+      } catch (error) {
+        console.error('Error fetching trailer:', error);
+      } finally {
+        // hide the loading message
+        const loading_message = document.getElementById("loading_message");
+        loading_message.style.display = "none";
+      }
 }
 
 
@@ -1000,4 +1013,31 @@ function displayYearStats(data) {
 
 }
 
+// Initialize EmailJS with your user ID
+emailjs.init('TtgLX2SAhGi_jaItB');
+
+// Handle form submission
+document.getElementById('contact-form').addEventListener('submit', function(event) {
+  event.preventDefault(); // prevent default form behavior
+  
+  // Get form data
+  const formData = {
+    name: this.elements.name.value,
+    email: this.elements.email.value,
+    phone: this.elements.phone.value,
+    message: this.elements.message.value
+  };
+  
+  // Send email using EmailJS
+  emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
+    .then(function(response) {
+      console.log('SUCCESS!', response.status, response.text);
+      // Clear form inputs
+      document.getElementById('contact-form').reset();
+      alert('Your message has been sent!');
+    }, function(error) {
+      console.log('FAILED...', error);
+      alert('Oops! Something went wrong. Please try again later.');
+    });
+});
 
