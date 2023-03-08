@@ -1,6 +1,6 @@
 const imdbApiKey = imdbapi.key3;
 const omdbApiKey = omdbapi.key1;
-const moviedbApiKey = moviedb.key1;
+//const moviedbApiKey = moviedb.key1;
 // const username = traktapi.username;
 let numRequestsCompleted = 0;
 let clientId = traktapi.clientId
@@ -13,26 +13,26 @@ const genreColors = {
     Action: "#4682B430", // steel blue
     Adventure: "#6B8E2330", // olive green
     Animation: "#FFA50030", // orange
-    Biography: "light-blue",
+    Biography: "#0000CD30", //medium blue
     Comedy: "#FF8C0030", // dark orange
-    Crime: "#00000040",
-    Documentary: "#1E90FF30", // dodger blue
+    Crime: "#D3D3D330", //light grey
+    Documentary: "#1E90FF10", // dodger blue
     Drama: "#DC143C30", // crimson
-    // Family
-    Fantasy: "#F5F5DC",
-    // "Film Noir"
-    // History	// gold
+    Family: "#00BFFF30", // deep sky blue
+    Fantasy: "#FFFACD", // lemon chiffon
+    "Film-Noir": "#2E8B5730", // sea green
+    History: "#FFA50030",	// orange
     Horror: "#556B2F50", // dark olive green
-    Music: "#B0E0E6", //powder blue
-    // Musical // orange
-    Mystery: "#D3D3D3",
-    Romance: "rgba(255, 0, 0, 0.2)", //semi-transparent red
-    "Sci-Fi": "lightcyan", // light cyan
-    // `Short Film`: "#f5fffa" // mintcream
-    Sport: "#FDF5E6", //OldLace
-    Superhero: "#F0FFF0", //HoneyDew
-    Thriller: "#FFB6C1",
-    War: "#90ee90", // light green
+    Music: "#B0E0E6", // powder blue
+    Musical: "#FFD70030", // gold
+    Mystery: "#70809030", // slate grey
+    Romance: "rgba(255, 0, 0, 0.2)", // semi-transparent red
+    "Sci-Fi": "#6A5ACD30", // slate blue
+    "Short Film": "#f5fffa", // mintcream
+    Sport: "#FDF5E6", // OldLace
+    Superhero: "#F0FFF0", // HoneyDew
+    Thriller: "#FFB6C130", // light pink
+    War: "#90ee9020", // light green
     Western: "#DEB88750" // semi-transparent burly wood
 };
 
@@ -232,16 +232,16 @@ async function getInTheatersFromJsonFile() {
     const theaterData = await response.json();
 
     // call the function populateMovies 
-    if (window.location.pathname === '/movie-webapp/index.html') {
+    if (window.location.pathname === '/index.html') {
         currentTab = 'index';
         displayRandomElements(theaterData);
         
-      } else if (window.location.pathname === '/movie-webapp/in_theaters.html') {
+      } else if (window.location.pathname === '/in_theaters.html') {
         currentTab = 'in_theaters';
         populateTheaterGallery(theaterData);
     }
 }
-}
+
 
 /**
  * populateTheaterGallery takes argument data.
@@ -560,6 +560,8 @@ function displayRandomElements(data) {
       const title = data.items.find(x => x.id === id).title;
       const ranking = data.items.find(x => x.id === id).imDbRating;
       const plot = data.items.find(x => x.id === id).plot;
+      const img = data.items.find(x => x.id === id).image;
+      console.log(img)
 
       const elementTitle = document.getElementById(`element_${i + 1}_title`);
       elementTitle.textContent = title;
@@ -570,7 +572,12 @@ function displayRandomElements(data) {
       const elementRanking = document.getElementById(`element_${i + 1}_ranking`);
       elementRanking.textContent = ranking;
 
-
+      
+      const elementImage = document.getElementById(`element_${i + 1}_image`);
+      elementImage.setAttribute('src', img);
+      console.log(img)
+    
+      
 
     }
 

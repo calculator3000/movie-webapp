@@ -4,23 +4,23 @@
 <head>
     <meta charset="utf-8">
     <title>ScreenTrack: using the IMDB API to display data about movies</title>
-    <link rel="icon" type="image/x-icon" href="camera.png">
-    <script type="text/javascript" src="config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
-    <script src="script.js"></script>
-    <script src="login.js"></script>
-    <link rel="stylesheet" href="style_top250.css">
+    <link rel="icon" type="image/x-icon" href="images/camera.png">
+    <script type="text/javascript" src="scripts/config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
+    <script src="scripts/script.js"></script>
+    <script src="scripts/login.js"></script>
+    <link rel="stylesheet" href="styles/style_top250.css">
 </head>
 
 <body>
     <header>
 
-        <a href="./main.html"><div class="logo"><img src="images/camera.png"></div></a>
-        <a href="./main.html"><h3>ScreenTrack</h3></a>
+        <a href="./index.html"><div class="logo"><img src="images/camera.png"></div></a>
+        <a href="./index.html"><h3>ScreenTrack</h3></a>
         <nav class="main-nav">
             <ul>
-                <li><a href="./index.html">Top 250</a></li>
-                <li><a href="./gallery.html">Gallery</a></li>
+                <li><a href="./top250.html" class="current">Top 250</a></li>
                 <li><a href="./in_theaters.html">In Theaters</a></li>
+                <li><a href="./stats.html">Stats</a></li>
                 <li><a href="./watched.html">Watched</a></li>
             </ul>
         </nav>
@@ -33,8 +33,8 @@
     <div class="slidecontainer">
         <p>Filter for range of years:</p>
         <input type="range" min="1921" max="2022" value="50" class="slider" id="myRange" onclick= "filterYears()">
-        <p>Year: <span id="years"></span></p>
-        <p>Total movies: <span id="total_year"></span></p>
+        <b><p>Year:</b> <span id="years"></span></p>
+        <b><p>Total movies: </b><span id="total_year"></span></p>
       </div>
     <li class="header">
         <div class="movie_image"></div>

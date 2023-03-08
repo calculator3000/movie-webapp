@@ -60,6 +60,11 @@ nav a:hover {
     transition: 0.5s;
 }
 
+nav a.current {
+  color: #fba92c;
+}
+
+
 /* Style for the main */
 main {
     margin-top: 58px; /* ensures main starts below navigation bar */
