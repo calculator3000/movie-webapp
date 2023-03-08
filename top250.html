@@ -13,11 +13,11 @@
 
 <body>
     <header>
-        <div class="logo"><a href="./index.html"><img src="images/camera.png"></a></div>
-        <h3>ScreenTrack</h3>
+        <a href="./index.html"><div class="logo"><img src="images/camera.png"></div></a>
+        <a href="./index.html"><h3>ScreenTrack</h3></a>
         <nav class="main-nav">
             <ul>
-                <li><a href="./top250.html">Top 250</a></li>
+                <li><a href="./top250.html" class="current">Top 250</a></li>
                 <li><a href="./in_theaters.html">In Theaters</a></li>
                 <li><a href="./stats.html">Stats</a></li>
                 <li><a href="./watched.html">Watched</a></li>
@@ -33,8 +33,8 @@
     <div class="slidecontainer">
         <p>Filter for range of years:</p>
         <input type="range" min="1921" max="2022" value="50" class="slider" id="myRange" onclick= "filterYears()">
-        <p>Year: <span id="years"></span></p>
-        <p>Total movies: <span id="total_year"></span></p>
+        <b><p>Year:</b> <span id="years"></span></p>
+        <b><p>Total movies: </b><span id="total_year"></span></p>
       </div>
     <li class="header">
         <div class="movie_image"></div>

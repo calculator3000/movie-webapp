@@ -17,6 +17,7 @@ header {
     overflow: auto;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
+    z-index: 1;
 }
 
 .logo img {
@@ -59,11 +60,102 @@ nav a:hover {
     transition: 0.5s;
 }
 
+nav a.current {
+  color: #fba92c;
+}
+
+
 /* Style for the main */
 main {
     margin-top: 58px; /* ensures main starts below navigation bar */
 }
 
+
+/* Statistics */
+/* Style for the top actors section */
+#topActors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 300px;
+    margin: 0 auto; 
+    align-items: flex-start; /* Align the actor containers at the top of the flex container */
+
+  }
+  
+  /* Style for the individual actor containers */
+  /* Style for the top actors section */
+#topActors {
+    /* Make the actor containers display in a flexbox, wrapping onto new lines when necessary */
+    display: flex;
+    flex-wrap: wrap;
+    /* Set the space between the actor containers to be evenly distributed along the main axis */
+    justify-content: space-between;
+    /* Set the maximum width of the section to be 600px */
+    max-width: 300px;
+    /* Center the section horizontally within its container */
+    margin: 0 auto;
+    /* Align the actor containers at the top of the flex container */
+    align-items: flex-start;
+  }
+  
+  /* Style for the individual actor containers */
+  .actor-container {
+    /* Set the width of each actor container to be 30% of its parent's width */
+    width: 30%;
+    /* Add a margin at the bottom of each actor container to create some space between them */
+    margin-bottom: 10px;
+    /* Set a fixed height for the actor container */
+    height: 180px;
+    /* Clip any content that overflows beyond the fixed height of the container */
+    overflow: hidden;
+    /* Make the container a flex container, with elements stacked vertically */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Style for the actor images */
+  .actorImg {
+    /* Make the image fill the width of its container */
+    display: block;
+    width: 100%;
+    /* Allow the image to scale vertically to maintain its aspect ratio */
+    height: auto;
+  }
+  
+  /* Style for the actor names */
+  .actorName {
+    /* Add a bit of space between the actor image and the actor name */
+    margin-top: 5px;
+    /* Make the font size of the actor name smaller */
+    font-size: 0.8em;
+    height: 20px;
+    /* Make the actor name bold */
+    font-weight: bold;
+  }
+  
+  /* Style for the actor counts */
+  .actorCount {
+    /* Add a bit of space between the actor name and the actor count */
+    margin-top: 2px;
+    /* Make the font size of the actor count smaller */
+    font-size: 0.7em;
+    /* Make the color of the actor count a darker gray */
+    color: #666;
+  }
+  
+
+  #row1 {
+    display: flex;
+  }
+
+/* #years {
+    width: 200px;
+} */
+#test {
+    width: 600px;
+    padding: 50px;
+}
 
 
 /* Gallery */
@@ -85,9 +177,15 @@ main {
     max-width: 350px;
     height: 300px;
     object-fit: cover;
+
+    
   }
 
 .gallery::after {
     content: "";
     width: 350px;
 }
+
+.row {
+    display: flex;
+  }

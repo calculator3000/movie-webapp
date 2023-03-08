@@ -17,6 +17,7 @@ header {
     overflow: auto;
     position: fixed; /* Set the navbar to fixed position */
     top: 0; /* Position the navbar at the top of the page */
+    z-index: 1;
 }
 
 .logo img {
@@ -59,6 +60,11 @@ nav a:hover {
     transition: 0.5s;
 }
 
+nav a.current {
+    color: #fba92c;
+}
+
+
 /* Style for the main */
 main {
     margin-top: 58px; /* ensures main starts below navigation bar */
@@ -70,6 +76,7 @@ main {
 
 section {
     padding: 10px;
+    margin: 20px
 }
 #movieitem {
     display: flex;
@@ -78,7 +85,7 @@ section {
     align-items: center;
     padding: 20px;
     background-color: #ffffff;
-    border-radius: 20px;
+    border-radius: 10px;
     margin: 10px;
     width: 100%;
     cursor:pointer;
@@ -99,13 +106,14 @@ section {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background-color: #afe0f5;
-    border-radius: 20px;
+    background-color: #fba92c;
+    border-radius: 10px;
     margin: 10px;
     width: 100%;
     font-weight: bold;
     font-size: 110%;
 }
+
 .header div {
     width: 300px;
     cursor:pointer;
@@ -165,18 +173,43 @@ section {
     padding: 20px;
 }
 /*Slider*/
+
+
 .slidecontainer {
     width: 20%; /* Width of the outside container */
     float: right;
 }
-/* Mouse-over effects */
-.slider:hover {
-    opacity: 1; /* Fully shown on mouse-over */
-} 
 #myInput {
     width: 30%; /* Full-width */
     font-size: 16px; /* Increase font-size */
     padding: 12px 20px 12px 40px; /* Add some padding */
     border: 1px solid #ddd; /* Add a grey border */
-    margin: 20px;
+    margin: 20px;    
+.slider {
+    -webkit-appearance: none;
+    width: 60%;
+    height: 10px;
+    border-radius: 5px;   
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; 
+    background: #fba92c;
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
   }

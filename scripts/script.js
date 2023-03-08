@@ -1,5 +1,6 @@
 const imdbApiKey = imdbapi.key3;
 const omdbApiKey = omdbapi.key1;
+//const moviedbApiKey = moviedb.key1;
 // const username = traktapi.username;
 let numRequestsCompleted = 0;
 let clientId = traktapi.clientId
@@ -12,26 +13,26 @@ const genreColors = {
     Action: "#4682B430", // steel blue
     Adventure: "#6B8E2330", // olive green
     Animation: "#FFA50030", // orange
-    Biography: "light-blue",
+    Biography: "#0000CD30", //medium blue
     Comedy: "#FF8C0030", // dark orange
-    Crime: "#00000040",
-    Documentary: "#1E90FF30", // dodger blue
+    Crime: "#D3D3D330", //light grey
+    Documentary: "#1E90FF10", // dodger blue
     Drama: "#DC143C30", // crimson
-    // Family
-    Fantasy: "#F5F5DC",
-    // "Film Noir"
-    // History	// gold
+    Family: "#00BFFF30", // deep sky blue
+    Fantasy: "#FFFACD", // lemon chiffon
+    "Film-Noir": "#2E8B5730", // sea green
+    History: "#FFA50030",	// orange
     Horror: "#556B2F50", // dark olive green
-    Music: "#B0E0E6", //powder blue
-    // Musical // orange
-    Mystery: "#D3D3D3",
-    Romance: "rgba(255, 0, 0, 0.2)", //semi-transparent red
-    "Sci-Fi": "lightcyan", // light cyan
-    // `Short Film`: "#f5fffa" // mintcream
-    Sport: "#FDF5E6", //OldLace
-    Superhero: "#F0FFF0", //HoneyDew
-    Thriller: "#FFB6C1",
-    War: "#90ee90", // light green
+    Music: "#B0E0E6", // powder blue
+    Musical: "#FFD70030", // gold
+    Mystery: "#70809030", // slate grey
+    Romance: "rgba(255, 0, 0, 0.2)", // semi-transparent red
+    "Sci-Fi": "#6A5ACD30", // slate blue
+    "Short Film": "#f5fffa", // mintcream
+    Sport: "#FDF5E6", // OldLace
+    Superhero: "#F0FFF0", // HoneyDew
+    Thriller: "#FFB6C130", // light pink
+    War: "#90ee9020", // light green
     Western: "#DEB88750" // semi-transparent burly wood
 };
 
@@ -283,6 +284,7 @@ async function getInTheatersFromJsonFile() {
     }
 }
 
+
 /**
  * populateTheaterGallery takes argument data.
  * it populates in_theaters.html gallery class with data about movies currently in theaters
@@ -298,7 +300,7 @@ function populateTheaterGallery(data) {
         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
         // later move to CSS
         genreList.style.padding = "0px";
-        genreList.style.width = "130px";
+        genreList.style.width = "190px";
         genreList.style.margin = "0px";
 
         // cover poster of the movie
@@ -306,7 +308,7 @@ function populateTheaterGallery(data) {
         movImg.src = movie.image;
         // later move to CSS
         movImg.style.width = "130px";
-        movImg.style.height = "auto";
+        movImg.style.height = "180px";
         movImg.style["margin-top"] = "0px";
         movieCard.appendChild(movImg);
 
@@ -317,8 +319,9 @@ function populateTheaterGallery(data) {
         movTitle.style.width = "130px";
         movTitle.style.height = "50px";
         movTitle.style["text-align"] = "center";
+        movTitle.style["verticalAlign"] = "middle";
         movTitle.style["font-size"] = "12px";
-        movTitle.style["margin-top"] = "2px";
+        movTitle.style["margin-top"] = "5px";
         movTitle.style["margin-bottom"] = "0px";
         movieCard.appendChild(movTitle);
 
@@ -339,7 +342,7 @@ function populateTheaterGallery(data) {
             movGenre.style.padding = "2px 5px";
             movGenre.style["list-style"] = "none";
             movGenre.style.display = "inline-block";
-            movGenre.style.margin = "2px";
+            movGenre.style.margin = "0px";
             
             // append the genre li elements to the genreList ul element
             genreList.appendChild(movGenre);            
@@ -349,6 +352,69 @@ function populateTheaterGallery(data) {
         movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
     }
+    const genreFilters = document.createElement('div'); // create a container for the genre filters
+    genreFilters.style.display = "flex";
+    genreFilters.style.flexWrap = "wrap";
+    genreFilters.style.marginBottom = "20px";
+    section.insertBefore(genreFilters, section.firstChild); // insert the container before the first child of the section element
+
+    const genreTypes = []; // create an array to store the genre types
+    for (const movie of movies) {
+    for (const genre of movie.genreList) {
+        const genreName = genre.key;
+        if (!genreTypes.includes(genreName)) {
+        genreTypes.push(genreName); // add the genre type to the array if it's not already there
+        }
+    }
+    }
+
+    genreTypes.sort();
+    const genreFiltersState = {}; // create an object to store the filter state for each genre
+
+    for (const genre of genreTypes) {
+      const genreFilter = document.createElement('div'); // create a filter element for each genre
+      genreFilter.textContent = genre;
+      genreFilter.style.backgroundColor = genreColors[genre];
+      genreFilter.style.borderRadius = "10px";
+      genreFilter.style.fontSize = "15px";
+      genreFilter.style.padding = "5px";
+      genreFilter.style.marginTop = "50px";
+      genreFilter.style.marginRight = "10px";
+      genreFilter.style.marginBottom = "20px";
+      genreFilter.style.cursor = "pointer";
+      genreFilters.appendChild(genreFilter);
+    
+      genreFiltersState[genre] = true; // initialize filter state for this genre to true
+    
+      genreFilter.addEventListener('click', () => {
+        const currentFilterState = genreFiltersState[genre];
+    
+        if (currentFilterState) {
+          // if filter is currently active, deactivate it
+          genreFiltersState[genre] = false;
+          genreFilter.style.backgroundColor = "white";
+          for (const movieCard of section.querySelectorAll('article')) {
+            const genreList = movieCard.querySelector('ul');
+            if (genreList.textContent.includes(genre)) {
+              movieCard.style.display = "none";
+            }
+          }
+        } else {
+          // if filter is currently inactive, activate it
+          genreFiltersState[genre] = true;
+          genreFilter.style.backgroundColor = genreColors[genre];
+          for (const movieCard of section.querySelectorAll('article')) {
+            const genreList = movieCard.querySelector('ul');
+            if (genreList.textContent.includes(genre)) {
+              movieCard.style.display = "";
+            }
+          }
+        }
+      });
+    }
+    
+    
+
 }
 
 
@@ -536,6 +602,7 @@ function displayRandomElements(data) {
       const title = data.items.find(x => x.id === id).title;
       const ranking = data.items.find(x => x.id === id).imDbRating;
       const plot = data.items.find(x => x.id === id).plot;
+      const img = data.items.find(x => x.id === id).image;
 
       const elementTitle = document.getElementById(`element_${i + 1}_title`);
       elementTitle.textContent = title;
@@ -546,7 +613,11 @@ function displayRandomElements(data) {
       const elementRanking = document.getElementById(`element_${i + 1}_ranking`);
       elementRanking.textContent = ranking;
 
-
+      
+      const elementImage = document.getElementById(`element_${i + 1}_image`);
+      elementImage.setAttribute('src', img);
+    
+      
 
     }
 
@@ -557,18 +628,33 @@ function displayRandomElements(data) {
 async function getyoutube(id) {
     let movie_id = id
     let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_pius00o6/${movie_id}`;
-    const response = await fetch(url);
-    var trailer = await response.json();
-    console.log(trailer);
+    try {
+        const response = await fetch(url);
+        const trailer = await response.json();
+        console.log(trailer);
+    
+        if (trailer.videoUrl) {
+          const trailer_link = document.getElementById("trailer_url");
+          const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
+          trailer_link.setAttribute('src', embeddedUrl);
 
-    let trailer_link = document.getElementById("trailer_url");
-    trailer_link.setAttribute('src', trailer.videoUrl);
-    console.log(trailer)
-    let trailer_title = document.getElementById("trailer_title");
-    trailer_title.innerHTML = `${trailer.title}`;
-
-    let trailer_year = document.getElementById("trailer_year");
-    trailer_year.innerHTML = trailer.year;
+          console.log(trailer)
+    
+          const trailer_title = document.getElementById("trailer_title");
+          trailer_title.innerHTML = `${trailer.title}`;
+    
+          const trailer_year = document.getElementById("trailer_year");
+          trailer_year.innerHTML = trailer.year;
+        } else {
+          console.error('No video URL found in response:', trailer);
+        }
+      } catch (error) {
+        console.error('Error fetching trailer:', error);
+      } finally {
+        // hide the loading message
+        const loading_message = document.getElementById("loading_message");
+        loading_message.style.display = "none";
+      }
 }
 
 
@@ -627,59 +713,373 @@ function convertMinutes(min) {
 
 // window.addEventListener('load', getUserStats)
 
-let genres = []
+
 async function getWatchedFromJsonFile() {
-    // other way to write promise (needs async keyword). 
     const response = await fetch("./json_files/watched.json");
-    const movieData = await response.json();
+    const watchedData = await response.json();
 
-    // call the function populateMovies 
-    console.log(movieData.items);
-    for (const movie of movieData.items) {
-        var genres = movie.Genre
-        const genreArr = genres.split(", ");
+    generateWatchedStats(watchedData)
 
-        for (let genre of genreArr) {
-            // console.log(genre)
-        }
-    }
+    // getWatchedGenres(watchedData);
+    // getWatchedYears(watchedData);
+    // getWatchedActors(watchedData);
+    // getLowHighRatedMovie(watchedData)
+}
 
-    for (const movie of movieData.items) {
+function generateWatchedStats(watchedData) {
+    // set variables for objects containing data to be used in creation of the charts
+    let genreCount = {}; // format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
+    let yearCount = {}; // format: {1989: 1, 1990: 1}
+    let minRating = {}; // format: {Title: "JurassicPark", Rating: 6.1, Poster: "http://..."}
+    let maxRating = {}; // format: {Title: "Lord of the Rings", Rating: 9.3, Poster: "http://..."}
+    let langCount = {}; // format: {English: 30, Mandarin: 1}
+    let actorCount = {};
+    let countryCount = {}; 
+    // set initial values for lowest and highest rated films
+    let lowestRating = 10.0;
+    let highestRating = 0.0;
+    console.log(watchedData.items)
+
+    for (const movie of watchedData.items) {
+        let genres = movie.Genre // format: Genre: "Action, Adventure, Fantasy"
+        let genresSplit = genres.split(", ");
         let year = movie.Year
-        if(year in yearCount) {
-            yearCount[year] += 1;
-        } else {
-            yearCount[year] = 1;
+        let rating = movie.imdbRating
+        let language = movie.Language // format: "English, Mandarin"
+        let langSplit = language.split(", ")[0]; // only use the first language mentioned
+        let actorSplit = movie.Actors.split(", ")
+        let countrySplit = movie.Country.split(", ");
+
+        // GENRES: count how many times each genre appears in movies watched & populate genreObject with data
+        // if movie has multiple genres, all genres will be counted
+        for (const genre of genresSplit) { genreCount = createCounterObject(genre, genreCount) }
+
+        // YEARS: count how many times each release year appears in movies watched & populate yearCount with data
+        yearCount = createCounterObject(year, yearCount)
+
+        // RATINGS: check what was the lowest and the highest rated movies watched (according to imdb rating)
+        // check if the current movie has a lower rating than the current lowest rating
+        if (rating < lowestRating) {
+            lowestRating = rating;
+            minRating["Title"] = movie.Title;
+            minRating["Rating"] = rating;
+            minRating["Poster"] = movie.Poster;
         }
-       
-    }
-    console.log(yearCount)
+        // check if the current movie has a higher rating than the current highest rating
+        if (rating > highestRating) {
+            highestRating = rating;
+            maxRating["Title"] = movie.Title;
+            maxRating["Rating"] = rating;
+            maxRating["Poster"] = movie.Poster;
+        }
 
-    createYearStats();
-    //createGenreStats();
+        // COUNTRIES: 
+        for (const country of countrySplit) { countryCount = createCounterObject(country, countryCount) }
+
+        // ACTORS
+        for (const actor of actorSplit) { actorCount = createCounterObject(actor, actorCount) }
+
+        // LANGUAGES: note only first language
+        langCount = createCounterObject(langSplit, langCount)
+    }
+
+    // GENRES: sort the genres (high - low) and call function displaying data in a chart
+        let genreCountSort = createSortedCounter(genreCount, true)
+        displayGenreStats(genreCountSort[0], genreCountSort[1], genreCountSort[2])
+
+    // YEAR: year barchart should also include release years from which no movies where watched
+        let years = Object.keys(yearCount).map(Number);
+        let minYear = Math.min(...years);
+        let maxYear = 2023;
+
+        for(let i=minYear; i<=maxYear; i++) {
+            if(!years.includes(i)) {
+                yearCount[i] = 0
+            } 
+        }
+        displayYearStats(yearCount);
+
+    // LANGUAGES: sort the countries (high - low) and display in a chart
+        let langCountSort = createSortedCounter(langCount)
+        displayLanguageStats(langCountSort[0], langCountSort[1])
+
+    // COUNTRIES: sort the countries (high - low) and display in a chart
+        var countryCountSort = createSortedCounter(countryCount)
+        displayCountryStats(countryCountSort[0], countryCountSort[1])
+
+    // ACTORS
+        var actorsCountSort = createSortedCounter(actorCount)
+        for (let i=0; i < 6; i++) {
+            let actorname = actorsCountSort[0][i]
+            let actorCount = actorsCountSort[1][i]
+            getActorPoster(actorname, actorCount, i)
+            // console.log(actorsCountSort[0][i])
+            // console.log(actorsCountSort[1][i])
+        }
+        // getActorPoster()
+    // call functions responsiple for UI
+
+
+    displayLowHighRatedMovie(minRating, maxRating);
 }
 
-function createGenreStats() {
+/**
+ * counts how many times each variable appears in movies watched and populate object with data
+ * returns object with key-value pair of variable: count
+ * @param {string} variable - e.g. year
+ * @param {object} object - empty object {}
+ * @returns {object} object - exemplary format: {1989: 1, 1990: 1, ...}
+ */
+function createCounterObject(variable, object) {
+    if(variable in object) {
+        object[variable] += 1;
+    } else {
+        object[variable] = 1;
+    }
+    return object;
+}
 
-    var canvasElement = document.getElementById("genres");
+function getActorPoster(actor, actorCount, functionCounter) {
+    let imagePath = ""
+    // let actor = "Emma Watson" // Emma%20Watson
+    let url = `https://api.themoviedb.org/3/search/person?api_key=${moviedbApiKey}&language=en-US&query=${actor}&page=1&include_adult=false`
+    
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        imagePath = data.results[0].profile_path 
+        displayTopActors(imagePath, actor, actorCount, functionCounter)
+    });
+}
+
+// var actors = []
+function displayTopActors(imgPath, actor, actorCount, functionCounter) {
+    let baseurl = "https://image.tmdb.org/t/p/w154/"
+    let imgUrl = baseurl + imgPath
+    var elementId = "top" + functionCounter
+    console.log(elementId)
+    let actorSection = document.getElementById(elementId) // .src = imgUrl;
+    actorSection.getElementsByClassName("actorImg")[0].src = imgUrl
+    actorSection.getElementsByClassName("actorName")[0].innerHTML = actor
+    actorSection.getElementsByClassName("actorCount")[0].innerHTML = actorCount + " movies"
+
+
+    // let actorObj = {}
+    // actorObj["actor"] = actor
+    // actorObj["count"] = count
+    // actorObj["image"] = imgUrl
+    // actors.push(actorObj)
+    // console.log(actors)
+}
+/**
+ * creates a list of objects containing two to three properties
+ * @param {object} object - the object to sort, format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
+ * @param {boolean} [hasColor=false]  - adsi 
+ * @returns {array} labels - the labels to be used in the chart
+ * @returns {array} data - the data to be used in the chart
+ */
+function createSortedCounter(object, hasColor = false) {
+    let labels = [];
+    let data = [];
+    let bckgColors = []
+
+    // example format of result : [{label: 'adventure', count: 2, color: "#6B8E2330"}, ...]
+        // label: e.g., genre
+        // count: e.g., counting how many times genre appears in the movies watched
+        // color: e.g. the color for the genre (from genreColor), to be used in the chart
+    const countArr = Object.entries(object).map(([label, count]) => { 
+        let result = { label, count }
+        if (hasColor) {
+            result.color = genreColors[label]
+        }
+        return result;
+    });
+
+    // sort the countArr from highest to lowest value
+    const countSort = countArr.sort(function (b,a) { return a.count - b.count });
+
+    // create new arrays containing the genre, count, and (optionally) color respectively
+    // to be used in creation of the chart
+    for (let i=0; i < countSort.length; i++) {
+        labels.push(countSort[i].label)
+        data.push(countSort[i].count)
+        if (hasColor) {
+            bckgColors.push(countSort[i].color)
+        }
+    }
+    return [labels, data, bckgColors]
+}
+
+
+function displayLowHighRatedMovie(lowestRating, highestRating) {
+    document.getElementById("lowScore").innerHTML = `${lowestRating.Rating}`;
+    document.getElementById('lowPoster').src = lowestRating.Poster;
+    document.getElementById('lowTitle').innerHTML = `${lowestRating.Title}`;
+    document.getElementById("highScore").innerHTML = `${highestRating.Rating}`;
+    document.getElementById('highPoster').src = highestRating.Poster;
+    document.getElementById('highTitle').innerHTML = `${highestRating.Title}`;
+}
+
+function displayLanguageStats(labels, data) {
+    let canvasElement = document.getElementById("lang");
+    let config = {
+        type: "pie",
+        data: {
+            // labels: Object.keys(genreCountSort),
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Number of Movies Containing this Genre',
+                    // data: Object.values(genreCountSort),
+                    data: data,
+                    // backgroundColor: color
+                },
+            ],
+        },
+        options: {
+            indexAxis: 'y',
+            layout: {
+                padding: 50
+            }
+        },
+        scales: {
+            x: {
+              stacked: true,
+              display: false
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+            }
+          },
+    }
+
+    let genreChart = new Chart(canvasElement, config)
+}
+
+function displayCountryStats(labels, data) {
+    let canvasElement = document.getElementById("country");
+    let config = {
+        type: "bar",
+        data: {
+            // labels: Object.keys(genreCountSort),
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Number of Movies Containing this Genre',
+                    // data: Object.values(genreCountSort),
+                    data: data,
+                    // backgroundColor: color
+                },
+            ],
+        },
+        options: {
+            indexAxis: 'y',
+            layout: {
+                padding: 50
+            }
+        },
+        scales: {
+            x: {
+              stacked: true,
+              display: false
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+            }
+          },
+    }
+    let genreChart = new Chart(canvasElement, config)
+}
+
+function displayGenreStats(labels, data, color) {
+    let canvasElement = document.getElementById("genres");
+    let config = {
+        type: "bar",
+        data: {
+            // labels: Object.keys(genreCountSort),
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Number of Movies Containing this Genre',
+                    // data: Object.values(genreCountSort),
+                    data: data,
+                    backgroundColor: color
+                },
+            ],
+        },
+        options: {
+            indexAxis: 'y',
+            layout: {
+                padding: 50
+            }
+        },
+        scales: {
+            x: {
+              stacked: true,
+              display: false
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+            }
+          },
+    }
+
+    let genreChart = new Chart(canvasElement, config)
+}
+
+
+let yearCount = {};
+
+
+function displayYearStats(data) {
+    var canvasElement = document.getElementById("years");
     var config = {
         type: "bar",
-        data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
+        // data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
+        data: { datasets: [{ data: data }] },
+        options: { 
+            responsive: true,
+            indexAxis: "x",
+            layout: {
+                // padding: 50,
+                // width: 200,
+                // height: 300
+            }
+        }
     }
 
     var genreChart = new Chart(canvasElement, config)
 
 }
 
-let yearCount = {}
+// Initialize EmailJS with your user ID
+emailjs.init('TtgLX2SAhGi_jaItB');
 
-function createYearStats() {
-    var canvasElement = document.getElementById("genres");
-    var config = {
-        type: "bar",
-        data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
-    }
+// Handle form submission
+document.getElementById('contact-form').addEventListener('submit', function(event) {
+  event.preventDefault(); // prevent default form behavior
+  
+  // Get form data
+  const formData = {
+    name: this.elements.name.value,
+    email: this.elements.email.value,
+    phone: this.elements.phone.value,
+    message: this.elements.message.value
+  };
+  
+  // Send email using EmailJS
+  emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
+    .then(function(response) {
+      console.log('SUCCESS!', response.status, response.text);
+      // Clear form inputs
+      document.getElementById('contact-form').reset();
+      alert('Your message has been sent!');
+    }, function(error) {
+      console.log('FAILED...', error);
+      alert('Oops! Something went wrong. Please try again later.');
+    });
+});
 
-    var genreChart = new Chart(canvasElement, config)
-
-}
