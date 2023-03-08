@@ -223,6 +223,48 @@ function filterYears(){
     total.innerHTML = count
 }
 
+function searchMovieActor() {
+    fetch("json_files/top250.json")
+    .then(response => response.json())
+    .then(data => {
+        var input, filter, table_movie, rows_movie, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table_movie = document.getElementById("top250");
+        rows_movie = movieitem;
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < rows_movie.length; i++) {
+            td = rows_movie[i].getElementsByTagName("DIV")[0];
+            if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                rows_movie[i].style.display = "";
+            } else {
+                rows_movie[i].style.display = "none";
+            }
+            }
+        }
+        let movies = data.items;
+        for (const movie1 of movies) {
+            let actors = movie1.crew;
+            let movie_name = movie1.title;
+            if (actors.toUpperCase().indexOf(filter) > -1) {
+                for (i=0; i < rows_movie.length; i++) {
+                    if (rows_movie[i].getElementsByTagName("DIV")[0].innerHTML.includes(movie_name) == true) {
+                        rows_movie[i].style.display = "";
+                    } 
+                }
+            } else { 
+                for (i=0; i < rows_movie.length; i++) {
+                    if (rows_movie[i].getElementsByTagName("DIV")[0].innerHTML.includes(movie_name) == true) {
+                        rows_movie[i].style.display = "none";
+                    }
+                }
+            }
+        }});
+}     
+
 // ********** in_theaters.html, in_theaters.json **********
 // Gets the movies in theaters from the json file and assigns the response data to movieData
 async function getInTheatersFromJsonFile() {
