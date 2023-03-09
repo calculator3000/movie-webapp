@@ -8,6 +8,7 @@ body {
     background-color: #f0f0f0;
     margin: 0;
     padding: 0;
+    margin-bottom: 30px;
 }
 
 /* Style for the header with navigation bar */
@@ -80,82 +81,210 @@ main {
     max-width: 300px;
     margin: 0 auto; 
     align-items: flex-start; /* Align the actor containers at the top of the flex container */
-
   }
-  
+   
   /* Style for the individual actor containers */
-  /* Style for the top actors section */
-#topActors {
-    /* Make the actor containers display in a flexbox, wrapping onto new lines when necessary */
-    display: flex;
-    flex-wrap: wrap;
-    /* Set the space between the actor containers to be evenly distributed along the main axis */
-    justify-content: space-between;
-    /* Set the maximum width of the section to be 600px */
-    max-width: 300px;
-    /* Center the section horizontally within its container */
-    margin: 0 auto;
-    /* Align the actor containers at the top of the flex container */
-    align-items: flex-start;
-  }
-  
-  /* Style for the individual actor containers */
-  .actor-container {
-    /* Set the width of each actor container to be 30% of its parent's width */
+.actor-container {
     width: 30%;
-    /* Add a margin at the bottom of each actor container to create some space between them */
     margin-bottom: 10px;
-    /* Set a fixed height for the actor container */
     height: 180px;
-    /* Clip any content that overflows beyond the fixed height of the container */
     overflow: hidden;
-    /* Make the container a flex container, with elements stacked vertically */
     display: flex;
     flex-direction: column;
-  }
+    text-align:center;
+}
   
   /* Style for the actor images */
-  .actorImg {
+.actorImg {
     /* Make the image fill the width of its container */
     display: block;
     width: 100%;
     /* Allow the image to scale vertically to maintain its aspect ratio */
     height: auto;
-  }
+    margin-bottom:3px;
+}
   
+/* .actorNameDiv {
+  height: 30px;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  /* justify-content: center;
+  align-items: center;
+}
   /* Style for the actor names */
-  .actorName {
-    /* Add a bit of space between the actor image and the actor name */
-    margin-top: 5px;
-    /* Make the font size of the actor name smaller */
-    font-size: 0.8em;
-    height: 20px;
-    /* Make the actor name bold */
-    font-weight: bold;
-  }
+/* .actorName {
+  text-align: center;
+  vertical-align: middle;
+  /*line-height: 30px;    */
+  /*font-size: 0.8em;
+  height: 30px;
+  font-weight: bold;
+} */
+
+.actorNameDiv {
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.actorName {
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-bottom:13px;
+}
+
   
   /* Style for the actor counts */
-  .actorCount {
+.actorCount {
     /* Add a bit of space between the actor name and the actor count */
     margin-top: 2px;
     /* Make the font size of the actor count smaller */
     font-size: 0.7em;
     /* Make the color of the actor count a darker gray */
     color: #666;
-  }
-  
-
-  #row1 {
-    display: flex;
-  }
-
-/* #years {
-    width: 200px;
-} */
-#test {
-    width: 600px;
-    padding: 50px;
 }
+  
+.largText{
+  font-size: 0.8em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.smallText {
+  font-size: 0.7em;
+  color: #666;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    /* align-items: center; */
+    align-items: flex-start;
+    margin: 0px 30px;
+
+}
+
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width:50%;
+}
+
+.column {
+  flex-basis: 90%;
+}
+
+#textStats {
+  display: inline-block;
+  font-size: 3rem;
+  margin-top:30px;
+}
+
+/* style the days element */
+#days, #hours, #minutes, #watched {
+  font-size: 3rem;
+  font-weight: bold;
+  display: inline-block;
+  color: #FBA92C;
+}
+
+.column-thirds {
+  flex-basis: 30%;
+}
+
+@media screen and (max-width: 768px) {
+  .column-thirds {
+    min-width: 300px;
+  }
+}
+/* .column-thirds2 {
+  width: 90vw;
+}
+.column-thirds {
+  /* width: 10vw;
+  min-width: 300px;
+} */
+
+#ratingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 0px;
+  flex-grow: 1;
+  
+}
+
+.rating-container {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imdbRating {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.imdbRating img {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.ratingPoster {
+  margin-top: 10px;
+  max-width: 200px;
+  width:100%;
+}
+
+#genresChart {
+  display: block;
+  width: 40%;
+  height: auto;
+  margin-top: 0px;
+  flex-grow: 1;
+}
+
+.stats-container {
+  width: 100%;
+  max-width: 900px;
+  margin-top: 0px;
+  /* padding-right:20px; */
+  display: flex;
+  justify-content: center;
+  
+}
+
+.years-container {
+  height: 350px;
+}
+
+/*.genres-container {
+  /* height: 690px; 
+}*/
+
+
+.statTitle {
+  text-align: center;
+  margin: 20px 0px; 
+}
+
+.lang-container {
+  height: 350px;
+}
+
+#stats {
+  margin-bottom: 50px;
+}
+
 
 
 /* Gallery */
@@ -183,7 +312,7 @@ main {
 .row {
     display: flex;
   }
-
+  
   /* In Theaters--------------- */
 #genrelist {
   width: 190px;
@@ -218,3 +347,9 @@ main {
   margin-bottom: 20px;
   cursor: pointer;
 }
+#filter_idea {
+    padding: 15px;
+    font-size: 24px;
+    margin-left: 20px;
+}
+

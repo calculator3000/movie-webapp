@@ -1,6 +1,6 @@
 const imdbApiKey = imdbapi.key1;
 const omdbApiKey = omdbapi.key1;
-//const moviedbApiKey = moviedb.key1;
+const moviedbApiKey = moviedb.key1;
 // const username = traktapi.username;
 let numRequestsCompleted = 0;
 let clientId = traktapi.clientId
@@ -269,11 +269,11 @@ async function getInTheatersFromJsonFile() {
     const theaterData = await response.json();
 
     // call the function populateMovies 
-    if (window.location.pathname === '/index.html') {
+    if (window.location.pathname === '/movie-webapp/index.html') {
         currentTab = 'index';
         displayRandomElements(theaterData);
         
-      } else if (window.location.pathname === '/in_theaters.html') {
+      } else if (window.location.pathname === '/movie-webapp/in_theaters.html') {
         currentTab = 'in_theaters';
         populateTheaterGallery(theaterData);
     }
@@ -388,6 +388,7 @@ function populateTheaterGallery(data) {
       const genreFilter = document.createElement('div'); // create a filter element for each genre
       genreFilter.textContent = genre;
       genreFilter.style.backgroundColor = genreColors[genre];
+
       genreFilter.setAttribute("class", "genrefilter")
       genreFilters.appendChild(genreFilter);
     
@@ -423,40 +424,6 @@ function populateTheaterGallery(data) {
     
 
 }
-
-
-// /** testing getWatched function of trakt api */
-// function getWatched() {
-//     var request = new XMLHttpRequest();
-//     request.open('GET', `https://api.trakt.tv/users/${username}/watched/movies`);
-
-//     request.setRequestHeader('Content-Type', 'application/json');
-//     request.setRequestHeader('trakt-api-version', '2');
-//     request.setRequestHeader('Authorization', `Bearer ${token2}`);
-//     request.setRequestHeader('trakt-api-version', '2');
-//     request.setRequestHeader('trakt-api-key', clientId);
-
-//     request.onreadystatechange = function () {
-//         if (this.readyState === 4) {
-//             console.log('Status:', this.status);
-//             console.log('Headers:', this.getAllResponseHeaders());
-//             console.log('Body:', this.responseText);
-//             var watched = JSON.parse(this.responseText)
-
-//         // for every movie in watched list, get more data from IMDB
-//         for (const movie of watched) {
-//             imdbId = movie.movie.ids.imdb
-//             getMovData(imdbId)
-//         }
-//     }
-//   };
-//   populateWatchedGallery();
-
-//   request.send();
-// }
-
-/** testing getWatched function of trakt api */
-
 
 function getWatched() {
     console.log("1. In GetWatched")
@@ -626,15 +593,13 @@ function displayRandomElements(data) {
     
       
 
-    }
-
-    
+    }    
 }
 
 
 async function getyoutube(id) {
     let movie_id = id
-    let url = `https://imdb-api.com/en/API/YouTubeTrailer/k_pius00o6/${movie_id}`;
+    let url = `https://imdb-api.com/en/API/YouTubeTrailer/${imdbApiKey}/${movie_id}`;
     try {
         const response = await fetch(url);
         const trailer = await response.json();
@@ -666,71 +631,49 @@ async function getyoutube(id) {
 
 
 function getUserStats() {
-    // let clientId = traktapi.clientId
-
     let url = `https://api.trakt.tv/users/${username}/stats`;
     
     fetch(url, {
         method: 'GET',
-        // mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
             'trakt-api-version': '2',
             'trakt-api-key': clientId //,
-            // 'authorization': `Bearer ${token2}`
-//            'access-control-allow-origin': '*'
         }
     })
     .then(response => {
         console.log('Status:', response.status);
         console.log('Headers:', response.headers);
-        return response.json(); // response.text()
+        return response.json(); 
     })
     .then(body => {
         console.log('Body:', body);
         displayUserStats(body);
     })
-    // .catch(error => {
-    //     console.error('Error:', error);
-    // });
-
 }
 
 function displayUserStats(stats) {
     let minMovies = convertMinutes(stats.movies.minutes);
-    let minShows = convertMinutes(stats.episodes.minutes);
-    
-    const section = document.querySelector('#stats')
-    const pMinMovies = document.createElement('p'); // creates new element
-    const pMinShows = document.createElement('p'); // creates new element
-    pMinMovies.textContent = `Movies: ${minMovies}`; // fill the p element with the title
-    pMinShows.textContent = `TV Shows: ${minShows}`; // fill the p element with the title
+    let numMovies = stats.movies.watched
 
-    section.appendChild(pMinMovies);
-    section.appendChild(pMinShows);
-
+    document.getElementById("days").innerText = minMovies[0];
+    document.getElementById("hours").innerText = minMovies[1];
+    document.getElementById("minutes").innerText = minMovies[2];
+    document.getElementById("watched").innerText = numMovies
 }
 
 function convertMinutes(min) {
     var days = Math.floor(min / 1440);
     var hours = Math.floor((min % 1440) / 60);
     var minutes = min % 60;
-    return days + " days, " + hours + " hours, " + minutes + " minutes"
+    return [days, hours, minutes]
 }
-
-// window.addEventListener('load', getUserStats)
-
 
 async function getWatchedFromJsonFile() {
     const response = await fetch("./json_files/watched.json");
     const watchedData = await response.json();
 
     generateWatchedStats(watchedData)
-
-    // getWatchedGenres(watchedData);
-    // getWatchedYears(watchedData);
-    // getWatchedActors(watchedData);
-    // getLowHighRatedMovie(watchedData)
 }
 
 function generateWatchedStats(watchedData) {
@@ -848,7 +791,6 @@ function createCounterObject(variable, object) {
 
 function getActorPoster(actor, actorCount, functionCounter) {
     let imagePath = ""
-    // let actor = "Emma Watson" // Emma%20Watson
     let url = `https://api.themoviedb.org/3/search/person?api_key=${moviedbApiKey}&language=en-US&query=${actor}&page=1&include_adult=false`
     
     fetch(url)
@@ -859,7 +801,6 @@ function getActorPoster(actor, actorCount, functionCounter) {
     });
 }
 
-// var actors = []
 function displayTopActors(imgPath, actor, actorCount, functionCounter) {
     let baseurl = "https://image.tmdb.org/t/p/w154/"
     let imgUrl = baseurl + imgPath
@@ -869,15 +810,8 @@ function displayTopActors(imgPath, actor, actorCount, functionCounter) {
     actorSection.getElementsByClassName("actorImg")[0].src = imgUrl
     actorSection.getElementsByClassName("actorName")[0].innerHTML = actor
     actorSection.getElementsByClassName("actorCount")[0].innerHTML = actorCount + " movies"
-
-
-    // let actorObj = {}
-    // actorObj["actor"] = actor
-    // actorObj["count"] = count
-    // actorObj["image"] = imgUrl
-    // actors.push(actorObj)
-    // console.log(actors)
 }
+
 /**
  * creates a list of objects containing two to three properties
  * @param {object} object - the object to sort, format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
@@ -890,6 +824,7 @@ function createSortedCounter(object, hasColor = false) {
     let data = [];
     let bckgColors = []
 
+    console.log(window.location.pathname)
     // example format of result : [{label: 'adventure', count: 2, color: "#6B8E2330"}, ...]
         // label: e.g., genre
         // count: e.g., counting how many times genre appears in the movies watched
@@ -930,38 +865,27 @@ function displayLowHighRatedMovie(lowestRating, highestRating) {
 function displayLanguageStats(labels, data) {
     let canvasElement = document.getElementById("lang");
     let config = {
-        type: "pie",
+        type: "doughnut",
         data: {
-            // labels: Object.keys(genreCountSort),
             labels: labels,
             datasets: [
                 {
-                    label: 'Number of Movies Containing this Genre',
-                    // data: Object.values(genreCountSort),
+                    label: '# of movies containing this language (as first language)',
                     data: data,
-                    // backgroundColor: color
                 },
             ],
         },
         options: {
-            indexAxis: 'y',
-            layout: {
-                padding: 50
-            }
-        },
-        scales: {
-            x: {
-              stacked: true,
-              display: false
+            plugins: {
+                legend: {
+                    display: true
+                }
             },
-            y: {
-              stacked: true,
-              beginAtZero: true,
-            }
-          },
+            responsive: true,
+            maintainAspectRatio: false
+        }
     }
-
-    let genreChart = new Chart(canvasElement, config)
+    let langChart = new Chart(canvasElement, config)
 }
 
 function displayCountryStats(labels, data) {
@@ -969,124 +893,99 @@ function displayCountryStats(labels, data) {
     let config = {
         type: "bar",
         data: {
-            // labels: Object.keys(genreCountSort),
             labels: labels,
             datasets: [
                 {
-                    label: 'Number of Movies Containing this Genre',
-                    // data: Object.values(genreCountSort),
+                    label: 'number of movies from this country',
                     data: data,
-                    // backgroundColor: color
                 },
             ],
         },
         options: {
-            indexAxis: 'y',
-            layout: {
-                padding: 50
-            }
-        },
-        scales: {
-            x: {
-              stacked: true,
-              display: false
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            y: {
-              stacked: true,
-              beginAtZero: true,
-            }
-          },
+            indexAxis: 'y',
+        }
     }
-    let genreChart = new Chart(canvasElement, config)
+    let countryChart = new Chart(canvasElement, config)
 }
 
 function displayGenreStats(labels, data, color) {
-    let canvasElement = document.getElementById("genres");
+    let canvasElement = document.getElementById("genresChart");
     let config = {
         type: "bar",
         data: {
-            // labels: Object.keys(genreCountSort),
             labels: labels,
             datasets: [
                 {
-                    label: 'Number of Movies Containing this Genre',
-                    // data: Object.values(genreCountSort),
+                    label: 'number of movies containing this genre',
                     data: data,
                     backgroundColor: color
                 },
             ],
         },
         options: {
-            indexAxis: 'y',
-            layout: {
-                padding: 50
-            }
-        },
-        scales: {
-            x: {
-              stacked: true,
-              display: false
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            y: {
-              stacked: true,
-              beginAtZero: true,
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
             }
-          },
-    }
-
+        }
     let genreChart = new Chart(canvasElement, config)
 }
-
-
-let yearCount = {};
-
 
 function displayYearStats(data) {
     var canvasElement = document.getElementById("years");
     var config = {
         type: "bar",
-        // data: {labels: ["Hello", "Bye"], datasets: [{label: "number", data: [1, 2] }]}
-        data: { datasets: [{ data: data }] },
+        data: { datasets: [ { 
+                        data: data 
+                    }] },
         options: { 
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
             responsive: true,
+            maintainAspectRatio: false,
             indexAxis: "x",
-            layout: {
-                // padding: 50,
-                // width: 200,
-                // height: 300
-            }
         }
     }
-
-    var genreChart = new Chart(canvasElement, config)
-
+    var yearChart = new Chart(canvasElement, config)
 }
 
-// Initialize EmailJS with your user ID
-emailjs.init('TtgLX2SAhGi_jaItB');
+// // Initialize EmailJS with your user ID
+// emailjs.init('TtgLX2SAhGi_jaItB');
 
-// Handle form submission
-document.getElementById('contact-form').addEventListener('submit', function(event) {
-  event.preventDefault(); // prevent default form behavior
+// // Handle form submission
+// document.getElementById('contact-form').addEventListener('submit', function(event) {
+//   event.preventDefault(); // prevent default form behavior
   
-  // Get form data
-  const formData = {
-    name: this.elements.name.value,
-    email: this.elements.email.value,
-    phone: this.elements.phone.value,
-    message: this.elements.message.value
-  };
+//   // Get form data
+//   const formData = {
+//     name: this.elements.name.value,
+//     email: this.elements.email.value,
+//     phone: this.elements.phone.value,
+//     message: this.elements.message.value
+//   };
   
-  // Send email using EmailJS
-  emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
-    .then(function(response) {
-      console.log('SUCCESS!', response.status, response.text);
-      // Clear form inputs
-      document.getElementById('contact-form').reset();
-      alert('Your message has been sent!');
-    }, function(error) {
-      console.log('FAILED...', error);
-      alert('Oops! Something went wrong. Please try again later.');
-    });
-});
-
+//   // Send email using EmailJS
+//   emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
+//     .then(function(response) {
+//       console.log('SUCCESS!', response.status, response.text);
+//       // Clear form inputs
+//       document.getElementById('contact-form').reset();
+//       alert('Your message has been sent!');
+//     }, function(error) {
+//       console.log('FAILED...', error);
+//       alert('Oops! Something went wrong. Please try again later.');
+//     });
+// });
