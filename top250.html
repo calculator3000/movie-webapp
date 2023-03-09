@@ -28,10 +28,10 @@
 <main>
 <!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
 <section id="top250">
-    <input type="text" id="myInput" onkeyup="searchMovieActor()" placeholder="Search for movie..">   
+    <input type="text" id="myInput" onkeyup="searchMovieActor()" placeholder="Search for movie or actor..">   
     <div class="slidecontainer">
         <p>Filter for range of years:</p>
-        <input type="range" min="1921" max="2022" value="50" class="slider" id="myRange" onclick= "filterYears()">
+        <input type="range" min="1888" max="2023" value="50" class="slider" id="myRange" onclick= "filterYears()">
         <b><p>Year:</b> <span id="years"></span></p>
         <b><p>Total movies: </b><span id="total_year"></span></p>
       </div>

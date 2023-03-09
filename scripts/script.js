@@ -233,38 +233,33 @@ function searchMovieActor() {
         filter = input.value.toUpperCase();
         table_movie = document.getElementById("top250");
         rows_movie = movieitem;
+        let movies = data.items;
 
         // Loop through all table rows, and hide those who don't match the search query
         for (i = 0; i < rows_movie.length; i++) {
             td = rows_movie[i].getElementsByTagName("DIV")[0];
-            if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                rows_movie[i].style.display = "";
-            } else {
-                rows_movie[i].style.display = "none";
-            }
-            }
-        }
-        let movies = data.items;
-        for (const movie1 of movies) {
-            let actors = movie1.crew;
-            let movie_name = movie1.title;
-            if (actors.toUpperCase().indexOf(filter) > -1) {
-                for (i=0; i < rows_movie.length; i++) {
-                    if (rows_movie[i].getElementsByTagName("DIV")[0].innerHTML.includes(movie_name) == true) {
+            for (const movie1 of movies) {
+                let actors = movie1.crew;
+                let movie_name = movie1.title;
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
                         rows_movie[i].style.display = "";
-                    } 
-                }
-            } else { 
-                for (i=0; i < rows_movie.length; i++) {
-                    if (rows_movie[i].getElementsByTagName("DIV")[0].innerHTML.includes(movie_name) == true) {
+                    } else if(actors.toUpperCase().indexOf(filter) > -1) {
+                        for (y=0; y < rows_movie.length; y++) {
+                            if (rows_movie[y].getElementsByTagName("DIV")[0].innerHTML.includes(movie_name) == true) {
+                                rows_movie[y].style.display = "";
+                            } 
+                        }   
+                    } else {
                         rows_movie[i].style.display = "none";
                     }
                 }
             }
-        }});
-}     
+        };
+
+    });
+}      
 
 // ********** in_theaters.html, in_theaters.json **********
 // Gets the movies in theaters from the json file and assigns the response data to movieData
@@ -298,31 +293,51 @@ function populateTheaterGallery(data) {
     for (const movie of movies) {
         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
-        // later move to CSS
-        genreList.style.padding = "0px";
-        genreList.style.width = "190px";
-        genreList.style.margin = "0px";
+        genreList.setAttribute("id", "genrelist")
+
+        // Get the modal
+        let modal = document.getElementById("myModal");
+        // Get the <span> element that closes the modal
+        let span = document.getElementsByClassName("close")[0];
+        // When the user clicks on the button, open the modal
+        movieCard.onclick = function() {
+            modal.style.display = "block";
+        }
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+            modal.style.display = "none";
+            }
+        }
+        // get Wikipedia info from API and fill the modal
+        movieCard.addEventListener("click", function() {
+            getWiki(movie.id)
+        })
+        movieCard.addEventListener("click", function() {
+            let modal_runtime = document.getElementById("modal_runtime");
+            modal_runtime.innerHTML = movie.runtimeMins;
+            
+            let modal_image = document.getElementById('modal_img');
+            modal_image.src = movie.image;
+
+            let modal_rating = document.getElementById("modal_rating");
+            modal_rating.innerHTML = movie.imDbRating;
+        })
 
         // cover poster of the movie
         const movImg = document.createElement('img');
         movImg.src = movie.image;
-        // later move to CSS
-        movImg.style.width = "130px";
-        movImg.style.height = "180px";
-        movImg.style["margin-top"] = "0px";
+        movImg.setAttribute("id", "movImg")
         movieCard.appendChild(movImg);
 
         // movie title
         const movTitle = document.createElement('p'); // creates new element
         movTitle.textContent = `${movie.title}`; // fill the p element with the title
-        // later move to CSS
-        movTitle.style.width = "130px";
-        movTitle.style.height = "50px";
-        movTitle.style["text-align"] = "center";
-        movTitle.style["verticalAlign"] = "middle";
-        movTitle.style["font-size"] = "12px";
-        movTitle.style["margin-top"] = "5px";
-        movTitle.style["margin-bottom"] = "0px";
+        movTitle.setAttribute("class", "theater_title")
         movieCard.appendChild(movTitle);
 
         // movie genre in little tags that change color according to genre
@@ -353,9 +368,7 @@ function populateTheaterGallery(data) {
         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
     }
     const genreFilters = document.createElement('div'); // create a container for the genre filters
-    genreFilters.style.display = "flex";
-    genreFilters.style.flexWrap = "wrap";
-    genreFilters.style.marginBottom = "20px";
+    genreFilters.setAttribute("class", "genrefilters")
     section.insertBefore(genreFilters, section.firstChild); // insert the container before the first child of the section element
 
     const genreTypes = []; // create an array to store the genre types
@@ -375,13 +388,8 @@ function populateTheaterGallery(data) {
       const genreFilter = document.createElement('div'); // create a filter element for each genre
       genreFilter.textContent = genre;
       genreFilter.style.backgroundColor = genreColors[genre];
-      genreFilter.style.borderRadius = "10px";
-      genreFilter.style.fontSize = "15px";
-      genreFilter.style.padding = "5px";
-      genreFilter.style.marginTop = "10px";
-      genreFilter.style.marginRight = "10px";
-      genreFilter.style.marginBottom = "20px";
-      genreFilter.style.cursor = "pointer";
+
+      genreFilter.setAttribute("class", "genrefilter")
       genreFilters.appendChild(genreFilter);
     
       genreFiltersState[genre] = true; // initialize filter state for this genre to true

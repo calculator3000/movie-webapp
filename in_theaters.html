@@ -9,6 +9,7 @@
     <script src="scripts/script.js"></script>
     <script src="scripts/login.js"></script>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/style_top250.css">
 </head>
 
 <body>
@@ -29,9 +30,22 @@
     <div id="filter_idea"><h5>If you don't like any of the genres, you can click on them and 
         they will be filtered out. <br>If you click again on the genre, 
             movies with that genre will show up again. Try it out!</br></h5></div>
-    <div class="gallery">
 
-    </div>
+    <div class="gallery"></div>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <img id="modal_img" class="movie_image"></img>
+                <span id="modal_title"></span>
+                <br />
+                <span id="modal_text"></span>
+                <div class="modal-crew">
+                    <p class = title>Runtime:</p>
+                    <div><span id="modal_runtime"></span> minutes</div>
+                    <p class = title>IMDb-Rating:</p>
+                    <span id="modal_rating"></span>
+                </div>
+            </div>
 
 
 <!-- will be filled with JSON-->

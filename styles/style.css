@@ -306,22 +306,50 @@ main {
     max-width: 350px;
     height: 300px;
     object-fit: cover;
-
-    
-  }
-
-.gallery::after {
-    content: "";
-    width: 350px;
+    cursor: pointer;
 }
 
 .row {
     display: flex;
   }
-
-
-  #filter_idea {
+  
+  /* In Theaters--------------- */
+#genrelist {
+  width: 190px;
+}
+#modal_img {
+  width: 100px;
+  height: "auto";
+}
+#movImg {
+  width: 130px;
+  height: 180px;
+}
+.theater_title {
+  width: 130px;
+  height: 50px;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+.genrefilters {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.genrefilter {
+  border-radius: 10px;
+  font-size: 15px;
+  padding: 5px;
+  margin-top: 50px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+#filter_idea {
     padding: 15px;
     font-size: 24px;
     margin-left: 20px;
-  }
+}
+
