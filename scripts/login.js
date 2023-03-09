@@ -2,7 +2,7 @@
 // var clientId = "";
 var clientSecret = "";
 var token = "";
-var username = traktapi.username;
+// var username = traktapi.username;
 var token2 = traktapi.token2
 var redirectUri = "http://127.0.0.1:5500/movie-webapp/";
 

@@ -1,7 +1,7 @@
 const imdbApiKey = imdbapi.key1;
-const omdbApiKey = omdbapi.key1;
+const omdbApiKey = omdbapi.key3;
 const moviedbApiKey = moviedb.key1;
-// const username = traktapi.username;
+const username = traktapi.username;
 let numRequestsCompleted = 0;
 let clientId = traktapi.clientId
 
@@ -294,6 +294,7 @@ function populateTheaterGallery(data) {
         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
         genreList.setAttribute("id", "genrelist")
+        genreList.style["padding"] = "0px";
 
         // Get the modal
         let modal = document.getElementById("myModal");
@@ -357,7 +358,7 @@ function populateTheaterGallery(data) {
             movGenre.style.padding = "2px 5px";
             movGenre.style["list-style"] = "none";
             movGenre.style.display = "inline-block";
-            movGenre.style.margin = "0px";
+            movGenre.style.margin = "2px";
             
             // append the genre li elements to the genreList ul element
             genreList.appendChild(movGenre);            
@@ -451,7 +452,7 @@ function getWatched() {
             getMovData(imdbId, function() { 
                 numRequestsCompleted++;
                 // populate gallery once all API calls are complete
-                if((numRequestsCompleted === watched.length) && (window.location.pathname == "/movie-webapp/watched.html")) {
+                if((numRequestsCompleted === watched.length)) {
                     populateWatchedGallery();
                 }
             });
@@ -486,30 +487,19 @@ function populateWatchedGallery() {
         const section = document.querySelector('.gallery'); // select the sections
         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
-            // later move to CSS
-            genreList.style.padding = "0px";
-            genreList.style.width = "130px";
-            genreList.style.margin = "0px";
+        genreList.setAttribute("id", "genrelist")
+        genreList.style["padding"] = "0px";
 
         // cover poster of the movie
         const movImg = document.createElement('img');
         movImg.src = watchedMov.Poster;
-            // later move to CSS
-            movImg.style.width = "130px";
-            movImg.style.height = "auto";
-            movImg.style["margin-top"] = "0px";
+            movImg.setAttribute("id", "movImg")
             movieCard.appendChild(movImg);
 
         // movie title
             const movTitle = document.createElement('p'); // creates new element
             movTitle.textContent = `${watchedMov.Title}`; // fill the p element with the title
-            // later move to CSS
-            movTitle.style.width = "130px";
-            movTitle.style.height = "50px";
-            movTitle.style["text-align"] = "center";
-            movTitle.style["font-size"] = "12px";
-            movTitle.style["margin-top"] = "2px";
-            movTitle.style["margin-bottom"] = "0px";
+            movTitle.setAttribute("class", "theater_title")
             movieCard.appendChild(movTitle);
 
         // genres
@@ -519,14 +509,13 @@ function populateWatchedGallery() {
             for (const genre of genreArr) {
                 const movGenre = document.createElement('li'); // creates new element
                 movGenre.textContent = genre;
+                // movGenre.setAttribute("id", "genrelist")
 
                 // get color mapping from genreColors class
                 const genreColor = genreColors[genre];
-                // later move to CSS
                 movGenre.style["background-color"] = genreColor;
                 movGenre.style["border-radius"] = "10px";
                 movGenre.style["font-size"] = "8px";
-                // movGenre.style.width = "60px";
                 movGenre.style["text-align"] = "center";
                 movGenre.style.padding = "2px 5px";
                 movGenre.style["list-style"] = "none";
@@ -537,6 +526,7 @@ function populateWatchedGallery() {
                 genreList.appendChild(movGenre);   
             }
             // append the element to the section
+            // movieCard.
             movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
             section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
 
@@ -590,9 +580,6 @@ function displayRandomElements(data) {
       
       const elementImage = document.getElementById(`element_${i + 1}_image`);
       elementImage.setAttribute('src', img);
-    
-      
-
     }    
 }
 
