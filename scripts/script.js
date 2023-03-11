@@ -1,4 +1,4 @@
-const imdbApiKey = imdbapi.key1;
+const imdbApiKey = imdbapi;
 const omdbApiKey = omdbapi.key3;
 const moviedbApiKey = moviedb.key1;
 const username = traktapi.username;
@@ -6,6 +6,17 @@ let numRequestsCompleted = 0;
 let clientId = traktapi.clientId
 
 var watchedArr = []
+
+
+// Initialize the key index to 0
+let keyIndex = 0;
+
+// Define a function to get the next available key
+function getNextKey() {
+  keyIndex = (keyIndex + 1) % imdbApiKey.length;
+  return imdbApiKey[keyIndex];
+}
+
 
 // colors with transparency 30-50
 // https://www.w3schools.com/colors/colors_names.asp
@@ -38,30 +49,88 @@ const genreColors = {
 
 
 // ********** index.html, top250.json ********** 
-// Gets the top250 movies from the json file and assigns the response data to movieData
+// Gets the top250 movies from IMDb API and assigns the response data to movieData
 async function getMoviesFromJsonFile() {
-    // other way to write promise (needs async keyword). 
-    const response = await fetch("json_files/top250.json");
-    const movieData = await response.json();
-    
-    // call the function populateMovies 
-    populateMovies(movieData);
+    let url = `https://imdb-api.com/en/API/Top250Movies/${imdbApiKey[keyIndex]}`;
+    // Try to access the APi via key
+    try {
+        const response = await fetch(url);
+        const movieData = await response.json();
+        console.log(movieData.status);
+        if (movieData.errorMessage && movieData.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getMoviesFromJsonFile(url);
+        } else{ 
+            // Call the function populateMovies 
+            populateMovies(movieData);
+        }
+    } catch (error) {
+        console.error('Error fetching Top 250 data:', error);
+    }
 }
+     
 
 async function getWiki(id) {
     let movie_id = id
-    let url = `https://imdb-api.com/en/API/Wikipedia/${imdbApiKey}/${movie_id}`;
-    const response = await fetch(url);      
+    let url = `https://imdb-api.com/en/API/Wikipedia/${imdbApiKey[keyIndex]}/${movie_id}`;
+    // Try the different keys for the API, if one is not working get next one
+    try {
+        const response = await fetch(url);
+        const datawiki = await response.json();
+        console.log(response.status);
+        if (datawiki.errorMessage && datawiki.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getWiki(url);
+        } else{ 
+            let modal_title = document.getElementById("modal_title");
+            modal_title.innerHTML = `${datawiki.fullTitle}`;
 
-    var datawiki = await response.json();
-    console.log(datawiki);
-
-    let modal_title = document.getElementById("modal_title");
-    modal_title.innerHTML = `${datawiki.fullTitle}`;
-
-    let modal_text = document.getElementById("modal_text");
-    modal_text.innerHTML = datawiki.plotShort.plainText;
+            let modal_text = document.getElementById("modal_text");
+            modal_text.innerHTML = datawiki.plotShort.plainText;
+        }
+    } catch (error) {
+        console.error('Error fetching wikipedia data:', error);
+        }
 }
+  
+
+async function getInTheatersFromJsonFile() {
+    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
+    // Add try/catch in order to handle errors in fetch statement
+    try {
+        const response = await fetch(url);
+        const theaterData = await response.json();
+        console.log(response.status);
+        // In theaters data is used in homepage and in_theaters page, so call function where page is open
+        if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getInTheatersFromJsonFile(url);
+        } else{ 
+            if (window.location.pathname === '/index.html') {
+                currentTab = 'index';
+                displayRandomElements(theaterData);
+              } else if (window.location.pathname === '/in_theaters.html') {
+                currentTab = 'in_theaters';
+                populateTheaterGallery(theaterData);
+              }
+        }
+      } catch (error) {
+        console.error('Error fetching theater data:', error);
+        }
+}
+
 
 /**
  * populateMovies takes argument data.
@@ -261,23 +330,37 @@ function searchMovieActor() {
     });
 }      
 
-// ********** in_theaters.html, in_theaters.json **********
+ // ********** in_theaters.html, in_theaters.json **********
 // Gets the movies in theaters from the json file and assigns the response data to movieData
 async function getInTheatersFromJsonFile() {
-    // other way to write promise (needs async keyword). 
-    const response = await fetch("./json_files/in_theaters.json");
-    const theaterData = await response.json();
-
-    // call the function populateMovies 
-    if (window.location.pathname === '/index.html') {
-        currentTab = 'index';
-        displayRandomElements(theaterData);
-        
-      } else if (window.location.pathname === '/in_theaters.html') {
-        currentTab = 'in_theaters';
-        populateTheaterGallery(theaterData);
-    }
+    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
+    // Add try/catch in order to handle errors in fetch statement
+    try {
+        const response = await fetch(url);
+        const theaterData = await response.json();
+        console.log(response.status);
+        // In theaters data is used in homepage and in_theaters page, so call function where page is open
+        if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getInTheatersFromJsonFile(url);
+        } else{ 
+            if (window.location.pathname === '/index.html') {
+                currentTab = 'index';
+                displayRandomElements(theaterData);
+              } else if (window.location.pathname === '/in_theaters.html') {
+                currentTab = 'in_theaters';
+                populateTheaterGallery(theaterData);
+              }
+        }
+      } catch (error) {
+        console.error('Error fetching theater data:', error);
+        }
 }
+
 
 
 /**
@@ -590,36 +673,44 @@ function displayRandomElements(data) {
  */
 async function getYouTube(id) {
     let movie_id = id
-    let url = `https://imdb-api.com/en/API/YouTubeTrailer/${imdbApiKey}/${movie_id}`;
+    let url = `https://imdb-api.com/en/API/YouTubeTrailer/${imdbApiKey[keyIndex]}/${movie_id}`;
     // Try to make API call and store information in json object
     try {
         const response = await fetch(url);
         const trailer = await response.json();
-        console.log(trailer);
-    
-        if (trailer.videoUrl) {
-            // get URL, title and year of movie
-            const trailer_link = document.getElementById("trailer_url");
-            const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
-            trailer_link.setAttribute('src', embeddedUrl);
-        
-            const trailer_title = document.getElementById("trailer_title");
-            trailer_title.innerHTML = `${trailer.title}`;
-        
-            const trailer_year = document.getElementById("trailer_year");
-            trailer_year.innerHTML = trailer.year;
-            } else {
-            console.error('No video URL found in response:', trailer);
+        console.log(trailer.status);
+        if (trailer.errorMessage && trailer.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
             }
+            return await getYouTube(url);
+        } else{ 
+            if (trailer.videoUrl) {
+                // get URL, title and year of movie
+                const trailer_link = document.getElementById("trailer_url");
+                const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
+                trailer_link.setAttribute('src', embeddedUrl);
+            
+                const trailer_title = document.getElementById("trailer_title");
+                trailer_title.innerHTML = `${trailer.title}`;
+            
+                const trailer_year = document.getElementById("trailer_year");
+                trailer_year.innerHTML = trailer.year;
+                
+            } else {
+                // if there is no trailer to id, display other youtube video
+                const trailer_link = document.getElementById("trailer_url");
+                const embeddedUrl = "https://www.youtube.com/embed/KTSiBVZMy6U"
+                trailer_link.setAttribute('src', embeddedUrl);
+            }
+        }
     } catch (error) {
-        console.error('Error fetching trailer:', error);
-    } finally {
-        // hide the loading message
-        const loading_message = document.getElementById("loading_message");
-        loading_message.style.display = "none";
+        console.error('Error fetching trailer data:', error);
     }
 }
-
+    
 
 function getUserStats() {
     let url = `https://api.trakt.tv/users/${username}/stats`;

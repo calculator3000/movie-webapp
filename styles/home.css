@@ -215,6 +215,11 @@ color: #111;
   text-align: justify;
   }
 
+#services .image {
+width: 130px;
+height: 180px;
+}
+
 #services .box:hover .title {
 color: #fba92c;
 }
