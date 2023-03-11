@@ -269,11 +269,11 @@ async function getInTheatersFromJsonFile() {
     const theaterData = await response.json();
 
     // call the function populateMovies 
-    if (window.location.pathname === '/movie-webapp/index.html') {
+    if (window.location.pathname === '/index.html') {
         currentTab = 'index';
         displayRandomElements(theaterData);
         
-      } else if (window.location.pathname === '/movie-webapp/in_theaters.html') {
+      } else if (window.location.pathname === '/in_theaters.html') {
         currentTab = 'in_theaters';
         populateTheaterGallery(theaterData);
     }
@@ -534,14 +534,14 @@ function populateWatchedGallery() {
 }
 
 /**
- * populateTheaterGallery takes argument data.
- * it populates in_theaters.html gallery class with data about movies currently in theaters
+ * displayRandomElements takes argument data.
+ * it displays four random movies in index.html of the in theater movies
  * @param {json} data - JSON file
  */
 
 function displayRandomElements(data) {
+    // Get ids of the movie data, choose four random ids and store in array
     const elements = data.items.map(user => user.id);
-  
     const randomElements = [];
     while (randomElements.length < 4) {
       const randomIndex = Math.floor(Math.random() * elements.length);
@@ -558,9 +558,10 @@ function displayRandomElements(data) {
     const randomElement = elements[randomIndex];
     console.log(randomElement)
 
-    // call function getyoutube
-    getyoutube(randomElement)
+    // Call function getyoutube
+    getYouTube(randomElement)
 
+    // get title, rank, plot and image for each of the four random movies and create html id
     for (let i = 0; i < randomElements.length; i++) {
       const id = randomElements[i];
       const title = data.items.find(x => x.id === id).title;
@@ -577,43 +578,46 @@ function displayRandomElements(data) {
       const elementRanking = document.getElementById(`element_${i + 1}_ranking`);
       elementRanking.textContent = ranking;
 
-      
       const elementImage = document.getElementById(`element_${i + 1}_image`);
       elementImage.setAttribute('src', img);
     }    
 }
 
-
-async function getyoutube(id) {
+/**
+ * getYouTube takes argument id.
+ * it fetches information from imDb YouTube API and gets year, title and URL of trailer
+ * @param {json} data - JSON file
+ */
+async function getYouTube(id) {
     let movie_id = id
     let url = `https://imdb-api.com/en/API/YouTubeTrailer/${imdbApiKey}/${movie_id}`;
+    // Try to make API call and store information in json object
     try {
         const response = await fetch(url);
         const trailer = await response.json();
         console.log(trailer);
     
         if (trailer.videoUrl) {
-          const trailer_link = document.getElementById("trailer_url");
-          const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
-          trailer_link.setAttribute('src', embeddedUrl);
-
-          console.log(trailer)
-    
-          const trailer_title = document.getElementById("trailer_title");
-          trailer_title.innerHTML = `${trailer.title}`;
-    
-          const trailer_year = document.getElementById("trailer_year");
-          trailer_year.innerHTML = trailer.year;
-        } else {
-          console.error('No video URL found in response:', trailer);
-        }
-      } catch (error) {
+            // get URL, title and year of movie
+            const trailer_link = document.getElementById("trailer_url");
+            const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
+            trailer_link.setAttribute('src', embeddedUrl);
+        
+            const trailer_title = document.getElementById("trailer_title");
+            trailer_title.innerHTML = `${trailer.title}`;
+        
+            const trailer_year = document.getElementById("trailer_year");
+            trailer_year.innerHTML = trailer.year;
+            } else {
+            console.error('No video URL found in response:', trailer);
+            }
+    } catch (error) {
         console.error('Error fetching trailer:', error);
-      } finally {
+    } finally {
         // hide the loading message
         const loading_message = document.getElementById("loading_message");
         loading_message.style.display = "none";
-      }
+    }
 }
 
 
@@ -949,30 +953,26 @@ function displayYearStats(data) {
     var yearChart = new Chart(canvasElement, config)
 }
 
-// // Initialize EmailJS with your user ID
-// emailjs.init('TtgLX2SAhGi_jaItB');
+/* Sending Email from Contact Section */
 
-// // Handle form submission
-// document.getElementById('contact-form').addEventListener('submit', function(event) {
-//   event.preventDefault(); // prevent default form behavior
-  
-//   // Get form data
-//   const formData = {
-//     name: this.elements.name.value,
-//     email: this.elements.email.value,
-//     phone: this.elements.phone.value,
-//     message: this.elements.message.value
-//   };
-  
-//   // Send email using EmailJS
-//   emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
-//     .then(function(response) {
-//       console.log('SUCCESS!', response.status, response.text);
-//       // Clear form inputs
-//       document.getElementById('contact-form').reset();
-//       alert('Your message has been sent!');
-//     }, function(error) {
-//       console.log('FAILED...', error);
-//       alert('Oops! Something went wrong. Please try again later.');
-//     });
-// });
+console.log(emailjs);
+function sendmail() {
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let message = document.getElementById("message").value;
+
+        var contactParams = {
+            from_name: "Test",
+            from_email: "movielover273@gmail.com",
+            message: "Test"
+        };
+
+        emailjs.send('service_6k1j5kc', 'template_qbj48v3', contactParams)
+            .then(function(response) {
+                console.log('SUCCESS!', response.status, response.text);
+            }, function(error) {
+                console.log('FAILED...', error);
+    });
+}
+
+

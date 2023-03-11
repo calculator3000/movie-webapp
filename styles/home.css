@@ -110,52 +110,54 @@ main {
 
 /* Homepage */
 
-.hero_image {
-  position: relative;
-  text-align: center;
-}
+/* YouTube Trailer section
+--------------------------------*/
 
-.background {
-  float: left;
-  background-color: transparent;
-  text-align: center;
-  padding: 70px 0;
-  width: 100%;
-  height: 500px;
+.container_first {
   background-color: #fba92c;
-
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px;
 }
 
-.column {
-  left: 5%;
-  position: absolute;
-  text-align: left;
-  float: left;
-  background-color: transparent;
-  padding: 100px 0;
+.left-column {
   width: 40%;
+  text-align: left;
+  margin-right: 20px;
+
 }
 
-.column_2 {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  float: right;
-  background-color: transparent;
+
+.right-column {
+  width: 55%;
   text-align: center;
-  width: 50%;
-  padding: 30px 0;
-  height: 400px; /* Should be removed. Only for demonstration */
 }
 
-#trailer_url {
-  width: 500px;
-  height: 300px;
+.video_title {
+  margin-bottom: 20px;
+}
+
+iframe {
+  width: 90%;
+  height: 360px;
+  border: none;
 }
 
 
 /* Discover Movie Section
 --------------------------------*/
+
+@media only screen and (max-width: 768px) {
+  #services .box {
+    max-width: calc(100% - 40px);
+    margin: 10px 20px;
+    padding: 20px;
+    min-height: auto;
+    box-sizing: border-box;
+  }
+}
 
 
 .section-bg {
@@ -165,22 +167,26 @@ main {
 }
 
 #services {
-padding: 2.5rem 0;
-box-shadow: inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1);
-
+  padding: 2.5rem 0;
+  box-shadow: inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* change this line */
 }
 
 #services .box {
-padding: 30px 50px 30px 50px;
-overflow: hidden;
-border-radius: 10px;
-margin: 10px ;
-background: #fff;
-box-shadow: 0 10px 29px 0 rgba(68, 88, 144, 0.1);
-transition: all 0.3s ease-in-out;
-min-height: 600px; /* set a minimum height */
-max-width: 340px;
+  padding: 30px 50px 30px 50px;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: 10px ;
+  background: #fff;
+  box-shadow: 0 10px 29px 0 rgba(68, 88, 144, 0.1);
+  transition: all 0.3s ease-in-out;
+  min-height: 600px; 
+  max-width: 340px;
+  box-sizing: border-box; 
 }
+
 
 #services .box:hover {
 -webkit-transform: translateY(-5px);
