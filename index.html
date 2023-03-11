@@ -6,9 +6,22 @@
     <title>ScreenTrack: using the IMDB API to display data about movies</title>
     <link rel="icon" type="image/x-icon" href="images/camera.png">
     <script type="text/javascript" src="scripts/config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
+    <script
+    type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+      (function () {
+        emailjs.init('TtgLX2SAhGi_jaItB');
+    })();
+  </script>
     <script src="scripts/script.js">getInTheatersFromJsonFile</script>
     <script src="scripts/login.js"></script>
     <link rel="stylesheet" href="styles/home.css">
+
+
+
+    
 </head>
 
 <body>
@@ -21,16 +34,14 @@
             <li><a href="./in_theaters.html">In Theaters</a></li>
             <li><a href="./stats.html">Stats</a></li>
             <li><a href="./watched.html">Watched</a></li>
+            <li><a href="./about.html">About</a></li>
           </ul>
       </nav>
   </header>
 
-    <!-- will be filled with JSON-->
     <main>
-      <section class="hero_image">
-          <div class="background">
-          </div>
-          <div class="column">
+      <section class="container_first">
+          <div class="left-column">
             <h1>
               Interested in movies?
               <br><br><br>On this website you will find a lot of information about movies.
@@ -38,9 +49,9 @@
               the cinema and log into your account in order to find some statistics on the movies you have watched.<br>
             </h1>
           </div>
-          <div class="column_2">
-            <h1><p id="trailer_title"></p><p id="trailer_year"></p></h1>
-            <iframe src="" id="trailer_url" frameborder="0" allow="autoplay"allow="autoplay"></iframe>
+          <div class="right-column">
+            <div class="video_title"><h1><p id="trailer_title"></p><p id="trailer_year"></p></h1></div>
+            <iframe src="" id="trailer_url" frameborder="0" allow="autoplay" allowfullscreen></iframe></iframe>
           </div>
       </section>
 
@@ -60,7 +71,7 @@
           <div class="col-md-6 col-lg-5 offset-lg-1 ">
             <div class="box">
               <div class="icon"><i class="fab fa-angellist" style="color: #ff689b;"></i></div>
-              <img src="" id="element_1_image" alt="movie image" >
+              <img class="image" src="" id="element_1_image" alt="movie image" >
               <h4 class="title", id="element_1_title">
               </h4>
               <h4 class="ranking", id="element_1_ranking">
@@ -75,7 +86,7 @@
           <div class="col-md-6 col-lg-5 " >
             <div class="box">
               <div class="icon"><i class="fas fa-calculator" style="color: #e9bf06;"></i></div>
-              <img src="" id="element_2_image" alt="movie image" >
+              <img class="image" src="" id="element_2_image" alt="movie image" >
               <h4 class="title", id="element_2_title"></h4>
               <h5 class="ranking", id="element_2_ranking"></h5>
               <p class="description" id="element_2_plot"></p>
@@ -87,7 +98,7 @@
           <div class="col-md-6 col-lg-5 offset-lg-1 " >
             <div class="box">
               <div class="icon"><i class="far fa-calendar-alt" style="color: #3fcdc7;"></i></div>
-              <img src="" id="element_3_image" alt="movie image" >
+              <img class="image" src="" id="element_3_image" alt="movie image" >
               <h4 class="title", id="element_3_title"></h4>
               <h5 class="ranking", id="element_3_ranking"></h5>
               <p class="description", id="element_3_plot"></p>
@@ -99,7 +110,7 @@
           <div class="col-md-6 col-lg-5 " >
             <div class="box">
               <div class="icon"><i class="far fa-clock" style="color:#41cf2e;"></i></div>
-              <img src="" id="element_4_image" alt="movie image" >
+              <img class="image" src="" id="element_4_image" alt="movie image" >
               <h4 class="title", id="element_4_title"></h4>
               <h5 class="ranking", id="element_4_ranking"></h5>
               <p class="description", id="element_4_plot"></p>
@@ -116,17 +127,16 @@
       <div class="container">
         <div class="section-header">
           <h2>
-            Discover movies that are currently in cinemas
+            Feedback
           </h2>
           <div class="container">
             <div class="contact-box">
               <div class="right">
                 <h4>If you wish to see information about other movies on the website, please fill out the form.</h4>
                 <form id="contact-form">
-                  <input type="text" class="field" placeholder="Your Name" name="name">
-                  <input type="email" class="field" placeholder="Your Email" name="email">
-                  <input type="text" class="field" placeholder="Phone" name="phone">
-                  <textarea placeholder="Message" class="field" name="message"></textarea>
+                  <input type="text" class="field" id="name" placeholder="Your Name" name="name">
+                  <input type="email" class="field" id="email" placeholder="Your Email" name="email">
+                  <textarea placeholder="Message" class="field" id="message" name="message"></textarea>
                   <button type="submit" class="btn">Send</button>
                 </form>
               </div>
@@ -143,6 +153,10 @@
 
 <script>
     getInTheatersFromJsonFile();
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    sendmail();
+    });
 </script>
 
 </html>
