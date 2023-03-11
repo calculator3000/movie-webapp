@@ -331,7 +331,7 @@ function searchMovieActor() {
 }      
 
  // ********** in_theaters.html, in_theaters.json **********
-// Gets the movies in theaters from the json file and assigns the response data to movieData
+// Gets the movies in theaters from IMDb API and assigns the response data to movieData
 async function getInTheatersFromJsonFile() {
     let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
     // Add try/catch in order to handle errors in fetch statement
