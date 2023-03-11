@@ -962,14 +962,18 @@ function sendmail() {
     let message = document.getElementById("message").value;
 
         var contactParams = {
-            from_name: "Test",
-            from_email: "movielover273@gmail.com",
-            message: "Test"
+            from_name: name,
+            from_email: email,
+            message: message
         };
 
         emailjs.send('service_6k1j5kc', 'template_qbj48v3', contactParams)
             .then(function(response) {
                 console.log('SUCCESS!', response.status, response.text);
+                // Clear the input fields
+                document.getElementById("name").value = '';
+                document.getElementById("email").value = '';
+                document.getElementById("message").value = '';
             }, function(error) {
                 console.log('FAILED...', error);
     });
