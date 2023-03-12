@@ -492,7 +492,7 @@ async function searchMovieActor() {
 
                 if (count === 0) {
                 var errorMessage = document.createElement("p");
-                errorMessage.innerHTML = "No movies found within the specified range of years.";
+                errorMessage.innerHTML = "No movies found.";
                 errorMessage.setAttribute("class", "noMovies")
                 document.body.appendChild(errorMessage);
                 }
