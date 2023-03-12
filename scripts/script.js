@@ -259,39 +259,144 @@ function sortTable(n) {
     }
   }
 
-//filter for years
-function filterYears(){
+//------ filter for range of years ------
+
+function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#fba92c', controlSlider);
+    if (from > to) {
+        fromSlider.value = to;
+        fromInput.value = to;
+    } else {
+        fromSlider.value = from;
+    }
+}
+
+function controlToInput(toSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#fba92c', controlSlider);
+    setToggleAccessible(toInput);
+    if (from <= to) {
+        toSlider.value = to;
+        toInput.value = to;
+    } else {
+        toInput.value = from;
+    }
+}
+
+function controlFromSlider(fromSlider, toSlider, fromInput) {
+    const [from, to] = getParsed(fromSlider, toSlider);
+    fillSlider(fromSlider, toSlider, '#C6C6C6', '#fba92c', toSlider);
+    if (from > to) {
+      fromSlider.value = to;
+      fromInput.value = to;
+    } else {
+      fromInput.value = from;
+    }
+  }
+  
+  function controlToSlider(fromSlider, toSlider, toInput) {
+    const [from, to] = getParsed(fromSlider, toSlider);
+    fillSlider(fromSlider, toSlider, '#C6C6C6', '#fba92c', toSlider);
+    setToggleAccessible(toSlider);
+    if (from <= to) {
+      toSlider.value = to;
+      toInput.value = to;
+    } else {
+      toInput.value = from;
+      toSlider.value = from;
+    }
+  }
+  
+  function getParsed(currentFrom, currentTo) {
+    const from = parseInt(currentFrom.value, 10);
+    const to = parseInt(currentTo.value, 10);
+    return [from, to];
+  }
+  
+  function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+      const rangeDistance = to.max-to.min;
+      const fromPosition = from.value - to.min;
+      const toPosition = to.value - to.min;
+      controlSlider.style.background = `linear-gradient(
+        to right,
+        ${sliderColor} 0%,
+        ${sliderColor} ${(fromPosition)/(rangeDistance)*100}%,
+        ${rangeColor} ${((fromPosition)/(rangeDistance))*100}%,
+        ${rangeColor} ${(toPosition)/(rangeDistance)*100}%, 
+        ${sliderColor} ${(toPosition)/(rangeDistance)*100}%, 
+        ${sliderColor} 100%)`;
+  }
+  
+  function setToggleAccessible(currentTarget) {
+    const toSlider = document.querySelector('#toSlider');
+    if (Number(currentTarget.value) <= 0 ) {
+      toSlider.style.zIndex = 2;
+    } else {
+      toSlider.style.zIndex = 0;
+    }
+  }
+
+
+function filterForYear() {
+    const fromSlider = document.querySelector('#fromSlider');
+    const toSlider = document.querySelector('#toSlider');
+    const fromInput = document.querySelector('#fromInput');
+    const toInput = document.querySelector('#toInput');
+    fillSlider(fromSlider, toSlider, '#C6C6C6', '#fba92c', toSlider);
+    setToggleAccessible(toSlider);
+      
+    fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+    toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+
     //clear previously filtered before
-    var filter, table, rows, td, i;
     table = document.getElementById("top250");
     rows = movieitem;
     for (i = 0; i < rows.length; i++) {
         rows[i].style.display = "";
     }
-    //output for slider
-    var slider = document.getElementById("myRange");
-    var output = document.getElementById("years");
-    output.innerHTML = slider.value;
 
-    slider.oninput = function() {
-    output.innerHTML = this.value;
+    var sliderMin = document.getElementById("fromSlider");
+    var outputMin = document.getElementById("fromInput");
+    outputMin.innerHTML = sliderMin.value;
+    sliderMin.oninput = function() {
+        outputMin.innerHTML = this.value;
     }
+
+    var sliderMax = document.getElementById("toSlider");
+    var outputMax = document.getElementById("toInput");
+    outputMax.innerHTML = sliderMax.value;
+    sliderMax.oninput = function() {
+        outputMax.innerHTML = this.value;
+    }
+
     count = 0
     //use output as filter
-    filter = document.getElementById("years");
+    filterMax = document.getElementById("toInput");
+    filterMin = document.getElementById("fromInput")
     // Loop through all table rows, and hide those who don't match
     for (i = 0; i < rows.length; i++) {
         td = rows[i].getElementsByTagName("DIV")[1];
-    	if (parseInt(td.innerHTML) < parseInt(filter.innerHTML) + 1) {
+    	if ((parseInt(td.innerHTML) < parseInt(filterMax.innerHTML) + 1) && (parseInt(
+            td.innerHTML) > parseInt(filterMin.innerHTML) - 1)) {
             rows[i].style.display = " ";
             count = count + 1
         } else {
             rows[i].style.display ="none";
         }
     }
+
     var total = document.getElementById("total_year");
     total.innerHTML = count
+
+    if (count === 0) {
+        var errorMessage = document.createElement("p");
+        errorMessage.innerHTML = "No movies found within the specified range of years.";
+        errorMessage.setAttribute("class", "noMovies")
+        document.body.appendChild(errorMessage);
+    }
 }
+
 
 function searchMovieActor() {
     fetch("json_files/top250.json")
@@ -326,7 +431,21 @@ function searchMovieActor() {
                 }
             }
         };
+        var count = 0;
+        for (i = 0; i < rows_movie.length; i++) {
+            if (rows_movie[i].style.display !== 'none')
+                count++;
+            }
+        
+        var total = document.getElementById("total_year");
+        total.innerHTML = count;
 
+        if (count === 0) {
+            var errorMessage = document.createElement("p");
+            errorMessage.innerHTML = "No movies found within the specified range of years.";
+            errorMessage.setAttribute("class", "noMovies")
+            document.body.appendChild(errorMessage);
+        }
     });
 }      
 
