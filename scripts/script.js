@@ -6,6 +6,7 @@ let numRequestsCompleted = 0;
 let clientId = traktapi.clientId;
 var token2 = traktapi.token2;
 let baseurl = "https://image.tmdb.org/t/p/w154/"
+
 var watchedArr = []
 var starsArr = []
 
@@ -76,7 +77,7 @@ async function getTop250Movies() {
         console.error('Error fetching Top 250 data:', error);
     }
 }
-     
+
 /**
  * populateMovies takes argument data (a JSON file containing top250 imdb movies).
  * it populates index.html top250 id with movie data
@@ -93,15 +94,12 @@ function populateMovies(data) {
         const movie_card = document.createElement('li');
         movie_card.setAttribute("id", "movieitem")
 
-        // Get the modal
+        // Get the modal and close-button
         let modal = document.getElementById("myModal");
-        // Get the <span> element that closes the modal
         let span = document.getElementsByClassName("close")[0];
-        // When the user clicks on the button, open the modal
         movie_card.onclick = function() {
             modal.style.display = "block";
         }
-        // When the user clicks on <span> (x), close the modal
         span.onclick = function() {
             modal.style.display = "none";
         }
@@ -249,49 +247,34 @@ function sortTable(n) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById("top250");
     switching = true;
-    // Set the sorting direction to ascending:
     dir = "asc";
-    /* Make a loop that will continue until
-    no switching has been done: */
+    /* Make a loop that will continue until no switching needed: */
     while (switching) {
-      // Start by saying: no switching is done:
       switching = false;
       rows = movieitem;
-      /* Loop through all table rows (except the
-      first, which contains table headers): */
       for (i = 0; i < (rows.length - 1); i++) {
-        // Start by saying there should be no switching:
         shouldSwitch = false;
-        /* Get the two elements you want to compare,
-        one from current row and one from the next: */
         x = rows[i].getElementsByTagName("DIV")[n];
         y = rows[i + 1].getElementsByTagName("DIV")[n];
-        /* Check if the two rows should switch place,
-        based on the direction, asc or desc: */
+        // Check if the two rows should switch place
         if (dir == "asc") {
           if (parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) {
-            // If so, mark as a switch and break the loop:
             shouldSwitch = true;
             break;
           }
         } else if (dir == "desc") {
           if (parseFloat(x.innerHTML) < parseFloat(y.innerHTML)) {
-            // If so, mark as a switch and break the loop:
             shouldSwitch = true;
             break;
           }
         }
       }
       if (shouldSwitch) {
-        /* If a switch has been marked, make the switch
-        and mark that a switch has been done: */
         rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
         switching = true;
-        // Each time a switch is done, increase this count by 1:
+        // Each time a switch is done, increase count by 1:
         switchcount ++;
       } else {
-        /* If no switching has been done AND the direction is "asc",
-        set the direction to "desc" and run the while loop again. */
         if (switchcount == 0 && dir == "asc") {
           dir = "desc";
           switching = true;
@@ -392,6 +375,11 @@ function filterForYear() {
     toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
 
     //clear previously filtered before
+    var errorMessage = document.querySelector(".noMovies");
+    if (errorMessage) {
+        errorMessage.remove();
+    }
+
     table = document.getElementById("top250");
     rows = movieitem;
     for (i = 0; i < rows.length; i++) {
@@ -442,90 +430,77 @@ function filterForYear() {
 /**
  * search for movie actor
  */
-function searchMovieActor() {
-    fetch("json_files/top250.json")
-    .then(response => response.json())
-    .then(data => {
-        var input, filter, table_movie, rows_movie, td, i, txtValue;
-        input = document.getElementById("myInput");
-        filter = input.value.toUpperCase();
-        table_movie = document.getElementById("top250");
-        rows_movie = movieitem;
-        let movies = data.items;
-
-        // Loop through all table rows, and hide those who don't match the search query
-        for (i = 0; i < rows_movie.length; i++) {
-            td = rows_movie[i].getElementsByTagName("DIV")[0];
-            for (const movie1 of movies) {
-                let actors = movie1.crew;
-                let movie_name = movie1.title;
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        rows_movie[i].style.display = "";
-                    } else if(actors.toUpperCase().indexOf(filter) > -1) {
-                        for (y=0; y < rows_movie.length; y++) {
-                            if (rows_movie[y].getElementsByTagName("DIV")[0].innerHTML.includes(movie_name) == true) {
-                                rows_movie[y].style.display = "";
-                            } 
-                        }   
-                    } else {
-                        rows_movie[i].style.display = "none";
-                    }
+async function searchMovieActor() {
+    let url = `https://imdb-api.com/en/API/Top250Movies/${imdbApiKey[keyIndex]}`;
+        try {
+            const response = await fetch(url);
+            const movieData = await response.json();
+            console.log(movieData.status);
+            if ((movieData.errorMessage === 'Invalid API Key') 
+            || (movieData.status === 'Invalid API Key') 
+            || (movieData.errorMessage.includes("Maximum usage"))) { 
+            // If the API key is invalid, try the next one
+                keyIndex++;
+                if (keyIndex >= imdbApiKey.length) {
+                throw new Error('All API keys are invalid');
                 }
-            }
-        };
-        var count = 0;
-        for (i = 0; i < rows_movie.length; i++) {
-            if (rows_movie[i].style.display !== 'none')
+                return await getMoviesFromJsonFile(url);
+            } else{ 
+                console.log(movieData)
+                var input, filter, table_movie, rows_movie, td, i, txtValue;
+                input = document.getElementById("myInput");
+                filter = input.value.toUpperCase();
+                table_movie = document.getElementById("top250");
+                rows_movie = movieitem;
+                let movies = movieData.items;
+
+                var errorMessage = document.querySelector(".noMovies");
+                if (errorMessage) {
+                errorMessage.remove();
+                }
+
+                // Loop through all table rows, and hide those who don't match the search query
+                for (i = 0; i < rows_movie.length; i++) {
+                    td = rows_movie[i].getElementsByTagName("DIV")[0];
+                        for (const movie1 of movies) {
+                            let actors = movie1.crew;
+                            let movie_name = movie1.title;
+                            if (td) {
+                                txtValue = td.textContent || td.innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    rows_movie[i].style.display = "";
+                                } else if(actors.toUpperCase().indexOf(filter) > -1) {
+                                    for (y=0; y < rows_movie.length; y++) {
+                                        if (rows_movie[y].getElementsByTagName("DIV")[0].innerHTML.includes(movie_name) == true) {
+                                            rows_movie[y].style.display = "";
+                                        } 
+                                    }   
+                                } else {
+                                    rows_movie[i].style.display = "none";
+                                }
+                            }
+                        }
+                };
+                var count = 0;
+                for (i = 0; i < rows_movie.length; i++) {
+                if (rows_movie[i].style.display !== 'none')
                 count++;
-            }
+                }
         
-        var total = document.getElementById("total_year");
-        total.innerHTML = count;
+                var total = document.getElementById("total_year");
+                total.innerHTML = count;
 
-        if (count === 0) {
-            var errorMessage = document.createElement("p");
-            errorMessage.innerHTML = "No movies found within the specified range of years.";
-            errorMessage.setAttribute("class", "noMovies")
-            document.body.appendChild(errorMessage);
-        }
-    });
-}      
-
-// /**
-//  * retrieves the movies in theaters from the json file and assigns the response data to movieData
-//  */
-// async function getInTheatersFromJsonFile() {
-//     let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
-//     // Add try/catch in order to handle errors in fetch statement
-//     try {
-//         const response = await fetch(url);
-//         const theaterData = await response.json();
-//         console.log(response.status);
-//         // In theaters data is used in homepage and in_theaters page, so call function where page is open
-//         if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
-//             // If the API key is invalid, try the next one
-//             keyIndex++;
-//             if (keyIndex >= imdbApiKey.length) {
-//               throw new Error('All API keys are invalid');
-//             }
-//             return await getInTheatersFromJsonFile(url);
-//         } else{ 
-//             if (window.location.pathname === '/index.html') {
-//                 currentTab = 'index';
-//                 displayRandomElements(theaterData);
-//               } else if (window.location.pathname === '/in_theaters.html') {
-//                 currentTab = 'in_theaters';
-//                 populateTheaterGallery(theaterData);
-//               }
-//         }
-//       } catch (error) {
-//         console.error('Error fetching theater data:', error);
-//         }
-// }
-
-
+                if (count === 0) {
+                var errorMessage = document.createElement("p");
+                errorMessage.innerHTML = "No movies found within the specified range of years.";
+                errorMessage.setAttribute("class", "noMovies")
+                document.body.appendChild(errorMessage);
+                }
+            }   
+        } catch (error) {
+            console.error('Error fetching Top 250 data:', error);
+    }
+}   
 
 /**
  * populateTheaterGallery takes argument data.
@@ -608,7 +583,6 @@ function populateTheaterGallery(data) {
             movGenre.style["background-color"] = genreColor;
             movGenre.style["border-radius"] = "10px";
             movGenre.style["font-size"] = "8px";
-            // movGenre.style.width = "60px";
             movGenre.style["text-align"] = "center";
             movGenre.style.padding = "2px 5px";
             movGenre.style["list-style"] = "none";
@@ -838,6 +812,61 @@ function populateWatchedGallery() {
     }
 }
 
+// /**
+//  * display the data of the watched movies in a gallery
+//  * movie title, movie poster, movie genres
+//  */
+// function populateWatchedGallery() {
+//     console.log("3. in populateWatchedGallery")
+//     console.log(watchedArr)
+
+//     for (const watchedMov of watchedArr) { 
+//         const section = document.querySelector('.gallery'); // select the sections
+//         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
+//         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
+//         genreList.setAttribute("id", "genrelist")
+//         genreList.style["padding"] = "0px";
+
+//         // cover poster of the movie
+//         const movImg = document.createElement('img');
+//         movImg.src = watchedMov.Poster;
+//         movImg.setAttribute("id", "movImg")
+//         movieCard.appendChild(movImg);
+
+//         // movie title
+//         const movTitle = document.createElement('p'); // creates new element
+//         movTitle.textContent = `${watchedMov.Title}`; // fill the p element with the title
+//         movTitle.setAttribute("class", "theater_title")
+//         movieCard.appendChild(movTitle);
+
+//         // genres
+//         var genres = watchedMov.Genre
+//         const genreArr = genres.split(", ");
+
+//         for (const genre of genreArr) {
+//             const movGenre = document.createElement('li'); // creates new element
+//             movGenre.textContent = genre;
+
+//             // get color mapping from genreColors class
+//             const genreColor = genreColors[genre];
+//             movGenre.style["background-color"] = genreColor;
+//             movGenre.style["border-radius"] = "10px";
+//             movGenre.style["font-size"] = "8px";
+//             movGenre.style["text-align"] = "center";
+//             movGenre.style.padding = "2px 5px";
+//             movGenre.style["list-style"] = "none";
+//             movGenre.style.display = "inline-block";
+//             movGenre.style.margin = "2px";
+            
+//             // append the genre li elements to the genreList ul element
+//             genreList.appendChild(movGenre);   
+//         }
+//         // append the element to the section
+//         movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
+//         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
+//     }
+// }
+
 /**
  * displayRandomElements takes argument data.
  * it displays four random movies in index.html of the in theater movies
@@ -887,6 +916,7 @@ function displayRandomElements(data) {
 }
 
 /**
+
  * getYouTube takes argument id.
  * it fetches information from imDb YouTube API and gets year, title and URL of trailer
  * @param {json} data - JSON file
@@ -1404,3 +1434,4 @@ function addToWatchlist(imdbId) {
     })
     .catch(error => console.error(error));
 }
+
