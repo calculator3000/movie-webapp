@@ -1,5 +1,5 @@
-const imdbApiKey = imdbapi.key1;
-const omdbApiKey = omdbapi.key4;
+const imdbApiKey = imdbapi;
+const omdbApiKey = omdbapi.key3;
 const moviedbApiKey = moviedb.key1;
 const username = traktapi.username;
 let numRequestsCompleted = 0;
@@ -9,6 +9,17 @@ let baseurl = "https://image.tmdb.org/t/p/w154/"
 
 
 var watchedArr = []
+
+
+// Initialize the key index to 0
+let keyIndex = 0;
+
+// Define a function to get the next available key
+function getNextKey() {
+  keyIndex = (keyIndex + 1) % imdbApiKey.length;
+  return imdbApiKey[keyIndex];
+}
+
 
 // colors with transparency 30-50
 // https://www.w3schools.com/colors/colors_names.asp
@@ -47,13 +58,28 @@ const genreColors = {
  */
 // Gets the top250 movies from the json file and assigns the response data to movieData
 async function getMoviesFromJsonFile() {
-    // other way to write promise (needs async keyword). 
-    const response = await fetch("json_files/top250.json");
-    const movieData = await response.json();
-    
-    // call the function populateMovies 
-    populateMovies(movieData);
+    let url = `https://imdb-api.com/en/API/Top250Movies/${imdbApiKey[keyIndex]}`;
+    // Try to access the APi via key
+    try {
+        const response = await fetch(url);
+        const movieData = await response.json();
+        console.log(movieData.status);
+        if (movieData.errorMessage && movieData.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getMoviesFromJsonFile(url);
+        } else{ 
+            // Call the function populateMovies 
+            populateMovies(movieData);
+        }
+    } catch (error) {
+        console.error('Error fetching Top 250 data:', error);
+    }
 }
+     
 
 /**
  * calls the IMDB-API to retrieve wikipedia data for the movie
@@ -61,18 +87,61 @@ async function getMoviesFromJsonFile() {
  */
 async function getWiki(id) {
     let movie_id = id
-    let url = `https://imdb-api.com/en/API/Wikipedia/${imdbApiKey}/${movie_id}`;
-    const response = await fetch(url);      
+    let url = `https://imdb-api.com/en/API/Wikipedia/${imdbApiKey[keyIndex]}/${movie_id}`;
+    // Try the different keys for the API, if one is not working get next one
+    try {
+        const response = await fetch(url);
+        const datawiki = await response.json();
+        console.log(response.status);
+        if (datawiki.errorMessage && datawiki.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getWiki(url);
+        } else{ 
+            let modal_title = document.getElementById("modal_title");
+            modal_title.innerHTML = `${datawiki.fullTitle}`;
 
-    var datawiki = await response.json();
-    console.log(datawiki);
-
-    let modal_title = document.getElementById("modal_title");
-    modal_title.innerHTML = `${datawiki.fullTitle}`;
-
-    let modal_text = document.getElementById("modal_text");
-    modal_text.innerHTML = datawiki.plotShort.plainText;
+            let modal_text = document.getElementById("modal_text");
+            modal_text.innerHTML = datawiki.plotShort.plainText;
+        }
+    } catch (error) {
+        console.error('Error fetching wikipedia data:', error);
+        }
 }
+  
+
+async function getInTheatersFromJsonFile() {
+    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
+    // Add try/catch in order to handle errors in fetch statement
+    try {
+        const response = await fetch(url);
+        const theaterData = await response.json();
+        console.log(response.status);
+        // In theaters data is used in homepage and in_theaters page, so call function where page is open
+        if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getInTheatersFromJsonFile(url);
+        } else{ 
+            if (window.location.pathname === '/index.html') {
+                currentTab = 'index';
+                displayRandomElements(theaterData);
+              } else if (window.location.pathname === '/in_theaters.html') {
+                currentTab = 'in_theaters';
+                populateTheaterGallery(theaterData);
+              }
+        }
+      } catch (error) {
+        console.error('Error fetching theater data:', error);
+        }
+}
+
 
 /**
  * populateMovies takes argument data (a JSON file containing top250 imdb movies).
@@ -202,40 +271,144 @@ function sortTable(n) {
     }
   }
 
+
 /**
- * filter for years
+ * filter for range of years
  */
-function filterYears(){
+function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#fba92c', controlSlider);
+    if (from > to) {
+        fromSlider.value = to;
+        fromInput.value = to;
+    } else {
+        fromSlider.value = from;
+    }
+}
+
+function controlToInput(toSlider, fromInput, toInput, controlSlider) {
+    const [from, to] = getParsed(fromInput, toInput);
+    fillSlider(fromInput, toInput, '#C6C6C6', '#fba92c', controlSlider);
+    setToggleAccessible(toInput);
+    if (from <= to) {
+        toSlider.value = to;
+        toInput.value = to;
+    } else {
+        toInput.value = from;
+    }
+}
+
+function controlFromSlider(fromSlider, toSlider, fromInput) {
+    const [from, to] = getParsed(fromSlider, toSlider);
+    fillSlider(fromSlider, toSlider, '#C6C6C6', '#fba92c', toSlider);
+    if (from > to) {
+      fromSlider.value = to;
+      fromInput.value = to;
+    } else {
+      fromInput.value = from;
+    }
+  }
+  
+  function controlToSlider(fromSlider, toSlider, toInput) {
+    const [from, to] = getParsed(fromSlider, toSlider);
+    fillSlider(fromSlider, toSlider, '#C6C6C6', '#fba92c', toSlider);
+    setToggleAccessible(toSlider);
+    if (from <= to) {
+      toSlider.value = to;
+      toInput.value = to;
+    } else {
+      toInput.value = from;
+      toSlider.value = from;
+    }
+  }
+  
+  function getParsed(currentFrom, currentTo) {
+    const from = parseInt(currentFrom.value, 10);
+    const to = parseInt(currentTo.value, 10);
+    return [from, to];
+  }
+  
+  function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+      const rangeDistance = to.max-to.min;
+      const fromPosition = from.value - to.min;
+      const toPosition = to.value - to.min;
+      controlSlider.style.background = `linear-gradient(
+        to right,
+        ${sliderColor} 0%,
+        ${sliderColor} ${(fromPosition)/(rangeDistance)*100}%,
+        ${rangeColor} ${((fromPosition)/(rangeDistance))*100}%,
+        ${rangeColor} ${(toPosition)/(rangeDistance)*100}%, 
+        ${sliderColor} ${(toPosition)/(rangeDistance)*100}%, 
+        ${sliderColor} 100%)`;
+  }
+  
+  function setToggleAccessible(currentTarget) {
+    const toSlider = document.querySelector('#toSlider');
+    if (Number(currentTarget.value) <= 0 ) {
+      toSlider.style.zIndex = 2;
+    } else {
+      toSlider.style.zIndex = 0;
+    }
+  }
+
+
+function filterForYear() {
+    const fromSlider = document.querySelector('#fromSlider');
+    const toSlider = document.querySelector('#toSlider');
+    const fromInput = document.querySelector('#fromInput');
+    const toInput = document.querySelector('#toInput');
+    fillSlider(fromSlider, toSlider, '#C6C6C6', '#fba92c', toSlider);
+    setToggleAccessible(toSlider);
+      
+    fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+    toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+
     //clear previously filtered before
-    var filter, table, rows, td, i;
     table = document.getElementById("top250");
     rows = movieitem;
     for (i = 0; i < rows.length; i++) {
         rows[i].style.display = "";
     }
-    //output for slider
-    var slider = document.getElementById("myRange");
-    var output = document.getElementById("years");
-    output.innerHTML = slider.value;
 
-    slider.oninput = function() {
-    output.innerHTML = this.value;
+    var sliderMin = document.getElementById("fromSlider");
+    var outputMin = document.getElementById("fromInput");
+    outputMin.innerHTML = sliderMin.value;
+    sliderMin.oninput = function() {
+        outputMin.innerHTML = this.value;
     }
+
+    var sliderMax = document.getElementById("toSlider");
+    var outputMax = document.getElementById("toInput");
+    outputMax.innerHTML = sliderMax.value;
+    sliderMax.oninput = function() {
+        outputMax.innerHTML = this.value;
+    }
+
     count = 0
     //use output as filter
-    filter = document.getElementById("years");
+    filterMax = document.getElementById("toInput");
+    filterMin = document.getElementById("fromInput")
     // Loop through all table rows, and hide those who don't match
     for (i = 0; i < rows.length; i++) {
         td = rows[i].getElementsByTagName("DIV")[1];
-    	if (parseInt(td.innerHTML) < parseInt(filter.innerHTML) + 1) {
+    	if ((parseInt(td.innerHTML) < parseInt(filterMax.innerHTML) + 1) && (parseInt(
+            td.innerHTML) > parseInt(filterMin.innerHTML) - 1)) {
             rows[i].style.display = " ";
             count = count + 1
         } else {
             rows[i].style.display ="none";
         }
     }
+
     var total = document.getElementById("total_year");
     total.innerHTML = count
+
+    if (count === 0) {
+        var errorMessage = document.createElement("p");
+        errorMessage.innerHTML = "No movies found within the specified range of years.";
+        errorMessage.setAttribute("class", "noMovies")
+        document.body.appendChild(errorMessage);
+    }
 }
 
 /**
@@ -274,7 +447,21 @@ function searchMovieActor() {
                 }
             }
         };
+        var count = 0;
+        for (i = 0; i < rows_movie.length; i++) {
+            if (rows_movie[i].style.display !== 'none')
+                count++;
+            }
+        
+        var total = document.getElementById("total_year");
+        total.innerHTML = count;
 
+        if (count === 0) {
+            var errorMessage = document.createElement("p");
+            errorMessage.innerHTML = "No movies found within the specified range of years.";
+            errorMessage.setAttribute("class", "noMovies")
+            document.body.appendChild(errorMessage);
+        }
     });
 }      
 
@@ -282,20 +469,34 @@ function searchMovieActor() {
  * retrieves the movies in theaters from the json file and assigns the response data to movieData
  */
 async function getInTheatersFromJsonFile() {
-    // other way to write promise (needs async keyword). 
-    const response = await fetch("./json_files/in_theaters.json");
-    const theaterData = await response.json();
-
-    // call the function populateMovies 
-    if (window.location.pathname === '/movie-webapp/index.html') {
-        currentTab = 'index';
-        displayRandomElements(theaterData);
-        
-      } else if (window.location.pathname === '/movie-webapp/in_theaters.html') {
-        currentTab = 'in_theaters';
-        populateTheaterGallery(theaterData);
-    }
+    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
+    // Add try/catch in order to handle errors in fetch statement
+    try {
+        const response = await fetch(url);
+        const theaterData = await response.json();
+        console.log(response.status);
+        // In theaters data is used in homepage and in_theaters page, so call function where page is open
+        if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getInTheatersFromJsonFile(url);
+        } else{ 
+            if (window.location.pathname === '/index.html') {
+                currentTab = 'index';
+                displayRandomElements(theaterData);
+              } else if (window.location.pathname === '/in_theaters.html') {
+                currentTab = 'in_theaters';
+                populateTheaterGallery(theaterData);
+              }
+        }
+      } catch (error) {
+        console.error('Error fetching theater data:', error);
+        }
 }
+
 
 
 /**
@@ -678,12 +879,13 @@ function populateWatchedGallery() {
 // }
 
 /**
- * display a random element
- * @param {*} data - tbd
+ * displayRandomElements takes argument data.
+ * it displays four random movies in index.html of the in theater movies
+ * @param {json} data - JSON file
  */
 function displayRandomElements(data) {
+    // Get ids of the movie data, choose four random ids and store in array
     const elements = data.items.map(user => user.id);
-  
     const randomElements = [];
     while (randomElements.length < 4) {
       const randomIndex = Math.floor(Math.random() * elements.length);
@@ -700,9 +902,10 @@ function displayRandomElements(data) {
     const randomElement = elements[randomIndex];
     console.log(randomElement)
 
-    // call function getyoutube
-    getyoutube(randomElement)
+    // Call function getyoutube
+    getYouTube(randomElement)
 
+    // get title, rank, plot and image for each of the four random movies and create html id
     for (let i = 0; i < randomElements.length; i++) {
       const id = randomElements[i];
       const title = data.items.find(x => x.id === id).title;
@@ -718,46 +921,55 @@ function displayRandomElements(data) {
 
       const elementRanking = document.getElementById(`element_${i + 1}_ranking`);
       elementRanking.textContent = ranking;
-      
       const elementImage = document.getElementById(`element_${i + 1}_image`);
       elementImage.setAttribute('src', img);
     }    
 }
 
 /**
- * call IMDB API to get trailer from youtube for the movie id 
- * @param {*} id - IMDB id of the movie
+
+ * getYouTube takes argument id.
+ * it fetches information from imDb YouTube API and gets year, title and URL of trailer
+ * @param {json} data - JSON file
  */
-async function getyoutube(id) {
+async function getYouTube(id) {
     let movie_id = id
-    let url = `https://imdb-api.com/en/API/YouTubeTrailer/${imdbApiKey}/${movie_id}`;
+    let url = `https://imdb-api.com/en/API/YouTubeTrailer/${imdbApiKey[keyIndex]}/${movie_id}`;
+    // Try to make API call and store information in json object
     try {
         const response = await fetch(url);
         const trailer = await response.json();
-        console.log(trailer);
-    
-        if (trailer.videoUrl) {
-          const trailer_link = document.getElementById("trailer_url");
-          const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
-          trailer_link.setAttribute('src', embeddedUrl);
-
-          console.log(trailer)
-    
-          const trailer_title = document.getElementById("trailer_title");
-          trailer_title.innerHTML = `${trailer.title}`;
-    
-          const trailer_year = document.getElementById("trailer_year");
-          trailer_year.innerHTML = trailer.year;
-        } else {
-          console.error('No video URL found in response:', trailer);
+        console.log(trailer.status);
+        if (trailer.errorMessage && trailer.errorMessage === 'Invalid API Key') {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getYouTube(url);
+        } else{ 
+            if (trailer.videoUrl) {
+                // get URL, title and year of movie
+                const trailer_link = document.getElementById("trailer_url");
+                const embeddedUrl = trailer.videoUrl.replace("watch?v=", "embed/");
+                trailer_link.setAttribute('src', embeddedUrl);
+            
+                const trailer_title = document.getElementById("trailer_title");
+                trailer_title.innerHTML = `${trailer.title}`;
+            
+                const trailer_year = document.getElementById("trailer_year");
+                trailer_year.innerHTML = trailer.year;
+                
+            } else {
+                // if there is no trailer to id, display other youtube video
+                const trailer_link = document.getElementById("trailer_url");
+                const embeddedUrl = "https://www.youtube.com/embed/KTSiBVZMy6U"
+                trailer_link.setAttribute('src', embeddedUrl);
+            }
         }
-      } catch (error) {
-        console.error('Error fetching trailer:', error);
-      } finally {
-        // hide the loading message
-        const loading_message = document.getElementById("loading_message");
-        loading_message.style.display = "none";
-      }
+    } catch (error) {
+        console.error('Error fetching trailer data:', error);
+    }
 }
 
 /**
@@ -1165,31 +1377,29 @@ function displayYearStats(data) {
     var yearChart = new Chart(canvasElement, config)
 }
 
-// // Initialize EmailJS with your user ID
-// emailjs.init('TtgLX2SAhGi_jaItB');
+/* Sending Email from Contact Section */
 
-// // Handle form submission
-// document.getElementById('contact-form').addEventListener('submit', function(event) {
-//   event.preventDefault(); // prevent default form behavior
-  
-//   // Get form data
-//   const formData = {
-//     name: this.elements.name.value,
-//     email: this.elements.email.value,
-//     phone: this.elements.phone.value,
-//     message: this.elements.message.value
-//   };
-  
-//   // Send email using EmailJS
-//   emailjs.send('service_6k1j5kc', 'template_qbj48v3', formData)
-//     .then(function(response) {
-//       console.log('SUCCESS!', response.status, response.text);
-//       // Clear form inputs
-//       document.getElementById('contact-form').reset();
-//       alert('Your message has been sent!');
-//     }, function(error) {
-//       console.log('FAILED...', error);
-//       alert('Oops! Something went wrong. Please try again later.');
-//     });
-// });
+console.log(emailjs);
+function sendmail() {
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let message = document.getElementById("message").value;
+
+        var contactParams = {
+            from_name: name,
+            from_email: email,
+            message: message
+        };
+
+        emailjs.send('service_6k1j5kc', 'template_qbj48v3', contactParams)
+            .then(function(response) {
+                console.log('SUCCESS!', response.status, response.text);
+                // Clear the input fields
+                document.getElementById("name").value = '';
+                document.getElementById("email").value = '';
+                document.getElementById("message").value = '';
+            }, function(error) {
+                console.log('FAILED...', error);
+    });
+}
 

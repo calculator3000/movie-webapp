@@ -21,6 +21,7 @@
                 <li><a href="./in_theaters.html">In Theaters</a></li>
                 <li><a href="./stats.html">Stats</a></li>
                 <li><a href="./watched.html">Watched</a></li>
+                <li><a href="./about.html">About</a></li>
                 <li style="position: absolute; right: 0;"><a href="./login.html">Login</a></li>
             </ul>
         </nav>
@@ -29,13 +30,23 @@
 <main>
 <!-- will be filled with JSON data about top 250 IMDB movies, by populateMovies (script.js)-->
 <section id="top250">
-    <input type="text" id="myInput" onkeyup="searchMovieActor()" placeholder="Search for movie or actor..">   
-    <div class="slidecontainer">
+    <input type="text" id="myInput" onkeyup="searchMovieActor()" placeholder="Search for movie or actor..">  
+    <div class="range_container">
         <p>Filter for range of years:</p>
-        <input type="range" min="1888" max="2023" value="50" class="slider" id="myRange" onclick= "filterYears()">
-        <b><p>Year:</b> <span id="years"></span></p>
+        <div class="slidecontainer">
+            <input type="range" min="1888" max="2023" value="1888" class="slider" id="fromSlider" onclick= "filterForYear()">
+            <input type="range" min="1888" max="2023" value="2023" class="slider" id="toSlider" onclick= "filterForYear()">
+        </div>
+        <div class="form_control">
+            <div class="form_control_container">
+                <span class="form_control_container__time" id="fromInput">Min</span>
+            </div>
+            <div class="form_control_container">
+                <span class="form_control_container__time" id ="toInput">Max</span>
+            </div>
+        </div>
         <b><p>Total movies: </b><span id="total_year"></span></p>
-      </div>
+    </div>
     <li class="header">
         <div class="movie_image"></div>
         <div class="title" onclick= "sortTable(0)">Ranking &uarr;&darr;</div>
@@ -65,6 +76,7 @@
 <script>
     // getAPIkey()
     getMoviesFromJsonFile();
+
     // login();
 </script>
 
