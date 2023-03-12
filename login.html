@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>ScreenTrack: using the IMDB API to display data about movies</title>
+    <link rel="icon" type="image/x-icon" href="images/camera.png">
+    <script type="text/javascript" src="scripts/config.js"></script> <!-- need this to be able to access the config file, needs to be placed before the rest!!-->
+    <script src="scripts/script.js">getInTheatersFromJsonFile</script>
+    <script src="scripts/login.js"></script>
+    <link rel="stylesheet" href="styles/home.css">
+</head>
+
+<body>
+  <header>
+      <div class="logo"><a href="./index.html"><img src="images/camera.png"></a></div>
+      <a href="./index.html"><h3>ScreenTrack</h3></a>
+      <nav class="main-nav">
+          <ul>
+            <li><a href="./top250.html">Top 250</a></li>
+            <li><a href="./in_theaters.html">In Theaters</a></li>
+            <li><a href="./stats.html">Stats</a></li>
+            <li><a href="./watched.html">Watched</a></li>
+            <li style="position: absolute; right: 0;"><a href="./login.html">Login</a></li>
+          </ul>
+      </nav>
+  </header>
+
+    <!-- will be filled with JSON-->
+    <main>
+      <section></section>
+    
+    </main>
+
+</body>
+
+
+<script>
+    login();
+    getCode();
+</script>
+
+</html>

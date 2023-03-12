@@ -3,7 +3,10 @@ const omdbApiKey = omdbapi.key3;
 const moviedbApiKey = moviedb.key1;
 const username = traktapi.username;
 let numRequestsCompleted = 0;
-let clientId = traktapi.clientId
+let clientId = traktapi.clientId;
+var token2 = traktapi.token2;
+let baseurl = "https://image.tmdb.org/t/p/w154/"
+
 
 var watchedArr = []
 
@@ -48,8 +51,12 @@ const genreColors = {
 };
 
 
-// ********** index.html, top250.json ********** 
-// Gets the top250 movies from IMDb API and assigns the response data to movieData
+/** 
+ * CHANGE THIS TO API CALL!
+ * retrieves the JSON file containing top250 movies
+ * and calls populateMovies with the data
+ */
+// Gets the top250 movies from the json file and assigns the response data to movieData
 async function getMoviesFromJsonFile() {
     let url = `https://imdb-api.com/en/API/Top250Movies/${imdbApiKey[keyIndex]}`;
     // Try to access the APi via key
@@ -74,6 +81,10 @@ async function getMoviesFromJsonFile() {
 }
      
 
+/**
+ * calls the IMDB-API to retrieve wikipedia data for the movie
+ * @param {*} id - the IMDB id of the movey
+ */
 async function getWiki(id) {
     let movie_id = id
     let url = `https://imdb-api.com/en/API/Wikipedia/${imdbApiKey[keyIndex]}/${movie_id}`;
@@ -133,8 +144,9 @@ async function getInTheatersFromJsonFile() {
 
 
 /**
- * populateMovies takes argument data.
+ * populateMovies takes argument data (a JSON file containing top250 imdb movies).
  * it populates index.html top250 id with movie data
+ * and adds modals
  * @param {json} data - JSON file
  */
 function populateMovies(data) {
@@ -197,13 +209,13 @@ function populateMovies(data) {
         movie_card.appendChild(movie_rating);
 
         section.appendChild(movie_card);
-
-        // append the element to the section
-
     }
 }
 
-//sort the table
+/**
+ * sort the Table
+ * @param {*} n - tbd
+ */
 function sortTable(n) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById("top250");
@@ -259,8 +271,10 @@ function sortTable(n) {
     }
   }
 
-//------ filter for range of years ------
 
+/**
+ * filter for range of years
+ */
 function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
     const [from, to] = getParsed(fromInput, toInput);
     fillSlider(fromInput, toInput, '#C6C6C6', '#fba92c', controlSlider);
@@ -397,7 +411,9 @@ function filterForYear() {
     }
 }
 
-
+/**
+ * search for movie actor
+ */
 function searchMovieActor() {
     fetch("json_files/top250.json")
     .then(response => response.json())
@@ -449,8 +465,9 @@ function searchMovieActor() {
     });
 }      
 
- // ********** in_theaters.html, in_theaters.json **********
-// Gets the movies in theaters from IMDb API and assigns the response data to movieData
+/**
+ * retrieves the movies in theaters from the json file and assigns the response data to movieData
+ */
 async function getInTheatersFromJsonFile() {
     let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
     // Add try/catch in order to handle errors in fetch statement
@@ -485,6 +502,7 @@ async function getInTheatersFromJsonFile() {
 /**
  * populateTheaterGallery takes argument data.
  * it populates in_theaters.html gallery class with data about movies currently in theaters
+ * and adds modals
  * @param {json} data - JSON file
  */
 function populateTheaterGallery(data) {
@@ -623,12 +641,14 @@ function populateTheaterGallery(data) {
         }
       });
     }
-    
-    
-
 }
 
-function getWatched() {
+/**
+ * calls trakt-api to get the watched movies for the user (username defined in config file)
+ * for every movie watched, call getMovData to get more data than available from trakt-api
+ * once all data is received from getMovData, call generateWatchedStats to display the movie data
+ */
+function getWatchedForStats() {
     console.log("1. In GetWatched")
     const url = `https://api.trakt.tv/users/${username}/watched/movies`;
   
@@ -649,7 +669,47 @@ function getWatched() {
         // for every movie in watched list, get more data from OMDB
         // once completed, call populateWatchedGallery()
         for (const movie of watched) {
-        imdbId = movie.movie.ids.imdb;
+            imdbId = movie.movie.ids.imdb;
+            // only call the callback function once all requests have been completed and the data is stored in watchedArr
+            getMovData(imdbId, function() { 
+                numRequestsCompleted++;
+                // populate gallery once all API calls are complete
+                if((numRequestsCompleted === watched.length)) {
+                    generateWatchedStats(watched);
+                }
+            })
+        } 
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+/**
+ * calls trakt-api to get the watched movies for the user (username defined in config file)
+ * for every movie watched, call getMovData to get more data than available from trakt-api
+ * once all data is received from getMovData, call populateWatchedGallery to display the movie data
+ */
+function getWatchedForGallery() {
+    console.log("1. In GetWatched")
+    const url = `https://api.trakt.tv/users/${username}/watched/movies`;
+  
+    fetch(url, {
+        headers: {
+            'Content-Type': 'application/json',
+            'trakt-api-version': '2',
+            'Authorization': `Bearer ${token2}`,
+            'trakt-api-key': clientId
+        }
+    })
+    .then(response => {
+        console.log('Status:', response.status);
+        console.log('Headers:', response.headers);
+        return response.json();
+    })
+    .then(watched => {
+        // for every movie in watched list, get more data from OMDB
+        // once completed, call populateWatchedGallery()
+        for (const movie of watched) {
+            imdbId = movie.movie.ids.imdb;
             // only call the callback function once all requests have been completed and the data is stored in watchedArr
             getMovData(imdbId, function() { 
                 numRequestsCompleted++;
@@ -657,90 +717,172 @@ function getWatched() {
                 if((numRequestsCompleted === watched.length)) {
                     populateWatchedGallery();
                 }
-            });
-        } 
+            })
+        }
     })
     .catch(error => console.error('Error:', error));
 }
 
-/** get movie or series data from imdb api*/
-function getMovData(imdbId, callback) {
-    console.log("2. in GetMovData")
+// /**
+//  * get movie data from IMDB-Api
+//  * @param {*} imdbId - the imdb id for the movie
+//  * @param {function} callback - callback function
+//  */
+// function getMovData(imdbId, callback) {
+//     console.log("2. in GetMovData")
 
+//     // check if the function has already been called before
+//     if (watchedArr.length > 0) {
+//         callback();
+//         console.log("was already filled")
+//     } else {
+//         var url = `https://www.omdbapi.com/?apikey=${omdbApiKey}&i=${imdbId}`
+//         fetch(url)
+//         .then(response => response.json())
+//         .then(data => {watchedArr.push(data); callback()});
+//     }
+// }
+
+/**
+ * get movie data from the movie DB-Api
+ * @param {*} imdbId - the imdb id for the movie
+ * @param {function} callback - callback function
+ */
+function getMovData(imdbId, callback) {
+    console.log("3. in GetMovData")
     // check if the function has already been called before
     if (watchedArr.length > 0) {
         callback();
         console.log("was already filled")
     } else {
-        var url = `https://www.omdbapi.com/?apikey=${omdbApiKey}&i=${imdbId}`
+        let url = `https://api.themoviedb.org/3/movie/${imdbId}?api_key=${moviedbApiKey}&language=en-US`
         fetch(url)
         .then(response => response.json())
-        .then(data => {watchedArr.push(data); callback()});
+        // add the detailed movie data to the watchedArray, 
+        // because the flex gallery loops through an array to populate the cards with data 
+        .then(data => {watchedArr.push(data); callback()}); 
     }
 }
 
-
+/**
+ * display the data of the watched movies in a gallery
+ * movie title, movie poster, movie genres
+ */
 function populateWatchedGallery() {
-    console.log("3. in populateWatchedGallery")
+    console.log("4. in populateWatchedGallery")
     console.log(watchedArr)
 
     for (const watchedMov of watchedArr) { 
-
         const section = document.querySelector('.gallery'); // select the sections
         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
         genreList.setAttribute("id", "genrelist")
         genreList.style["padding"] = "0px";
+        genreList.style.width = "130px";
+        genreList.style["text-align"] = "center";
 
         // cover poster of the movie
         const movImg = document.createElement('img');
-        movImg.src = watchedMov.Poster;
-            movImg.setAttribute("id", "movImg")
-            movieCard.appendChild(movImg);
+        let posterPath = watchedMov.poster_path
+        let imgUrl = baseurl + posterPath
+        movImg.src = imgUrl;
+        movImg.setAttribute("id", "movImg")
+        movieCard.appendChild(movImg);
 
         // movie title
-            const movTitle = document.createElement('p'); // creates new element
-            movTitle.textContent = `${watchedMov.Title}`; // fill the p element with the title
-            movTitle.setAttribute("class", "theater_title")
-            movieCard.appendChild(movTitle);
+        const movTitle = document.createElement('p'); // creates new element
+        movTitle.textContent = `${watchedMov.title}`; // fill the p element with the title
+        movTitle.setAttribute("class", "theater_title")
+        movieCard.appendChild(movTitle);
 
         // genres
-            var genres = watchedMov.Genre
-            const genreArr = genres.split(", ");
+        var genres = watchedMov.genres
 
-            for (const genre of genreArr) {
-                const movGenre = document.createElement('li'); // creates new element
-                movGenre.textContent = genre;
-                // movGenre.setAttribute("id", "genrelist")
+        for (const genre of genres) {
+            let genreName = genre.name
+            const movGenre = document.createElement('li'); // creates new element
+            movGenre.textContent = genreName;
 
-                // get color mapping from genreColors class
-                const genreColor = genreColors[genre];
-                movGenre.style["background-color"] = genreColor;
-                movGenre.style["border-radius"] = "10px";
-                movGenre.style["font-size"] = "8px";
-                movGenre.style["text-align"] = "center";
-                movGenre.style.padding = "2px 5px";
-                movGenre.style["list-style"] = "none";
-                movGenre.style.display = "inline-block";
-                movGenre.style.margin = "2px";
-                
-                // append the genre li elements to the genreList ul element
-                genreList.appendChild(movGenre);   
-            }
-            // append the element to the section
-            // movieCard.
-            movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
-            section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
-
+            // get color mapping from genreColors class
+            const genreColor = genreColors[genreName];
+            movGenre.style["background-color"] = genreColor;
+            movGenre.style["border-radius"] = "10px";
+            movGenre.style["font-size"] = "8px";
+            movGenre.style["text-align"] = "center";
+            movGenre.style.padding = "2px 5px";
+            movGenre.style["list-style"] = "none";
+            movGenre.style.display = "inline-block";
+            movGenre.style.margin = "2px";
+            
+            // append the genre li elements to the genreList ul element
+            genreList.appendChild(movGenre);   
+        }
+        // append the element to the section
+        movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
+        section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
     }
 }
+
+// /**
+//  * display the data of the watched movies in a gallery
+//  * movie title, movie poster, movie genres
+//  */
+// function populateWatchedGallery() {
+//     console.log("3. in populateWatchedGallery")
+//     console.log(watchedArr)
+
+//     for (const watchedMov of watchedArr) { 
+//         const section = document.querySelector('.gallery'); // select the sections
+//         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
+//         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
+//         genreList.setAttribute("id", "genrelist")
+//         genreList.style["padding"] = "0px";
+
+//         // cover poster of the movie
+//         const movImg = document.createElement('img');
+//         movImg.src = watchedMov.Poster;
+//         movImg.setAttribute("id", "movImg")
+//         movieCard.appendChild(movImg);
+
+//         // movie title
+//         const movTitle = document.createElement('p'); // creates new element
+//         movTitle.textContent = `${watchedMov.Title}`; // fill the p element with the title
+//         movTitle.setAttribute("class", "theater_title")
+//         movieCard.appendChild(movTitle);
+
+//         // genres
+//         var genres = watchedMov.Genre
+//         const genreArr = genres.split(", ");
+
+//         for (const genre of genreArr) {
+//             const movGenre = document.createElement('li'); // creates new element
+//             movGenre.textContent = genre;
+
+//             // get color mapping from genreColors class
+//             const genreColor = genreColors[genre];
+//             movGenre.style["background-color"] = genreColor;
+//             movGenre.style["border-radius"] = "10px";
+//             movGenre.style["font-size"] = "8px";
+//             movGenre.style["text-align"] = "center";
+//             movGenre.style.padding = "2px 5px";
+//             movGenre.style["list-style"] = "none";
+//             movGenre.style.display = "inline-block";
+//             movGenre.style.margin = "2px";
+            
+//             // append the genre li elements to the genreList ul element
+//             genreList.appendChild(movGenre);   
+//         }
+//         // append the element to the section
+//         movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
+//         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
+//     }
+// }
 
 /**
  * displayRandomElements takes argument data.
  * it displays four random movies in index.html of the in theater movies
  * @param {json} data - JSON file
  */
-
 function displayRandomElements(data) {
     // Get ids of the movie data, choose four random ids and store in array
     const elements = data.items.map(user => user.id);
@@ -779,13 +921,13 @@ function displayRandomElements(data) {
 
       const elementRanking = document.getElementById(`element_${i + 1}_ranking`);
       elementRanking.textContent = ranking;
-
       const elementImage = document.getElementById(`element_${i + 1}_image`);
       elementImage.setAttribute('src', img);
     }    
 }
 
 /**
+
  * getYouTube takes argument id.
  * it fetches information from imDb YouTube API and gets year, title and URL of trailer
  * @param {json} data - JSON file
@@ -829,8 +971,11 @@ async function getYouTube(id) {
         console.error('Error fetching trailer data:', error);
     }
 }
-    
 
+/**
+ * calls trakt api to get user statistics (how many movies and hours watched)
+ * then calls displayUserStats function to display the statistics in UI
+ */
 function getUserStats() {
     let url = `https://api.trakt.tv/users/${username}/stats`;
     
@@ -853,16 +998,27 @@ function getUserStats() {
     })
 }
 
+/**
+ * display the user statistics (how many movies watched and how many minutes) in the UI
+ * @param {*} stats - object
+ */
 function displayUserStats(stats) {
+    // convert the number of minutes watched into days, hours, minutes
     let minMovies = convertMinutes(stats.movies.minutes);
     let numMovies = stats.movies.watched
 
+    // display the statistics about minutes spend watching movies and # movies watched in the UI
     document.getElementById("days").innerText = minMovies[0];
     document.getElementById("hours").innerText = minMovies[1];
     document.getElementById("minutes").innerText = minMovies[2];
     document.getElementById("watched").innerText = numMovies
 }
 
+/**
+ * convert parameter min into days, hours, and minutes
+ * @param {*} min - how many minutes a user has watched movies
+ * @returns array - containing the days, hours, minutes
+ */
 function convertMinutes(min) {
     var days = Math.floor(min / 1440);
     var hours = Math.floor((min % 1440) / 60);
@@ -870,14 +1026,25 @@ function convertMinutes(min) {
     return [days, hours, minutes]
 }
 
-async function getWatchedFromJsonFile() {
-    const response = await fetch("./json_files/watched.json");
-    const watchedData = await response.json();
+// /**
+//  * CHANGE THIS TO API CALL 
+//  * retrieve extensive data about movies watched (from IMDB API) from JSON file
+//  * call generateWatchedStats to display data and charts in UI
+//  */
+// async function getWatchedFromJsonFile() {
+//     const response = await fetch("./json_files/watched.json");
+//     const watchedData = await response.json();
 
-    generateWatchedStats(watchedData)
-}
+//     generateWatchedStats(watchedData)
+// }
 
-function generateWatchedStats(watchedData) {
+
+/**
+ * create objects containing data to be used in the creation of charts
+ * call the functions to create the charts and fill the UI with data
+ * @param {object} watchedData - extensive data about each movie watched
+ */
+function generateWatchedStats() {
     // set variables for objects containing data to be used in creation of the charts
     let genreCount = {}; // format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
     let yearCount = {}; // format: {1989: 1, 1990: 1}
@@ -889,22 +1056,26 @@ function generateWatchedStats(watchedData) {
     // set initial values for lowest and highest rated films
     let lowestRating = 10.0;
     let highestRating = 0.0;
-    console.log(watchedData.items)
+    console.log(watchedArr)
 
-    for (const movie of watchedData.items) {
-        let genres = movie.Genre // format: Genre: "Action, Adventure, Fantasy"
-        let genresSplit = genres.split(", ");
-        let year = movie.Year
-        let rating = movie.imdbRating
-        let language = movie.Language // format: "English, Mandarin"
-        let langSplit = language.split(", ")[0]; // only use the first language mentioned
-        let actorSplit = movie.Actors.split(", ")
-        let countrySplit = movie.Country.split(", ");
+    // for each movie, fill the objects initialized above to contain the data
+    for (const movie of watchedArr) {
+        let genres = movie.genres // format: Genre: "Action, Adventure, Fantasy"
+        // format: [0:  {id: 18, name: 'Drama'}, 1: {id: 35, name: 'Comedy'}, 2: {id: 80, name: 'Crime'}]
+        let year = movie.release_date.substring(0, 4); // format "2003-07-09"
+        let rating = movie.vote_average; // movieDB rating
+        let language = movie.original_language // original_language
+        // let actors = 
+        // let actorSplit = movie.Actors.split(", ")
+        let countries = movie.production_countries;
+        // let countrySplit = movie.Country.split(", ");
 
         // GENRES: count how many times each genre appears in movies watched & populate genreObject with data
         // if movie has multiple genres, all genres will be counted
-        for (const genre of genresSplit) { genreCount = createCounterObject(genre, genreCount) }
-
+        for (const genre of genres) { 
+            genreCount = createCounterObject(genre.name, genreCount) 
+        }
+    
         // YEARS: count how many times each release year appears in movies watched & populate yearCount with data
         yearCount = createCounterObject(year, yearCount)
 
@@ -912,28 +1083,34 @@ function generateWatchedStats(watchedData) {
         // check if the current movie has a lower rating than the current lowest rating
         if (rating < lowestRating) {
             lowestRating = rating;
-            minRating["Title"] = movie.Title;
+            minRating["Title"] = movie.title;
             minRating["Rating"] = rating;
-            minRating["Poster"] = movie.Poster;
+            minRating["Poster"] = baseurl + movie.poster_path;
         }
         // check if the current movie has a higher rating than the current highest rating
         if (rating > highestRating) {
             highestRating = rating;
-            maxRating["Title"] = movie.Title;
+            maxRating["Title"] = movie.title;
             maxRating["Rating"] = rating;
-            maxRating["Poster"] = movie.Poster;
+            maxRating["Poster"] = baseurl + movie.poster_path;
         }
 
         // COUNTRIES: 
-        for (const country of countrySplit) { countryCount = createCounterObject(country, countryCount) }
+        for (const country of countries) { 
+            countryCount = createCounterObject(country.name, countryCount) 
+        }
 
-        // ACTORS
-        for (const actor of actorSplit) { actorCount = createCounterObject(actor, actorCount) }
+    //     // ACTORS
+    //     for (const actor of actorSplit) { 
+    //         actorCount = createCounterObject(actor, actorCount) 
+    //     }
 
         // LANGUAGES: note only first language
-        langCount = createCounterObject(langSplit, langCount)
+        langCount = createCounterObject(language, langCount)
     }
 
+    // Sort the objects (from high to low) by creating a list of objects
+    // and call functions to display the data in a chart
     // GENRES: sort the genres (high - low) and call function displaying data in a chart
         let genreCountSort = createSortedCounter(genreCount, true)
         displayGenreStats(genreCountSort[0], genreCountSort[1], genreCountSort[2])
@@ -943,6 +1120,7 @@ function generateWatchedStats(watchedData) {
         let minYear = Math.min(...years);
         let maxYear = 2023;
 
+        // if year does not appear in the watched movie data, put 0 as a counter
         for(let i=minYear; i<=maxYear; i++) {
             if(!years.includes(i)) {
                 yearCount[i] = 0
@@ -950,28 +1128,25 @@ function generateWatchedStats(watchedData) {
         }
         displayYearStats(yearCount);
 
-    // LANGUAGES: sort the countries (high - low) and display in a chart
-        let langCountSort = createSortedCounter(langCount)
-        displayLanguageStats(langCountSort[0], langCountSort[1])
+    // RATINGS: call function to display title, poster, and rating of lowest and highest rated watched movies
+        displayLowHighRatedMovie(minRating, maxRating);
 
     // COUNTRIES: sort the countries (high - low) and display in a chart
         var countryCountSort = createSortedCounter(countryCount)
         displayCountryStats(countryCountSort[0], countryCountSort[1])
 
-    // ACTORS
-        var actorsCountSort = createSortedCounter(actorCount)
-        for (let i=0; i < 6; i++) {
-            let actorname = actorsCountSort[0][i]
-            let actorCount = actorsCountSort[1][i]
-            getActorPoster(actorname, actorCount, i)
-            // console.log(actorsCountSort[0][i])
-            // console.log(actorsCountSort[1][i])
-        }
-        // getActorPoster()
-    // call functions responsiple for UI
+    // LANGUAGES: sort the countries (high - low) and display in a chart
+        let langCountSort = createSortedCounter(langCount)
+        displayLanguageStats(langCountSort[0], langCountSort[1])
 
-
-    displayLowHighRatedMovie(minRating, maxRating);
+    // // ACTORS: sort the actors (high - low) and display top 6 actors
+    //     var actorsCountSort = createSortedCounter(actorCount)
+    //     for (let i=0; i < 6; i++) {
+    //         let actorname = actorsCountSort[0][i]
+    //         let actorCount = actorsCountSort[1][i]
+    //         // call function to retrieve pictures of actors from the movie db
+    //         getActorPoster(actorname, actorCount, i)
+    //     }
 }
 
 /**
@@ -990,6 +1165,12 @@ function createCounterObject(variable, object) {
     return object;
 }
 
+/**
+ * call themoviedb-api to get the picture of the actor
+ * @param {string} actor - the name of the actor
+ * @param {*} actorCount - how many times the actor has appeared in watched movies
+ * @param {int} functionCounter - how many times has this function now been called (to track if its the top1 actor, top2, etc.)
+ */
 function getActorPoster(actor, actorCount, functionCounter) {
     let imagePath = ""
     let url = `https://api.themoviedb.org/3/search/person?api_key=${moviedbApiKey}&language=en-US&query=${actor}&page=1&include_adult=false`
@@ -1002,12 +1183,18 @@ function getActorPoster(actor, actorCount, functionCounter) {
     });
 }
 
+/**
+ * displays for the top6 actors of movies watched the image, name, and # of times appeared in movie
+ * @param {string} imgPath - the path to the image of the actor
+ * @param {string} actor - the name of the actor
+ * @param {*} actorCount - how many times the actor has appeared in watched movies
+ * @param {int} functionCounter - how many times has this function been called (to track the elementID)
+ */
 function displayTopActors(imgPath, actor, actorCount, functionCounter) {
     let baseurl = "https://image.tmdb.org/t/p/w154/"
     let imgUrl = baseurl + imgPath
     var elementId = "top" + functionCounter
-    console.log(elementId)
-    let actorSection = document.getElementById(elementId) // .src = imgUrl;
+    let actorSection = document.getElementById(elementId)
     actorSection.getElementsByClassName("actorImg")[0].src = imgUrl
     actorSection.getElementsByClassName("actorName")[0].innerHTML = actor
     actorSection.getElementsByClassName("actorCount")[0].innerHTML = actorCount + " movies"
@@ -1015,17 +1202,17 @@ function displayTopActors(imgPath, actor, actorCount, functionCounter) {
 
 /**
  * creates a list of objects containing two to three properties
+ * the labels and data will then be used in the creation of the chart
  * @param {object} object - the object to sort, format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
- * @param {boolean} [hasColor=false]  - adsi 
- * @returns {array} labels - the labels to be used in the chart
- * @returns {array} data - the data to be used in the chart
+ * @param {boolean} [hasColor=false]  - whether a specific color scheme should be defined
+ * @returns {array} array - labels - the labels to be used in the chart
+ * @returns {array} array - data - the data to be used in the chart
  */
 function createSortedCounter(object, hasColor = false) {
     let labels = [];
     let data = [];
     let bckgColors = []
 
-    console.log(window.location.pathname)
     // example format of result : [{label: 'adventure', count: 2, color: "#6B8E2330"}, ...]
         // label: e.g., genre
         // count: e.g., counting how many times genre appears in the movies watched
@@ -1053,7 +1240,11 @@ function createSortedCounter(object, hasColor = false) {
     return [labels, data, bckgColors]
 }
 
-
+/**
+ * display the lowest and highest rated watched movie in UI
+ * @param {object} lowestRating - containing data about lowest rated watched movie, format: {Title: "JurassicPark", Rating: 6.1, Poster: "http://..."}
+ * @param {object} highestRating - containing data about highest rated watched movie, format: {Title: "JurassicPark", Rating: 6.1, Poster: "http://..."}
+ */
 function displayLowHighRatedMovie(lowestRating, highestRating) {
     document.getElementById("lowScore").innerHTML = `${lowestRating.Rating}`;
     document.getElementById('lowPoster').src = lowestRating.Poster;
@@ -1063,6 +1254,11 @@ function displayLowHighRatedMovie(lowestRating, highestRating) {
     document.getElementById('highTitle').innerHTML = `${highestRating.Title}`;
 }
 
+/**
+ * create and display chart with data about the first languages of movies
+ * @param {array} labels - the labels of the chart (here the languages)
+ * @param {array} data - the data of the chart (here how many times each language appeared in watched movie data)
+ */
 function displayLanguageStats(labels, data) {
     let canvasElement = document.getElementById("lang");
     let config = {
@@ -1072,7 +1268,7 @@ function displayLanguageStats(labels, data) {
             datasets: [
                 {
                     label: '# of movies containing this language (as first language)',
-                    data: data,
+                    data: data
                 },
             ],
         },
@@ -1089,6 +1285,11 @@ function displayLanguageStats(labels, data) {
     let langChart = new Chart(canvasElement, config)
 }
 
+/**
+ * create and display chart with data about the production countries of movies
+ * @param {array} labels - the labels of the chart (here the county)
+ * @param {array} data - the data of the chart (here how many times each country appeared in watched movie data)
+ */
 function displayCountryStats(labels, data) {
     let canvasElement = document.getElementById("country");
     let config = {
@@ -1097,8 +1298,9 @@ function displayCountryStats(labels, data) {
             labels: labels,
             datasets: [
                 {
-                    label: 'number of movies from this country',
+                    label: '# of movies from this country',
                     data: data,
+                    backgroundColor: "#fba92c"
                 },
             ],
         },
@@ -1114,6 +1316,11 @@ function displayCountryStats(labels, data) {
     let countryChart = new Chart(canvasElement, config)
 }
 
+/**
+ * create and display chart with data about the genres of movies
+ * @param {array} labels - the labels of the chart (here the genre)
+ * @param {array} data - the data of the chart (here how many times each genre appeared in watched movie data)
+ */
 function displayGenreStats(labels, data, color) {
     let canvasElement = document.getElementById("genresChart");
     let config = {
@@ -1122,7 +1329,7 @@ function displayGenreStats(labels, data, color) {
             labels: labels,
             datasets: [
                 {
-                    label: 'number of movies containing this genre',
+                    label: '# of movies containing this genre',
                     data: data,
                     backgroundColor: color
                 },
@@ -1142,13 +1349,20 @@ function displayGenreStats(labels, data, color) {
     let genreChart = new Chart(canvasElement, config)
 }
 
+/**
+ * create and display chart with data about the release years of watched movies
+ * @param {array} labels - the labels of the chart (here the years)
+ * @param {array} data - the data of the chart (here how many times each year appeared in watched movie data)
+ */
 function displayYearStats(data) {
     var canvasElement = document.getElementById("years");
     var config = {
         type: "bar",
-        data: { datasets: [ { 
-                        data: data 
-                    }] },
+        data: { datasets: [ 
+            { 
+                data: data,
+                backgroundColor: "#fba92c"
+            }] },
         options: { 
             plugins: {
                 legend: {
@@ -1188,5 +1402,4 @@ function sendmail() {
                 console.log('FAILED...', error);
     });
 }
-
 
