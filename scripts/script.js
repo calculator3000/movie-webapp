@@ -7,7 +7,7 @@ let clientId = traktapi.clientId;
 var token2 = traktapi.token2;
 let baseurl = "https://image.tmdb.org/t/p/w154/"
 var watchedArr = []
-
+var starsArr = []
 
 // Initialize the key index to 0
 let keyIndex = 0;
@@ -992,69 +992,67 @@ function convertMinutes(min) {
  * call the functions to create the charts and fill the UI with data
  * @param {object} watchedData - extensive data about each movie watched
  */
-function generateWatchedStats() {
+async function generateWatchedStats() {
     // set variables for objects containing data to be used in creation of the charts
     let genreCount = {}; // format: {Action: 1, Adventure: 1, Fantasy: 1, ...}
     let yearCount = {}; // format: {1989: 1, 1990: 1}
     let minRating = {}; // format: {Title: "JurassicPark", Rating: 6.1, Poster: "http://..."}
     let maxRating = {}; // format: {Title: "Lord of the Rings", Rating: 9.3, Poster: "http://..."}
     let langCount = {}; // format: {English: 30, Mandarin: 1}
-    let actorCount = {};
-    let countryCount = {}; 
+    let actorCount = {}; // format {"Orlando Bloom": 30, "Emma Watson": 10, ...}
+    let countryCount = {}; // format: {"US": 30, "DE": 15}
     // set initial values for lowest and highest rated films
     let lowestRating = 10.0;
     let highestRating = 0.0;
-    console.log(watchedArr)
 
     // for each movie, fill the objects initialized above to contain the data
     for (const movie of watchedArr) {
-        let genres = movie.genres // format: Genre: "Action, Adventure, Fantasy"
-        // format: [0:  {id: 18, name: 'Drama'}, 1: {id: 35, name: 'Comedy'}, 2: {id: 80, name: 'Crime'}]
-        let year = movie.release_date.substring(0, 4); // format "2003-07-09"
-        let rating = movie.vote_average; // movieDB rating
-        let language = movie.original_language // original_language
-        // let actors = 
-        // let actorSplit = movie.Actors.split(", ")
-        let countries = movie.production_countries;
-        // let countrySplit = movie.Country.split(", ");
+            let genres = movie.genres // format: [0:  {id: 18, name: 'Drama'}, 1: {id: 35, name: 'Comedy'}, 2: {id: 80, name: 'Crime'}]
+            let year = movie.release_date.substring(0, 4); // format "2003-07-09"
+            let rating = movie.vote_average; // movieDB rating
+            let language = movie.original_language // original_language
+            let countries = movie.production_countries; // use all production countries
 
-        // GENRES: count how many times each genre appears in movies watched & populate genreObject with data
-        // if movie has multiple genres, all genres will be counted
-        for (const genre of genres) { 
-            genreCount = createCounterObject(genre.name, genreCount) 
-        }
-    
-        // YEARS: count how many times each release year appears in movies watched & populate yearCount with data
-        yearCount = createCounterObject(year, yearCount)
+            // GENRES: count how many times each genre appears in movies watched & populate genreObject with data
+            // if movie has multiple genres, all genres will be counted
+            for (const genre of genres) { 
+                genreCount = createCounterObject(genre.name, genreCount) 
+            }
+        
+            // YEARS: count how many times each release year appears in movies watched & populate yearCount with data
+            yearCount = createCounterObject(year, yearCount)
 
-        // RATINGS: check what was the lowest and the highest rated movies watched (according to imdb rating)
-        // check if the current movie has a lower rating than the current lowest rating
-        if (rating < lowestRating) {
-            lowestRating = rating;
-            minRating["Title"] = movie.title;
-            minRating["Rating"] = rating;
-            minRating["Poster"] = baseurl + movie.poster_path;
-        }
-        // check if the current movie has a higher rating than the current highest rating
-        if (rating > highestRating) {
-            highestRating = rating;
-            maxRating["Title"] = movie.title;
-            maxRating["Rating"] = rating;
-            maxRating["Poster"] = baseurl + movie.poster_path;
-        }
+            // RATINGS: check what was the lowest and the highest rated movies watched (according to imdb rating)
+            // check if the current movie has a lower rating than the current lowest rating
+            if (rating < lowestRating) {
+                lowestRating = rating;
+                minRating["Title"] = movie.title;
+                minRating["Rating"] = rating;
+                minRating["Poster"] = baseurl + movie.poster_path;
+            }
 
-        // COUNTRIES: 
-        for (const country of countries) { 
-            countryCount = createCounterObject(country.name, countryCount) 
-        }
+            // check if the current movie has a higher rating than the current highest rating
+            if (rating > highestRating) {
+                highestRating = rating;
+                maxRating["Title"] = movie.title;
+                maxRating["Rating"] = rating;
+                maxRating["Poster"] = baseurl + movie.poster_path;
+            }
 
-    //     // ACTORS
-    //     for (const actor of actorSplit) { 
-    //         actorCount = createCounterObject(actor, actorCount) 
-    //     }
+            // COUNTRIES: 
+            for (const country of countries) { 
+                countryCount = createCounterObject(country.name, countryCount) 
+            }
 
-        // LANGUAGES: note only first language
-        langCount = createCounterObject(language, langCount)
+            // ACTORS
+            // wait for getTopActors to be completed
+            let starsArr = await getTopActors(movie.imdb_id);
+                for (const actor of starsArr) {
+                    actorCount = createCounterObject(actor.name, actorCount);
+                }
+
+            // LANGUAGES: note only first language
+            langCount = createCounterObject(language, langCount)
     }
 
     // Sort the objects (from high to low) by creating a list of objects
@@ -1087,14 +1085,13 @@ function generateWatchedStats() {
         let langCountSort = createSortedCounter(langCount)
         displayLanguageStats(langCountSort[0], langCountSort[1])
 
-    // // ACTORS: sort the actors (high - low) and display top 6 actors
-    //     var actorsCountSort = createSortedCounter(actorCount)
-    //     for (let i=0; i < 6; i++) {
-    //         let actorname = actorsCountSort[0][i]
-    //         let actorCount = actorsCountSort[1][i]
-    //         // call function to retrieve pictures of actors from the movie db
-    //         getActorPoster(actorname, actorCount, i)
-    //     }
+    // ACTORS: sort the actors (high - low) and display top 6 actors
+    var actorsCountSort = createSortedCounter(actorCount)
+    for (let i=0; i < 6; i++) {
+        let actorname = actorsCountSort[0][i]
+        let actorCount = actorsCountSort[1][i]
+        getActorPoster(actorname, actorCount, i)
+    }
 }
 
 /**
@@ -1128,6 +1125,28 @@ function getActorPoster(actor, actorCount, functionCounter) {
     .then(data => {
         imagePath = data.results[0].profile_path 
         displayTopActors(imagePath, actor, actorCount, functionCounter)
+    });
+}
+
+function getTopActors(imdbId) {
+    return new Promise((resolve, reject) => {
+        let url = `https://api.themoviedb.org/3/movie/${imdbId}/credits?api_key=${moviedbApiKey}&language=en-US`
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                let topThreeStars = data.cast.slice(0, 3);
+                let starsArr = [];
+
+                for(const star of topThreeStars) {
+                    const newStar = { name: star.name };
+                    starsArr.push(newStar);
+                }
+                resolve(starsArr);
+            })
+            .catch(error => {
+                reject(error);
+            });
     });
 }
 
