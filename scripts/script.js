@@ -6,8 +6,6 @@ let numRequestsCompleted = 0;
 let clientId = traktapi.clientId;
 var token2 = traktapi.token2;
 let baseurl = "https://image.tmdb.org/t/p/w154/"
-
-
 var watchedArr = []
 
 
@@ -19,7 +17,6 @@ function getNextKey() {
   keyIndex = (keyIndex + 1) % imdbApiKey.length;
   return imdbApiKey[keyIndex];
 }
-
 
 // colors with transparency 30-50
 // https://www.w3schools.com/colors/colors_names.asp
@@ -52,25 +49,25 @@ const genreColors = {
 
 
 /** 
- * CHANGE THIS TO API CALL!
- * retrieves the JSON file containing top250 movies
+ * calls imdb API to get top250 movies
  * and calls populateMovies with the data
  */
 // Gets the top250 movies from the json file and assigns the response data to movieData
-async function getMoviesFromJsonFile() {
+async function getTop250Movies() {
     let url = `https://imdb-api.com/en/API/Top250Movies/${imdbApiKey[keyIndex]}`;
     // Try to access the APi via key
     try {
         const response = await fetch(url);
         const movieData = await response.json();
-        console.log(movieData.status);
-        if (movieData.errorMessage && movieData.errorMessage === 'Invalid API Key') {
+        if ((movieData.errorMessage === 'Invalid API Key') 
+        || (movieData.status === 'Invalid API Key') 
+        || (movieData.errorMessage.includes("Maximum usage"))) {
             // If the API key is invalid, try the next one
             keyIndex++;
             if (keyIndex >= imdbApiKey.length) {
               throw new Error('All API keys are invalid');
             }
-            return await getMoviesFromJsonFile(url);
+            return await getTop250Movies(url);
         } else{ 
             // Call the function populateMovies 
             populateMovies(movieData);
@@ -80,69 +77,6 @@ async function getMoviesFromJsonFile() {
     }
 }
      
-
-/**
- * calls the IMDB-API to retrieve wikipedia data for the movie
- * @param {*} id - the IMDB id of the movey
- */
-async function getWiki(id) {
-    let movie_id = id
-    let url = `https://imdb-api.com/en/API/Wikipedia/${imdbApiKey[keyIndex]}/${movie_id}`;
-    // Try the different keys for the API, if one is not working get next one
-    try {
-        const response = await fetch(url);
-        const datawiki = await response.json();
-        console.log(response.status);
-        if (datawiki.errorMessage && datawiki.errorMessage === 'Invalid API Key') {
-            // If the API key is invalid, try the next one
-            keyIndex++;
-            if (keyIndex >= imdbApiKey.length) {
-              throw new Error('All API keys are invalid');
-            }
-            return await getWiki(url);
-        } else{ 
-            let modal_title = document.getElementById("modal_title");
-            modal_title.innerHTML = `${datawiki.fullTitle}`;
-
-            let modal_text = document.getElementById("modal_text");
-            modal_text.innerHTML = datawiki.plotShort.plainText;
-        }
-    } catch (error) {
-        console.error('Error fetching wikipedia data:', error);
-        }
-}
-  
-
-async function getInTheatersFromJsonFile() {
-    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
-    // Add try/catch in order to handle errors in fetch statement
-    try {
-        const response = await fetch(url);
-        const theaterData = await response.json();
-        console.log(response.status);
-        // In theaters data is used in homepage and in_theaters page, so call function where page is open
-        if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
-            // If the API key is invalid, try the next one
-            keyIndex++;
-            if (keyIndex >= imdbApiKey.length) {
-              throw new Error('All API keys are invalid');
-            }
-            return await getInTheatersFromJsonFile(url);
-        } else{ 
-            if (window.location.pathname === '/index.html') {
-                currentTab = 'index';
-                displayRandomElements(theaterData);
-              } else if (window.location.pathname === '/in_theaters.html') {
-                currentTab = 'in_theaters';
-                populateTheaterGallery(theaterData);
-              }
-        }
-      } catch (error) {
-        console.error('Error fetching theater data:', error);
-        }
-}
-
-
 /**
  * populateMovies takes argument data (a JSON file containing top250 imdb movies).
  * it populates index.html top250 id with movie data
@@ -210,6 +144,101 @@ function populateMovies(data) {
 
         section.appendChild(movie_card);
     }
+}
+
+/**
+ * calls the IMDB-API to retrieve wikipedia data for the movie
+ * @param {*} id - the IMDB id of the movey
+ */
+async function getWiki(id) {
+    let movie_id = id
+    let url = `https://imdb-api.com/en/API/Wikipedia/${imdbApiKey[keyIndex]}/${movie_id}`;
+    // Try the different keys for the API, if one is not working get next one
+    try {
+        const response = await fetch(url);
+        const datawiki = await response.json();
+        console.log(response.status);
+        
+        if ((datawiki.errorMessage === 'Invalid API Key') 
+        || (datawiki.status === 'Invalid API Key') 
+        || (datawiki.errorMessage.includes("Maximum usage"))) {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getWiki(url);
+        } else{ 
+            let modal_title = document.getElementById("modal_title");
+            modal_title.innerHTML = `${datawiki.fullTitle}`;
+
+            let modal_text = document.getElementById("modal_text");
+            modal_text.innerHTML = datawiki.plotShort.plainText;
+        }
+    } catch (error) {
+        console.error('Error fetching wikipedia data:', error);
+        }
+}
+  
+/**
+ * if the user has selected the Theater Tab, the movies currently in theater will be called
+ * from IMDB api and the function populateTheaterGallery will be called afterwards
+ */
+async function getInTheatersForTheaterTab() {
+    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
+
+    // Add try/catch in order to handle errors in fetch statement
+    try {
+        const response = await fetch(url);
+        const theaterData = await response.json();
+        console.log(response.status);
+        // In theaters data is used in homepage and in_theaters page, so call function where page is open
+        if ((theaterData.errorMessage === 'Invalid API Key') 
+        || (theaterData.status === 'Invalid API Key') 
+        || (theaterData.errorMessage.includes("Maximum usage"))) {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getInTheatersForTheaterTab(url);
+        } else{ 
+                populateTheaterGallery(theaterData);  
+        }
+      } catch (error) {
+        console.error('Error fetching theater data:', error);
+        }
+}
+
+/**
+ * if the user has selected the Theater Tab, the movies currently in theater will be called
+ * from IMDB api and the function displayRandomElements will be called afterwards
+ */
+async function getInTheatersForIndexTab() {
+    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
+
+    // Add try/catch in order to handle errors in fetch statement
+    try {
+        const response = await fetch(url);
+        const theaterData = await response.json();
+        console.log(response.status);
+        // In theaters data is used in homepage and in_theaters page, so call function where page is open
+        if ((theaterData.errorMessage === 'Invalid API Key') 
+        || (theaterData.status === 'Invalid API Key') 
+        || (theaterData.errorMessage.includes("Maximum usage"))) {
+            // If the API key is invalid, try the next one
+            keyIndex++;
+            if (keyIndex >= imdbApiKey.length) {
+              throw new Error('All API keys are invalid');
+            }
+            return await getInTheatersForIndexTab(url);
+        } else{ 
+            console.log("here")
+            displayRandomElements(theaterData);
+        }
+      } catch (error) {
+        console.error('Error fetching theater data:', error);
+        }
 }
 
 /**
@@ -309,7 +338,7 @@ function controlFromSlider(fromSlider, toSlider, fromInput) {
     }
   }
   
-  function controlToSlider(fromSlider, toSlider, toInput) {
+function controlToSlider(fromSlider, toSlider, toInput) {
     const [from, to] = getParsed(fromSlider, toSlider);
     fillSlider(fromSlider, toSlider, '#C6C6C6', '#fba92c', toSlider);
     setToggleAccessible(toSlider);
@@ -322,13 +351,13 @@ function controlFromSlider(fromSlider, toSlider, fromInput) {
     }
   }
   
-  function getParsed(currentFrom, currentTo) {
+function getParsed(currentFrom, currentTo) {
     const from = parseInt(currentFrom.value, 10);
     const to = parseInt(currentTo.value, 10);
     return [from, to];
   }
   
-  function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
       const rangeDistance = to.max-to.min;
       const fromPosition = from.value - to.min;
       const toPosition = to.value - to.min;
@@ -342,7 +371,7 @@ function controlFromSlider(fromSlider, toSlider, fromInput) {
         ${sliderColor} 100%)`;
   }
   
-  function setToggleAccessible(currentTarget) {
+function setToggleAccessible(currentTarget) {
     const toSlider = document.querySelector('#toSlider');
     if (Number(currentTarget.value) <= 0 ) {
       toSlider.style.zIndex = 2;
@@ -350,7 +379,6 @@ function controlFromSlider(fromSlider, toSlider, fromInput) {
       toSlider.style.zIndex = 0;
     }
   }
-
 
 function filterForYear() {
     const fromSlider = document.querySelector('#fromSlider');
@@ -465,37 +493,37 @@ function searchMovieActor() {
     });
 }      
 
-/**
- * retrieves the movies in theaters from the json file and assigns the response data to movieData
- */
-async function getInTheatersFromJsonFile() {
-    let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
-    // Add try/catch in order to handle errors in fetch statement
-    try {
-        const response = await fetch(url);
-        const theaterData = await response.json();
-        console.log(response.status);
-        // In theaters data is used in homepage and in_theaters page, so call function where page is open
-        if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
-            // If the API key is invalid, try the next one
-            keyIndex++;
-            if (keyIndex >= imdbApiKey.length) {
-              throw new Error('All API keys are invalid');
-            }
-            return await getInTheatersFromJsonFile(url);
-        } else{ 
-            if (window.location.pathname === '/index.html') {
-                currentTab = 'index';
-                displayRandomElements(theaterData);
-              } else if (window.location.pathname === '/in_theaters.html') {
-                currentTab = 'in_theaters';
-                populateTheaterGallery(theaterData);
-              }
-        }
-      } catch (error) {
-        console.error('Error fetching theater data:', error);
-        }
-}
+// /**
+//  * retrieves the movies in theaters from the json file and assigns the response data to movieData
+//  */
+// async function getInTheatersFromJsonFile() {
+//     let url = `https://imdb-api.com/en/API/InTheaters/${imdbApiKey[keyIndex]}`;
+//     // Add try/catch in order to handle errors in fetch statement
+//     try {
+//         const response = await fetch(url);
+//         const theaterData = await response.json();
+//         console.log(response.status);
+//         // In theaters data is used in homepage and in_theaters page, so call function where page is open
+//         if (theaterData.errorMessage && theaterData.errorMessage === 'Invalid API Key') {
+//             // If the API key is invalid, try the next one
+//             keyIndex++;
+//             if (keyIndex >= imdbApiKey.length) {
+//               throw new Error('All API keys are invalid');
+//             }
+//             return await getInTheatersFromJsonFile(url);
+//         } else{ 
+//             if (window.location.pathname === '/index.html') {
+//                 currentTab = 'index';
+//                 displayRandomElements(theaterData);
+//               } else if (window.location.pathname === '/in_theaters.html') {
+//                 currentTab = 'in_theaters';
+//                 populateTheaterGallery(theaterData);
+//               }
+//         }
+//       } catch (error) {
+//         console.error('Error fetching theater data:', error);
+//         }
+// }
 
 
 
@@ -516,12 +544,17 @@ function populateTheaterGallery(data) {
         genreList.setAttribute("id", "genrelist")
         genreList.style["padding"] = "0px";
 
+        const movImg = document.createElement('img');
+        movImg.src = movie.image;
+        movImg.setAttribute("id", "movImg")
+        movieCard.appendChild(movImg);
+
         // Get the modal
         let modal = document.getElementById("myModal");
         // Get the <span> element that closes the modal
         let span = document.getElementsByClassName("close")[0];
         // When the user clicks on the button, open the modal
-        movieCard.onclick = function() {
+        movImg.onclick = function() {
             modal.style.display = "block";
         }
         // When the user clicks on <span> (x), close the modal
@@ -535,10 +568,10 @@ function populateTheaterGallery(data) {
             }
         }
         // get Wikipedia info from API and fill the modal
-        movieCard.addEventListener("click", function() {
+        movImg.addEventListener("click", function() {
             getWiki(movie.id)
         })
-        movieCard.addEventListener("click", function() {
+        movImg.addEventListener("click", function() {
             let modal_runtime = document.getElementById("modal_runtime");
             modal_runtime.innerHTML = movie.runtimeMins;
             
@@ -548,18 +581,20 @@ function populateTheaterGallery(data) {
             let modal_rating = document.getElementById("modal_rating");
             modal_rating.innerHTML = movie.imDbRating;
         })
-
-        // cover poster of the movie
-        const movImg = document.createElement('img');
-        movImg.src = movie.image;
-        movImg.setAttribute("id", "movImg")
-        movieCard.appendChild(movImg);
-
+        
         // movie title
         const movTitle = document.createElement('p'); // creates new element
         movTitle.textContent = `${movie.title}`; // fill the p element with the title
         movTitle.setAttribute("class", "theater_title")
         movieCard.appendChild(movTitle);
+
+        // button
+        const addMovieButton = document.createElement('button')
+        addMovieButton.innerHTML = 'Add to watchlist';
+        addMovieButton.addEventListener("click", function() {
+            addToWatchlist(movie.id);
+        });
+        movieCard.appendChild(addMovieButton)
 
         // movie genre in little tags that change color according to genre
         for (const genre of movie.genreList) {
@@ -723,26 +758,6 @@ function getWatchedForGallery() {
     .catch(error => console.error('Error:', error));
 }
 
-// /**
-//  * get movie data from IMDB-Api
-//  * @param {*} imdbId - the imdb id for the movie
-//  * @param {function} callback - callback function
-//  */
-// function getMovData(imdbId, callback) {
-//     console.log("2. in GetMovData")
-
-//     // check if the function has already been called before
-//     if (watchedArr.length > 0) {
-//         callback();
-//         console.log("was already filled")
-//     } else {
-//         var url = `https://www.omdbapi.com/?apikey=${omdbApiKey}&i=${imdbId}`
-//         fetch(url)
-//         .then(response => response.json())
-//         .then(data => {watchedArr.push(data); callback()});
-//     }
-// }
-
 /**
  * get movie data from the movie DB-Api
  * @param {*} imdbId - the imdb id for the movie
@@ -823,61 +838,6 @@ function populateWatchedGallery() {
     }
 }
 
-// /**
-//  * display the data of the watched movies in a gallery
-//  * movie title, movie poster, movie genres
-//  */
-// function populateWatchedGallery() {
-//     console.log("3. in populateWatchedGallery")
-//     console.log(watchedArr)
-
-//     for (const watchedMov of watchedArr) { 
-//         const section = document.querySelector('.gallery'); // select the sections
-//         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
-//         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
-//         genreList.setAttribute("id", "genrelist")
-//         genreList.style["padding"] = "0px";
-
-//         // cover poster of the movie
-//         const movImg = document.createElement('img');
-//         movImg.src = watchedMov.Poster;
-//         movImg.setAttribute("id", "movImg")
-//         movieCard.appendChild(movImg);
-
-//         // movie title
-//         const movTitle = document.createElement('p'); // creates new element
-//         movTitle.textContent = `${watchedMov.Title}`; // fill the p element with the title
-//         movTitle.setAttribute("class", "theater_title")
-//         movieCard.appendChild(movTitle);
-
-//         // genres
-//         var genres = watchedMov.Genre
-//         const genreArr = genres.split(", ");
-
-//         for (const genre of genreArr) {
-//             const movGenre = document.createElement('li'); // creates new element
-//             movGenre.textContent = genre;
-
-//             // get color mapping from genreColors class
-//             const genreColor = genreColors[genre];
-//             movGenre.style["background-color"] = genreColor;
-//             movGenre.style["border-radius"] = "10px";
-//             movGenre.style["font-size"] = "8px";
-//             movGenre.style["text-align"] = "center";
-//             movGenre.style.padding = "2px 5px";
-//             movGenre.style["list-style"] = "none";
-//             movGenre.style.display = "inline-block";
-//             movGenre.style.margin = "2px";
-            
-//             // append the genre li elements to the genreList ul element
-//             genreList.appendChild(movGenre);   
-//         }
-//         // append the element to the section
-//         movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
-//         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
-//     }
-// }
-
 /**
  * displayRandomElements takes argument data.
  * it displays four random movies in index.html of the in theater movies
@@ -927,7 +887,6 @@ function displayRandomElements(data) {
 }
 
 /**
-
  * getYouTube takes argument id.
  * it fetches information from imDb YouTube API and gets year, title and URL of trailer
  * @param {json} data - JSON file
@@ -940,7 +899,9 @@ async function getYouTube(id) {
         const response = await fetch(url);
         const trailer = await response.json();
         console.log(trailer.status);
-        if (trailer.errorMessage && trailer.errorMessage === 'Invalid API Key') {
+        if ((trailer.errorMessage === 'Invalid API Key') 
+        || (trailer.status === 'Invalid API Key') 
+        || (trailer.errorMessage.includes("Maximum usage"))) {
             // If the API key is invalid, try the next one
             keyIndex++;
             if (keyIndex >= imdbApiKey.length) {
@@ -1025,19 +986,6 @@ function convertMinutes(min) {
     var minutes = min % 60;
     return [days, hours, minutes]
 }
-
-// /**
-//  * CHANGE THIS TO API CALL 
-//  * retrieve extensive data about movies watched (from IMDB API) from JSON file
-//  * call generateWatchedStats to display data and charts in UI
-//  */
-// async function getWatchedFromJsonFile() {
-//     const response = await fetch("./json_files/watched.json");
-//     const watchedData = await response.json();
-
-//     generateWatchedStats(watchedData)
-// }
-
 
 /**
  * create objects containing data to be used in the creation of charts
@@ -1191,7 +1139,6 @@ function getActorPoster(actor, actorCount, functionCounter) {
  * @param {int} functionCounter - how many times has this function been called (to track the elementID)
  */
 function displayTopActors(imgPath, actor, actorCount, functionCounter) {
-    let baseurl = "https://image.tmdb.org/t/p/w154/"
     let imgUrl = baseurl + imgPath
     var elementId = "top" + functionCounter
     let actorSection = document.getElementById(elementId)
@@ -1379,7 +1326,7 @@ function displayYearStats(data) {
 
 /* Sending Email from Contact Section */
 
-console.log(emailjs);
+// console.log(emailjs);
 function sendmail() {
     let name = document.getElementById("name").value;
     let email = document.getElementById("email").value;
@@ -1403,3 +1350,38 @@ function sendmail() {
     });
 }
 
+function addToWatchlist(imdbId) {
+    console.log("Hello", imdbId)
+    fetch('https://api.trakt.tv/sync/watchlist', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token2}`,
+      'trakt-api-key': clientId,
+      'trakt-api-version': '2'
+    },
+    body: JSON.stringify({
+      'movies': [
+        {
+          'ids': {
+            'imdb': imdbId,
+          },
+        }
+      ],
+    })
+  })
+    .then(response => {
+      console.log('Status:', response.status);
+      console.log('Headers:', response.headers);
+      return response.text();
+    })
+    .then(body => {
+      console.log('Body:', body);
+      if(body.includes(`{"added":{"movies":1`)) {
+        window.alert("Movie successfully added to your watchlist!");
+      } else {
+        window.alert("Sorry, something went wrong! Are you logged in?");
+      }
+    })
+    .catch(error => console.error(error));
+}
