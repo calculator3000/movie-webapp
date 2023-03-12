@@ -468,7 +468,7 @@ input[type="range"] {
   border-radius: 10px;
   font-size: 15px;
   padding: 5px;
-  margin-top: 50px;
+  margin-top: 0px;
   margin-right: 10px;
   margin-bottom: 20px;
   cursor: pointer;
@@ -477,7 +477,9 @@ input[type="range"] {
 #filter_idea {
     padding: 15px;
     font-size: 24px;
-    margin-left: 20px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: center;
 }
 
 /* Gallery */
@@ -486,7 +488,7 @@ input[type="range"] {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px 10px;

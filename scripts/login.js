@@ -1,6 +1,6 @@
 // variables to store the api-keys received trakt.tv, stored in config.js
 var clientSecret = "";
-var redirectUri = "http://127.0.0.1:5500/movie-webapp/";
+var redirectUri = "http://127.0.0.1:5500/";
 
 /** 
  * force to redirect to the trakt login page. 
