@@ -660,7 +660,7 @@ function populateTheaterGallery(data) {
 function getWatchedForStats() {
     console.log("1. In GetWatched")
     const url = `https://api.trakt.tv/users/${username}/watched/movies`;
-  
+
     fetch(url, {
         headers: {
             'Content-Type': 'application/json',
@@ -1352,11 +1352,13 @@ function sendmail() {
 }
 
 function addToWatchlist(imdbId) {
+    let token3 = getItem("token") 
+
     fetch('https://api.trakt.tv/sync/watchlist', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token2}`,
+      'Authorization': `Bearer ${token3}`,
       'trakt-api-key': clientId,
       'trakt-api-version': '2'
     },
@@ -1383,6 +1385,9 @@ function addToWatchlist(imdbId) {
         window.alert("Sorry, something went wrong! Are you logged in?");
       }
     })
-    .catch(error => console.error(error));
+    .catch(error => {
+        console.error(error);
+        window.alert("Sorry, something went wrong! Are you logged in?");
+    });
 }
 
