@@ -65,6 +65,9 @@ nav a.current {
   color: #fba92c;
 }
 
+/* .login-link {
+  float: right;
+} */
 
 /* Style for the main */
 main {
@@ -293,7 +296,7 @@ main {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px 10px;
@@ -332,6 +335,9 @@ main {
   font-size: 12px;
   margin-top: 5px;
   margin-bottom: 0px;
+
+  font-size: 0.8em;
+  font-weight: bold;
 }
 .genrefilters {
   display: flex;
@@ -342,7 +348,7 @@ main {
   border-radius: 10px;
   font-size: 15px;
   padding: 5px;
-  margin-top: 50px;
+  margin-top: 0px;
   margin-right: 10px;
   margin-bottom: 20px;
   cursor: pointer;
@@ -351,5 +357,7 @@ main {
     padding: 15px;
     font-size: 24px;
     margin-left: 20px;
+    text-align:center;
+    max-height:100px;
 }
 

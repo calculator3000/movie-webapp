@@ -21,12 +21,15 @@
             <li><a href="./in_theaters.html">In Theaters</a></li>
             <li><a href="./stats.html">Stats</a></li>
             <li><a href="./watched.html">Watched</a></li>
+            <li style="position: absolute; right: 0;"><a href="./login.html">Login</a></li>
           </ul>
       </nav>
   </header>
 
     <!-- will be filled with JSON-->
     <main>
+      <button onclick="test()">Test</button>
+      <button onclick="addMovieToWatched()">Add</button>
       <section class="hero_image">
           <div class="background">
           </div>
@@ -143,6 +146,7 @@
 
 <script>
     getInTheatersFromJsonFile();
+    getCode();
 </script>
 
 </html>
