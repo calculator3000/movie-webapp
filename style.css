@@ -71,12 +71,6 @@ main {
     margin-top: 58px; /* ensures main starts below navigation bar */
 }
 
-/* Style for Top 250*/
-section {
-  padding: 10px;
-  margin: 20px
-}
-
 #movieitem {
   display: flex;
   flex-direction: row;
