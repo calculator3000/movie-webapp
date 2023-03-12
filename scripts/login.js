@@ -1,9 +1,5 @@
 // variables to store the api-keys received trakt.tv, stored in config.js
-// var clientId = "";
 var clientSecret = "";
-// var token = "";
-// var username = traktapi.username;
-// var token2 = traktapi.token2
 var redirectUri = "http://127.0.0.1:5500/movie-webapp/";
 
 /** 
@@ -34,6 +30,10 @@ function getCode() {
   }
 }
 
+/**
+ * swap the code with a token
+ * @param {*} code 
+ */
 function getToken(code) {
   const url = 'https://api.trakt.tv/oauth/token';
 
@@ -65,10 +65,20 @@ function getToken(code) {
   });
 }
 
+/**
+ * set items inside local Storage
+ * @param {*} nameOfItem 
+ * @param {*} value 
+ */
 function createItem(nameOfItem, value) {
 	localStorage.setItem(nameOfItem, value); 
 } 
 
+/**
+ * get items from local storage
+ * @param {*} nameOfItem 
+ * @returns 
+ */
 function getItem(nameOfItem) {
 	return localStorage.getItem(nameOfItem);  
 } // Gets the value of 'nameOfItem' and returns it

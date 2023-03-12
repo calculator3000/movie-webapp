@@ -812,61 +812,6 @@ function populateWatchedGallery() {
     }
 }
 
-// /**
-//  * display the data of the watched movies in a gallery
-//  * movie title, movie poster, movie genres
-//  */
-// function populateWatchedGallery() {
-//     console.log("3. in populateWatchedGallery")
-//     console.log(watchedArr)
-
-//     for (const watchedMov of watchedArr) { 
-//         const section = document.querySelector('.gallery'); // select the sections
-//         const movieCard = document.createElement('article'); // create element article that all new elements will be appended to
-//         const genreList = document.createElement('ul'); // create element list that will contain the genre tags
-//         genreList.setAttribute("id", "genrelist")
-//         genreList.style["padding"] = "0px";
-
-//         // cover poster of the movie
-//         const movImg = document.createElement('img');
-//         movImg.src = watchedMov.Poster;
-//         movImg.setAttribute("id", "movImg")
-//         movieCard.appendChild(movImg);
-
-//         // movie title
-//         const movTitle = document.createElement('p'); // creates new element
-//         movTitle.textContent = `${watchedMov.Title}`; // fill the p element with the title
-//         movTitle.setAttribute("class", "theater_title")
-//         movieCard.appendChild(movTitle);
-
-//         // genres
-//         var genres = watchedMov.Genre
-//         const genreArr = genres.split(", ");
-
-//         for (const genre of genreArr) {
-//             const movGenre = document.createElement('li'); // creates new element
-//             movGenre.textContent = genre;
-
-//             // get color mapping from genreColors class
-//             const genreColor = genreColors[genre];
-//             movGenre.style["background-color"] = genreColor;
-//             movGenre.style["border-radius"] = "10px";
-//             movGenre.style["font-size"] = "8px";
-//             movGenre.style["text-align"] = "center";
-//             movGenre.style.padding = "2px 5px";
-//             movGenre.style["list-style"] = "none";
-//             movGenre.style.display = "inline-block";
-//             movGenre.style.margin = "2px";
-            
-//             // append the genre li elements to the genreList ul element
-//             genreList.appendChild(movGenre);   
-//         }
-//         // append the element to the section
-//         movieCard.appendChild(genreList); // append the genreList ul element to movieCard article element
-//         section.appendChild(movieCard); // append the movieCard article to the section selector (selected .gallery)
-//     }
-// }
-
 /**
  * displayRandomElements takes argument data.
  * it displays four random movies in index.html of the in theater movies
@@ -919,7 +864,7 @@ function displayRandomElements(data) {
 
  * getYouTube takes argument id.
  * it fetches information from imDb YouTube API and gets year, title and URL of trailer
- * @param {json} data - JSON file
+ * @param {*} id - IMDB Id
  */
 async function getYouTube(id) {
     let movie_id = id
@@ -1158,6 +1103,11 @@ function getActorPoster(actor, actorCount, functionCounter) {
     });
 }
 
+/**
+ * 
+ * @param {*} imdbId - IMDB Id
+ * @returns a promise
+ */
 function getTopActors(imdbId) {
     return new Promise((resolve, reject) => {
         let url = `https://api.themoviedb.org/3/movie/${imdbId}/credits?api_key=${moviedbApiKey}&language=en-US`
@@ -1390,17 +1340,18 @@ function sendmail() {
         emailjs.send('service_6k1j5kc', 'template_qbj48v3', contactParams)
             .then(function(response) {
                 console.log('SUCCESS!', response.status, response.text);
+                window.alert("Feedback successfully sent");
                 // Clear the input fields
                 document.getElementById("name").value = '';
                 document.getElementById("email").value = '';
                 document.getElementById("message").value = '';
             }, function(error) {
                 console.log('FAILED...', error);
+                window.alert("Sorry, try again later.")
     });
 }
 
 function addToWatchlist(imdbId) {
-    console.log("Hello", imdbId)
     fetch('https://api.trakt.tv/sync/watchlist', {
     method: 'POST',
     headers: {
