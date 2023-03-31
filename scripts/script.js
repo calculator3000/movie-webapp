@@ -4,7 +4,7 @@ const moviedbApiKey = moviedb.key1;
 const username = traktapi.username;
 let numRequestsCompleted = 0;
 let clientId = traktapi.clientId;
-var token2 = traktapi.token2;
+// var token2 = traktapi.token2;
 let baseurl = "https://image.tmdb.org/t/p/w154/"
 
 var watchedArr = []
@@ -660,12 +660,13 @@ function populateTheaterGallery(data) {
 function getWatchedForStats() {
     console.log("1. In GetWatched")
     const url = `https://api.trakt.tv/users/${username}/watched/movies`;
+    const auth_token = localStorage.getItem("token");
 
     fetch(url, {
         headers: {
             'Content-Type': 'application/json',
             'trakt-api-version': '2',
-            'Authorization': `Bearer ${token2}`,
+            'Authorization': `Bearer ${auth_token}`,
             'trakt-api-key': clientId
         }
     })
@@ -700,12 +701,13 @@ function getWatchedForStats() {
 function getWatchedForGallery() {
     console.log("1. In GetWatched")
     const url = `https://api.trakt.tv/users/${username}/watched/movies`;
+    const auth_token = localStorage.getItem("token");
   
     fetch(url, {
         headers: {
             'Content-Type': 'application/json',
             'trakt-api-version': '2',
-            'Authorization': `Bearer ${token2}`,
+            'Authorization': `Bearer ${auth_token}`,
             'trakt-api-key': clientId
         }
     })
@@ -914,13 +916,15 @@ async function getYouTube(id) {
  */
 function getUserStats() {
     let url = `https://api.trakt.tv/users/${username}/stats`;
-    
+    const auth_token = localStorage.getItem("token");
+
     fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'trakt-api-version': '2',
-            'trakt-api-key': clientId //,
+            'Authorization': `Bearer ${auth_token}`,
+            'trakt-api-key': clientId,
         }
     })
     .then(response => {
@@ -1352,13 +1356,13 @@ function sendmail() {
 }
 
 function addToWatchlist(imdbId) {
-    let token3 = getItem("token") 
+    const auth_token = localStorage.getItem("token");
 
     fetch('https://api.trakt.tv/sync/watchlist', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token3}`,
+      'Authorization': `Bearer ${auth_token}`,
       'trakt-api-key': clientId,
       'trakt-api-version': '2'
     },
